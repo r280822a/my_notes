@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/pages/home.dart';
+import 'package:my_notes/pages/note.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +14,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(useMaterial3: true),
-      home: const Home(),
+      routes: {
+        "/": (context) => const Home(),
+        "/note":(context) => const Note(),
+      },
     );
   }
 }
+
+List<List<String>> notes = [
+  ["Title", "This is a note"],
+  ["Another title", "this is another note"]
+];

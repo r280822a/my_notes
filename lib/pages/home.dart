@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_notes/main.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -8,11 +9,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  List<Widget> notes = [];
-
   void addNote(){
-    setState(() {});
-    notes.add(const Note());
+    setState(() {
+      notes.add(["",""]);
+    });
   }
 
   @override
@@ -28,7 +28,28 @@ class _HomeState extends State<Home> {
         child: ListView.builder(
           itemCount: notes.length,
           itemBuilder: (_, index) {
-            return notes[index];
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(5, 20, 5, 0),
+              child: GestureDetector(
+                onTap: () async {
+                  await Navigator.pushNamed(
+                    context,
+                    "/note",
+                    arguments: index,
+                  );
+                  setState(() {});
+                },
+                child: Card(
+                  elevation: 0,
+                  color: Theme.of(context).colorScheme.surfaceVariant,
+                  child: Container(
+                    height: 100,
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(notes[index][0])
+                  )
+                ),
+              ),
+            );
           },
         ),
       ),
@@ -42,8 +63,8 @@ class _HomeState extends State<Home> {
 }
 
 
-class Note extends StatelessWidget {
-  const Note({super.key});
+class Note1 extends StatelessWidget {
+  const Note1({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +74,8 @@ class Note extends StatelessWidget {
         elevation: 0,
         color: Theme.of(context).colorScheme.surfaceVariant,
         child: Container(
+          height: 100,
+          width: 100,
           padding: const EdgeInsets.all(10.0),
           child: EditableText(
             focusNode: FocusNode(),
