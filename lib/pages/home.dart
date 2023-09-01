@@ -50,21 +50,23 @@ class Note extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(5, 20, 5, 0),
       child: Card(
+        elevation: 0,
+        color: Theme.of(context).colorScheme.surfaceVariant,
         child: Container(
           padding: const EdgeInsets.all(10.0),
           child: EditableText(
             focusNode: FocusNode(),
             controller: TextEditingController(),
             backgroundCursorColor: Colors.black,
+            cursorColor: Colors.blue,
             
             maxLines: null,
             textAlign: TextAlign.start,
+            keyboardType: TextInputType.multiline,
             style: const TextStyle(
               color: Colors.black,
               fontSize: 18.0,
             ),
-            keyboardType: TextInputType.multiline,
-            cursorColor: Colors.blue,
           ),
         )
       ),
