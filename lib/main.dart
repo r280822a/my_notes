@@ -24,5 +24,6 @@ class MyApp extends StatelessWidget {
 
 List<List<String>> notes = [
   ["Title", "This is a note"],
-  ["Another title", "this is another note"]
+  ["Another title", "this is another note"],
+  ["Title12345678912345678912345", "1234567981234567891234567891234567891234"]
 ];

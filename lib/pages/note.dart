@@ -13,7 +13,7 @@ class _NoteState extends State<Note> {
     return TextFormField(
       style: TextStyle(
         fontWeight: isTitle ? FontWeight.bold : FontWeight.normal,
-        fontSize: isTitle ? 25 : 20,
+        fontSize: isTitle ? 23 : 16,
       ),
       maxLines: isTitle ? 1 : null,
       decoration: const InputDecoration(
