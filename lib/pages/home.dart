@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/main.dart';
+import 'package:my_notes/notes_db.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:sqflite/sqflite.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -16,8 +18,21 @@ class _HomeState extends State<Home> {
     });
   }
 
+  late Database notesDB;
+
+  void getDatabase() async {
+    notesDB = await NotesDatabase.open();
+    print(notesDB);
+
+    NotesDatabase.test(notesDB);
+    NotesDatabase.test(notesDB);
+    print(await notesDB.query("notes"));
+  }
+
   @override
   Widget build(BuildContext context) {
+    getDatabase();
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
