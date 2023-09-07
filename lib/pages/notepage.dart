@@ -23,7 +23,7 @@ class _NotePageState extends State<NotePage> {
       ),
       initialValue: isTitle ? note.title : note.description,
       onChanged: (value) {
-        isTitle ? note.title : note.description = value;
+        isTitle ? note.title = value : note.description = value;
         notesClass.updateNote(note);
       },
     );
