@@ -11,12 +11,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  void addNote(){
-    setState(() {
-      notes.add(["",""]);
-    });
-  }
-
   late NotesDatabase notesClass;
   bool loading = true;
 
@@ -102,7 +96,10 @@ class _HomeState extends State<Home> {
       ),
 
       floatingActionButton: FloatingActionButton(
-        onPressed: addNote,
+        onPressed: () async {
+          await notesClass.addNote("", "");
+          setState(() {});
+        },
         tooltip: 'Add note',
         child: const Icon(Icons.add),
       ),
