@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/main.dart';
+import 'package:my_notes/notes_db.dart';
 
-class Note extends StatefulWidget {
-  const Note({super.key});
+class NotePage extends StatefulWidget {
+  const NotePage({super.key});
 
   @override
-  State<Note> createState() => _NoteState();
+  State<NotePage> createState() => _NotePageState();
 }
 
-class _NoteState extends State<Note> {
-  TextFormField textFormBuilder(int index, bool isTitle){
+class _NotePageState extends State<NotePage> {
+  TextFormField textFormBuilder(Note note, NotesDatabase notesClass, bool isTitle){
     return TextFormField(
       style: TextStyle(
         fontWeight: isTitle ? FontWeight.bold : FontWeight.normal,
@@ -21,9 +21,10 @@ class _NoteState extends State<Note> {
         isDense: true,
         contentPadding: EdgeInsets.zero,
       ),
-      initialValue: notes[index][isTitle ? 0 : 1],
+      initialValue: isTitle ? note.title : note.description,
       onChanged: (value) {
-        notes[index][isTitle ? 0 : 1] = value;
+        isTitle ? note.title : note.description = value;
+        notesClass.updateNote(note);
       },
     );
   }
@@ -31,7 +32,9 @@ class _NoteState extends State<Note> {
 
   @override
   Widget build(BuildContext context) {
-    int index = ModalRoute.of(context)!.settings.arguments as int;
+    Map result = ModalRoute.of(context)!.settings.arguments as Map;
+    Note note = result["note"];
+    NotesDatabase notesClass = result["notesClass"];
 
     return Scaffold(
       appBar: AppBar(),
@@ -41,10 +44,10 @@ class _NoteState extends State<Note> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            textFormBuilder(index, true),
+            textFormBuilder(note, notesClass, true),
             const Divider(),
             Expanded(
-              child: textFormBuilder(index, false),
+              child: textFormBuilder(note, notesClass, false),
             ),
           ],
         ),

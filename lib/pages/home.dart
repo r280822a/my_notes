@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:my_notes/main.dart';
 import 'package:my_notes/notes_db.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:sqflite/sqflite.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -18,20 +17,31 @@ class _HomeState extends State<Home> {
     });
   }
 
-  late Database notesDB;
+  late NotesDatabase notesClass;
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    getDatabase();
+  }
 
   void getDatabase() async {
-    notesDB = await NotesDatabase.open();
-    print(notesDB);
+    notesClass = NotesDatabase();
 
-    NotesDatabase.test(notesDB);
-    NotesDatabase.test(notesDB);
-    print(await notesDB.query("notes"));
+    await notesClass.open();
+    await notesClass.toList();
+
+    // await notesClass.addNote("Title", "This is a note");
+    // await notesClass.addNote("Another title", "this is another note");
+    // await notesClass.addNote("Title12345678912345678912345", "1234567981234567891234567891234567891234");
+    loading = false;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    getDatabase();
+    if (loading) {return loadingScreen(context);}
 
     return Scaffold(
       appBar: AppBar(
@@ -41,19 +51,19 @@ class _HomeState extends State<Home> {
 
       body: MasonryGridView.count(
         padding: const EdgeInsets.all(8),
-        itemCount: notes.length,
+        itemCount: notesClass.notes.length,
         crossAxisCount: 2,
         mainAxisSpacing: 4,
         crossAxisSpacing: 4,
         itemBuilder: (context, index) {
-          final note = notes[index];
+          final Note note = notesClass.notes[index];
 
           return GestureDetector(
             onTap: () async {
               await Navigator.pushNamed(
                 context,
                 "/note",
-                arguments: index,
+                arguments: {"notesClass":notesClass, "note":notesClass.notes[index]},
               );
               setState(() {});
             },
@@ -68,7 +78,7 @@ class _HomeState extends State<Home> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      note[0],
+                      note.title,
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 20,
@@ -77,7 +87,7 @@ class _HomeState extends State<Home> {
                     ),
 
                     Text(
-                      note[1],
+                      note.description,
                       style: const TextStyle(
                         color: Colors.black54,
                         fontSize: 16,
