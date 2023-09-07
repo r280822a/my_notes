@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/pages/home.dart';
-import 'package:my_notes/pages/notepage.dart';
+import 'package:my_notes/pages/editnote.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 void main() {
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(useMaterial3: true),
       routes: {
         "/": (context) => const Home(),
-        "/note":(context) => const NotePage(),
+        "/note":(context) => const EditNote(),
       },
     );
   }

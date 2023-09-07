@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/notes_db.dart';
 
-class NotePage extends StatefulWidget {
-  const NotePage({super.key});
+class EditNote extends StatefulWidget {
+  const EditNote({super.key});
 
   @override
-  State<NotePage> createState() => _NotePageState();
+  State<EditNote> createState() => _EditNoteState();
 }
 
-class _NotePageState extends State<NotePage> {
-  TextFormField textFormBuilder(Note note, NotesDatabase notesClass, bool isTitle){
+class _EditNoteState extends State<EditNote> {
+  TextFormField textFormBuilder(Note note, NotesDatabase notesDB, bool isTitle){
     return TextFormField(
       style: TextStyle(
         fontWeight: isTitle ? FontWeight.bold : FontWeight.normal,
@@ -24,7 +24,7 @@ class _NotePageState extends State<NotePage> {
       initialValue: isTitle ? note.title : note.description,
       onChanged: (value) {
         isTitle ? note.title = value : note.description = value;
-        notesClass.updateNote(note);
+        notesDB.updateNote(note);
       },
     );
   }
@@ -34,20 +34,36 @@ class _NotePageState extends State<NotePage> {
   Widget build(BuildContext context) {
     Map result = ModalRoute.of(context)!.settings.arguments as Map;
     Note note = result["note"];
-    NotesDatabase notesClass = result["notesClass"];
+    NotesDatabase notesDB = result["notesDB"];
 
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () async {
+              await notesDB.deleteNote(note);
+              if (mounted){
+                Navigator.pop(context);
+              }
+            }, 
+            icon: const Icon(Icons.delete_outline_outlined)
+          )
+        ],
+      ),
 
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            textFormBuilder(note, notesClass, true),
+            textFormBuilder(note, notesDB, true),
             const Divider(),
+            Text(
+              note.time,
+              style: const TextStyle(color: Colors.black54),
+            ),
             Expanded(
-              child: textFormBuilder(note, notesClass, false),
+              child: textFormBuilder(note, notesDB, false),
             ),
           ],
         ),

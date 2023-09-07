@@ -11,7 +11,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  late NotesDatabase notesClass;
+  late NotesDatabase notesDB;
   bool loading = true;
 
   @override
@@ -21,14 +21,14 @@ class _HomeState extends State<Home> {
   }
 
   void getDatabase() async {
-    notesClass = NotesDatabase();
+    notesDB = NotesDatabase();
 
-    await notesClass.open();
-    await notesClass.toList();
+    await notesDB.open();
+    await notesDB.toList();
 
-    // await notesClass.addNote("Title", "This is a note");
-    // await notesClass.addNote("Another title", "this is another note");
-    // await notesClass.addNote("Title12345678912345678912345", "1234567981234567891234567891234567891234");
+    // await notesDB.addNote("Title", "This is a note");
+    // await notesDB.addNote("Another title", "this is another note");
+    // await notesDB.addNote("Title12345678912345678912345", "1234567981234567891234567891234567891234");
     loading = false;
     setState(() {});
   }
@@ -45,19 +45,19 @@ class _HomeState extends State<Home> {
 
       body: MasonryGridView.count(
         padding: const EdgeInsets.all(8),
-        itemCount: notesClass.notes.length,
+        itemCount: notesDB.list.length,
         crossAxisCount: 2,
         mainAxisSpacing: 4,
         crossAxisSpacing: 4,
         itemBuilder: (context, index) {
-          final Note note = notesClass.notes[index];
+          final Note note = notesDB.list[index];
 
           return GestureDetector(
             onTap: () async {
               await Navigator.pushNamed(
                 context,
                 "/note",
-                arguments: {"notesClass":notesClass, "note":notesClass.notes[index]},
+                arguments: {"notesDB":notesDB, "note":notesDB.list[index]},
               );
               setState(() {});
             },
@@ -73,15 +73,18 @@ class _HomeState extends State<Home> {
                   children: [
                     Text(
                       note.title,
+                      overflow: TextOverflow.ellipsis,
                       style: const TextStyle(
                         color: Colors.black,
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
 
                     Text(
                       note.description,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 5,
                       style: const TextStyle(
                         color: Colors.black54,
                         fontSize: 16,
@@ -97,10 +100,18 @@ class _HomeState extends State<Home> {
 
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          await notesClass.addNote("", "");
+          int index = await notesDB.addNote("", "");
+          
+          if (mounted) {
+            await Navigator.pushNamed(
+              context,
+              "/note",
+              arguments: {"notesDB":notesDB, "note":notesDB.list[index]},
+            );
+          }
           setState(() {});
         },
-        tooltip: 'Add note',
+        tooltip: "Add note",
         child: const Icon(Icons.add),
       ),
     );
