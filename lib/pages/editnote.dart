@@ -62,6 +62,7 @@ class _EditNoteState extends State<EditNote> {
               note.time,
               style: const TextStyle(color: Colors.black54),
             ),
+            const SizedBox(height: 10),
             Expanded(
               child: textFormBuilder(note, notesDB, false),
             ),
