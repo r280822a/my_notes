@@ -39,7 +39,7 @@ class _HomeState extends State<Home> {
 
   void selectCard(index){
     selectedCards[index] = !selectedCards[index];
-    if (selectedCards.every((element) => false)) {
+    if (selectedCards.every((element) => element == false)) {
       selectMode = false;
     } else {
       selectMode = true;
@@ -75,7 +75,7 @@ class _HomeState extends State<Home> {
                 await notesDB.deleteNote(notesToDelete[i]);
               }
               selectMode = false;
-              selectedCards = List.filled(selectedCards.length, false, growable: true);
+              selectedCards = List.filled(notesDB.list.length, false, growable: true);
               setState(() {});
             }, 
             icon: const Icon(Icons.delete_outline_outlined)
@@ -104,6 +104,7 @@ class _HomeState extends State<Home> {
                   "/note",
                   arguments: {"notesDB":notesDB, "note":notesDB.list[index]},
                 );
+                selectedCards = List.filled(notesDB.list.length, false, growable: true);
               }
               setState(() {});
             },
