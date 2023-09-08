@@ -39,7 +39,11 @@ class _HomeState extends State<Home> {
 
   void selectCard(index){
     selectedCards[index] = !selectedCards[index];
-    selectMode = selectedCards[index];
+    if (selectedCards.every((element) => false)) {
+      selectMode = false;
+    } else {
+      selectMode = true;
+    }
   }
 
   @override
