@@ -133,8 +133,8 @@ class _HomeState extends State<Home> {
                     Text(
                       note.title,
                       overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.black,
+                      style: TextStyle(
+                        color: Theme.of(context).textSelectionTheme.selectionColor,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -144,8 +144,8 @@ class _HomeState extends State<Home> {
                       note.description,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 5,
-                      style: const TextStyle(
-                        color: Colors.black54,
+                      style: TextStyle(
+                        color: Theme.of(context).unselectedWidgetColor,
                         fontSize: 16,
                       ),
                     ),

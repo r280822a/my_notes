@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_notes/pages/home.dart';
 import 'package:my_notes/pages/editnote.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,12 +14,24 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(useMaterial3: true),
-      routes: {
-        "/": (context) => const Home(),
-        "/note":(context) => const EditNote(),
-      },
+    return DynamicColorBuilder(
+      builder:(ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        return MaterialApp(
+          themeMode: ThemeMode.system,
+          theme: ThemeData(
+            colorScheme: lightDynamic,
+            useMaterial3: true
+          ),
+          darkTheme: ThemeData(
+            colorScheme: darkDynamic,
+            useMaterial3: true
+          ),
+          routes: {
+            "/": (context) => const Home(),
+            "/note":(context) => const EditNote(),
+          },
+        );
+      }
     );
   }
 }
