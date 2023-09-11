@@ -57,7 +57,7 @@ class _HomeState extends State<Home> {
         // If a card is selected then display buttons, else display nothing
         leading: selectModeEnabled ? IconButton(
           onPressed: () {
-            // Close selected mode, set all items in isSelected to false
+            // Close select mode, set all items in isSelected to false
             selectModeEnabled = false;
             isSelected = List.filled(isSelected.length, false, growable: true);
             setState(() {});
@@ -160,6 +160,7 @@ class _HomeState extends State<Home> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Preview of note
                     Text(
                       note.title,
                       overflow: TextOverflow.ellipsis,

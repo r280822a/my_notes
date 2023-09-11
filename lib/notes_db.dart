@@ -5,11 +5,11 @@ import 'package:intl/intl.dart';
 class NotesDatabase {
   // Database to save notes to
   late Database database;
-  // List to use locally in code
+  // List to help display notes
   late List<Note> list;
 
   Future open() async {
-    // Open the database
+    // Opens the database
     String path = join(await getDatabasesPath(), "notes.db");
 
     // await deleteDatabase(path);
@@ -17,7 +17,7 @@ class NotesDatabase {
   }
 
   static Future _createDB(Database db, int version) async {
-    // Create database, if not created already
+    // Creates database, if not created already
     const String idType = "INTEGER PRIMARY KEY AUTOINCREMENT";
     const String textType = "TEXT NOT NULL";
 

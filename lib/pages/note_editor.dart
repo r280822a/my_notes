@@ -11,7 +11,7 @@ class NoteEditor extends StatefulWidget {
 class _NoteEditorState extends State<NoteEditor> {
   TextFormField textFormBuilder(Note note, NotesDatabase notesDB, bool isTitle){
     return TextFormField(
-      // For title and description
+      // To edit title/description
       decoration: const InputDecoration(
         border: InputBorder.none,
         isDense: true,
@@ -60,6 +60,7 @@ class _NoteEditorState extends State<NoteEditor> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Display note
             textFormBuilder(note, notesDB, true),
             const Divider(),
             Text(
