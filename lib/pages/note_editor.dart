@@ -10,8 +10,8 @@ class NoteEditor extends StatefulWidget {
 
 class _NoteEditorState extends State<NoteEditor> {
   TextFormField textFormBuilder(Note note, NotesDatabase notesDB, bool isTitle){
+    // To edit title/description
     return TextFormField(
-      // To edit title/description
       decoration: const InputDecoration(
         border: InputBorder.none,
         isDense: true,
