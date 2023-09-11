@@ -44,6 +44,8 @@ Scaffold loadingScreen(BuildContext context) {
       title: const Text("Home"),
     ),
 
+    backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+
     body: MasonryGridView.count(
       padding: const EdgeInsets.all(8),
       itemCount: 10,
@@ -53,7 +55,7 @@ Scaffold loadingScreen(BuildContext context) {
       itemBuilder: (context, index) {
         return Card(
           elevation: 0,
-          color: Theme.of(context).colorScheme.surfaceVariant,
+          color: Theme.of(context).colorScheme.surface,
           child: Container(
             padding: const EdgeInsets.all(8),
             child: const SizedBox(
