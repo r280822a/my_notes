@@ -15,4 +15,5 @@ Makes use of a SQFLite to store notes on the device
 - Haptic feedback
 - Add markdown support/allow user to alter text (e.g. make it bold, italic, make a header)
 - Allow user to drag notes
+- Store time in notes as DateTime object instead of string
 - Animate transitions?
