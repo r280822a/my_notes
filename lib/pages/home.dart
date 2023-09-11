@@ -14,8 +14,9 @@ class _HomeState extends State<Home> {
   late NotesDatabase notesDB;
   bool loading = true;
 
-  List<bool> selectedCards = [];
-  bool selectMode = false;
+  // List to see if note is selected
+  List<bool> isSelected = [];
+  bool selectModeEnabled = false;
 
   @override
   void initState() {
@@ -24,25 +25,24 @@ class _HomeState extends State<Home> {
   }
 
   void getDatabase() async {
+    // Opens database, turns database to list
     notesDB = NotesDatabase();
 
     await notesDB.open();
     await notesDB.toList();
 
-    // await notesDB.addNote("Title", "This is a note");
-    // await notesDB.addNote("Another title", "this is another note");
-    // await notesDB.addNote("Title12345678912345678912345", "1234567981234567891234567891234567891234");
+    isSelected = List.filled(notesDB.list.length, false, growable: true);
     loading = false;
-    selectedCards = List.filled(notesDB.list.length, false, growable: true);
     setState(() {});
   }
 
   void selectCard(index){
-    selectedCards[index] = !selectedCards[index];
-    if (selectedCards.every((element) => element == false)) {
-      selectMode = false;
+    // Selects card at given index
+    isSelected[index] = !isSelected[index];
+    if (isSelected.every((element) => element == false)) {
+      selectModeEnabled = false;
     } else {
-      selectMode = true;
+      selectModeEnabled = true;
     }
   }
 
@@ -54,28 +54,31 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Home"),
-        leading: selectMode ? IconButton(
+        // If a card is selected then display buttons, else display nothing
+        leading: selectModeEnabled ? IconButton(
           onPressed: () {
-            selectMode = false;
-            selectedCards = List.filled(selectedCards.length, false, growable: true);
+            // Close selected mode, set all items in isSelected to false
+            selectModeEnabled = false;
+            isSelected = List.filled(isSelected.length, false, growable: true);
             setState(() {});
           },
           icon: const Icon(Icons.close)
         ) : null,
-        actions: selectMode ? [
+        actions: selectModeEnabled ? [
           IconButton(
             onPressed: () async {
+              // Find notes to swap
               List<Note> notesToSwap = [];
-              for (int i = 0; i < selectedCards.length; i++){
-                if (selectedCards[i]){
+              for (int i = 0; i < isSelected.length; i++){
+                if (isSelected[i]){
                   notesToSwap.add(notesDB.list[i]);
                 }
               }
+              // Only swap if exactly 2 selected
               if (notesToSwap.length != 2){
-                SnackBar snackBar = const SnackBar(
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   content: Text("Swapping only works with 2 notes"),
-                );
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                ));
               } else{
                 await notesDB.swapNote(notesToSwap[0], notesToSwap[1]);
               }
@@ -85,17 +88,19 @@ class _HomeState extends State<Home> {
           ),
           IconButton(
             onPressed: () async {
+              // Find notes to delete
               List<Note> notesToDelete = [];
-              for (int i = 0; i < selectedCards.length; i++){
-                if (selectedCards[i]){
+              for (int i = 0; i < isSelected.length; i++){
+                if (isSelected[i]){
                   notesToDelete.add(notesDB.list[i]);
                 }
               }
+              // Delete all selected notes
               for (int i = 0; i < notesToDelete.length; i++){
                 await notesDB.deleteNote(notesToDelete[i]);
               }
-              selectMode = false;
-              selectedCards = List.filled(notesDB.list.length, false, growable: true);
+              isSelected = List.filled(notesDB.list.length, false, growable: true);
+              selectModeEnabled = false;
               setState(() {});
             }, 
             icon: const Icon(Icons.delete_outline_outlined)
@@ -112,19 +117,23 @@ class _HomeState extends State<Home> {
         mainAxisSpacing: 4,
         crossAxisSpacing: 4,
         itemBuilder: (context, index) {
+          // For each note in notesDB.list
           final Note note = notesDB.list[index];
 
           return GestureDetector(
             onTap: () async {
-              if (selectMode){
+              // If select mode is enabled, select card
+              // Else, open note editor
+              if (selectModeEnabled){
                 selectCard(index);
               } else{
                 await Navigator.pushNamed(
                   context,
-                  "/note",
+                  "/note_editor",
                   arguments: {"notesDB":notesDB, "note":notesDB.list[index]},
                 );
-                selectedCards = List.filled(notesDB.list.length, false, growable: true);
+                // Update in case note deleted
+                isSelected = List.filled(notesDB.list.length, false, growable: true);
               }
               setState(() {});
             },
@@ -140,8 +149,9 @@ class _HomeState extends State<Home> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(15),
                 side: BorderSide(
-                  color: selectedCards[index] ? Theme.of(context).colorScheme.outline : Theme.of(context).colorScheme.surface,
-                  width: selectedCards[index] ? 3 : 0,
+                  // If selected, add border
+                  color: isSelected[index] ? Theme.of(context).colorScheme.outline : Theme.of(context).colorScheme.surface,
+                  width: isSelected[index] ? 3 : 0,
                 ),
               ),
               child: Container(
@@ -179,16 +189,18 @@ class _HomeState extends State<Home> {
 
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+          // Add empty note
           int index = await notesDB.addNote("", "");
-          selectedCards.add(false);
-          
+
+          // Open note editor
           if (mounted) {
             await Navigator.pushNamed(
               context,
-              "/note",
+              "/note_editor",
               arguments: {"notesDB":notesDB, "note":notesDB.list[index]},
             );
           }
+          isSelected = List.filled(notesDB.list.length, false, growable: true);
           setState(() {});
         },
         tooltip: "Add note",

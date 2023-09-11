@@ -1,26 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/notes_db.dart';
 
-class EditNote extends StatefulWidget {
-  const EditNote({super.key});
+class NoteEditor extends StatefulWidget {
+  const NoteEditor({super.key});
 
   @override
-  State<EditNote> createState() => _EditNoteState();
+  State<NoteEditor> createState() => _NoteEditorState();
 }
 
-class _EditNoteState extends State<EditNote> {
+class _NoteEditorState extends State<NoteEditor> {
   TextFormField textFormBuilder(Note note, NotesDatabase notesDB, bool isTitle){
     return TextFormField(
-      style: TextStyle(
-        fontWeight: isTitle ? FontWeight.bold : FontWeight.normal,
-        fontSize: isTitle ? 23 : 16,
-      ),
-      maxLines: isTitle ? 1 : null,
+      // For title and description
       decoration: const InputDecoration(
         border: InputBorder.none,
         isDense: true,
         contentPadding: EdgeInsets.zero,
       ),
+
+      style: TextStyle(
+        fontWeight: isTitle ? FontWeight.bold : FontWeight.normal,
+        fontSize: isTitle ? 23 : 16,
+      ),
+      maxLines: isTitle ? 1 : null,
       initialValue: isTitle ? note.title : note.description,
       onChanged: (value) {
         isTitle ? note.title = value : note.description = value;
@@ -32,15 +34,17 @@ class _EditNoteState extends State<EditNote> {
 
   @override
   Widget build(BuildContext context) {
-    Map result = ModalRoute.of(context)!.settings.arguments as Map;
-    Note note = result["note"];
-    NotesDatabase notesDB = result["notesDB"];
+    // Retrieve arguements from previous page
+    Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
+    Note note = arguments["note"];
+    NotesDatabase notesDB = arguments["notesDB"];
 
     return Scaffold(
       appBar: AppBar(
         actions: [
           IconButton(
             onPressed: () async {
+              // Deletes note
               await notesDB.deleteNote(note);
               if (mounted){
                 Navigator.pop(context);
@@ -60,7 +64,7 @@ class _EditNoteState extends State<EditNote> {
             const Divider(),
             Text(
               note.time,
-              style: const TextStyle(color: Colors.black54),
+              style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
             ),
             const SizedBox(height: 10),
             Expanded(

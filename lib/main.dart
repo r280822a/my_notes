@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/pages/home.dart';
-import 'package:my_notes/pages/editnote.dart';
+import 'package:my_notes/pages/note_editor.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 
@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
     return DynamicColorBuilder(
       builder:(ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
         return MaterialApp(
+          // Uses dynamic colors, follows system theme
           themeMode: ThemeMode.system,
           theme: ThemeData(
             colorScheme: lightDynamic,
@@ -26,9 +27,10 @@ class MyApp extends StatelessWidget {
             colorScheme: darkDynamic,
             useMaterial3: true
           ),
+
           routes: {
             "/": (context) => const Home(),
-            "/note":(context) => const EditNote(),
+            "/note_editor":(context) => const NoteEditor(),
           },
         );
       }
@@ -36,7 +38,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
+// [Temporarily in main.dart]
 Scaffold loadingScreen(BuildContext context) {
   return Scaffold(
     appBar: AppBar(
