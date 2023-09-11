@@ -65,6 +65,26 @@ class _HomeState extends State<Home> {
         actions: selectMode ? [
           IconButton(
             onPressed: () async {
+              List<Note> notesToSwap = [];
+              for (int i = 0; i < selectedCards.length; i++){
+                if (selectedCards[i]){
+                  notesToSwap.add(notesDB.list[i]);
+                }
+              }
+              if (notesToSwap.length != 2){
+                SnackBar snackBar = const SnackBar(
+                  content: Text("Swapping only works with 2 notes"),
+                );
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              } else{
+                await notesDB.swapNote(notesToSwap[0], notesToSwap[1]);
+              }
+              setState(() {});
+            },
+            icon: const Icon(Icons.swap_horiz_outlined)
+          ),
+          IconButton(
+            onPressed: () async {
               List<Note> notesToDelete = [];
               for (int i = 0; i < selectedCards.length; i++){
                 if (selectedCards[i]){

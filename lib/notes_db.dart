@@ -54,6 +54,23 @@ CREATE TABLE notes (
     await database.delete("notes", where: '_id = ?', whereArgs: [note.id]);
     list.remove(note);
   }
+
+  Future swapNote(Note note1, Note note2) async {
+    Note tempNote1 = note1;
+
+    Map<String, Object?> note1Json = note1.toJson();
+    note1Json.remove("_id");
+    Map<String, Object?> note2Json = note2.toJson();
+    note2Json.remove("_id");
+
+    await database.update("notes", note2Json, where: "_id = ?", whereArgs: [note1.id]);
+    await database.update("notes", note1Json, where: "_id = ?", whereArgs: [note2.id]);
+
+    int note1Index = list.indexOf(note1);
+    int note2Index = list.indexOf(note2);
+    list[note1Index] = note2;
+    list[note2Index] = tempNote1;
+  }
 }
 
 class Note{
