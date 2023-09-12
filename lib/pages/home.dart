@@ -52,11 +52,62 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     if (loading) {return loadingScreen(context);}
 
-    if (!loading) {
-      return Scaffold(
-        appBar: AppBar(
+    return Scaffold(
+      appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Home"),
+        // If a card is selected then display buttons, else display nothing
+        leading: selectModeEnabled ? IconButton(
+          onPressed: () {
+            // Close select mode, set all items in isSelected to false
+            selectModeEnabled = false;
+            isSelected = List.filled(isSelected.length, false, growable: true);
+            setState(() {});
+          },
+          icon: const Icon(Icons.close)
+        ) : null,
+        actions: selectModeEnabled ? [
+          IconButton(
+            onPressed: () async {
+              // Find notes to swap
+              List<Note> notesToSwap = [];
+              for (int i = 0; i < isSelected.length; i++){
+                if (isSelected[i]){
+                  notesToSwap.add(notesDB.list[i]);
+                }
+              }
+              // Only swap if exactly 2 selected
+              if (notesToSwap.length != 2){
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text("Swapping only works with 2 notes"),
+                ));
+              } else{
+                await notesDB.swapNote(notesToSwap[0], notesToSwap[1]);
+              }
+              setState(() {});
+            },
+            icon: const Icon(Icons.swap_horiz_outlined)
+          ),
+          IconButton(
+            onPressed: () async {
+              // Find notes to delete
+              List<Note> notesToDelete = [];
+              for (int i = 0; i < isSelected.length; i++){
+                if (isSelected[i]){
+                  notesToDelete.add(notesDB.list[i]);
+                }
+              }
+              // Delete all selected notes
+              for (int i = 0; i < notesToDelete.length; i++){
+                await notesDB.deleteNote(notesToDelete[i]);
+              }
+              isSelected = List.filled(notesDB.list.length, false, growable: true);
+              selectModeEnabled = false;
+              setState(() {});
+            }, 
+            icon: const Icon(Icons.delete_outline_outlined)
+          )
+        ] : [],
       ),
 
       backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
@@ -68,7 +119,8 @@ class _HomeState extends State<Home> {
             notesDB.list.insert(newIndex, element);
 
             isSelected.removeAt(oldIndex);
-            isSelected.insert(newIndex, true);
+            isSelected.insert(newIndex, false);
+            selectCard(newIndex);
           });
         },
         dragStartDelay: const Duration(milliseconds: 250),
@@ -159,8 +211,27 @@ class _HomeState extends State<Home> {
           );
         },
       ),
-      );
-    }
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          // Add empty note
+          int index = await notesDB.addNote("", "");
+
+          // Open note editor
+          if (mounted) {
+            await Navigator.pushNamed(
+              context,
+              "/note_editor",
+              arguments: {"notesDB":notesDB, "note":notesDB.list[index]},
+            );
+          }
+          isSelected = List.filled(notesDB.list.length, false, growable: true);
+          setState(() {});
+        },
+        tooltip: "Add note",
+        child: const Icon(Icons.add),
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(
