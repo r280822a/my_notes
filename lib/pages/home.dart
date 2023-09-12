@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_notes/main.dart';
 import 'package:my_notes/notes_db.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:flutter/services.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -139,6 +140,9 @@ class _HomeState extends State<Home> {
             },
 
             onLongPress: () {
+              if (!selectModeEnabled){
+                HapticFeedback.selectionClick();
+              }
               selectCard(index);
               setState(() {});
             },

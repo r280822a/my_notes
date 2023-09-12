@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/notes_db.dart';
+import 'package:intl/intl.dart';
 
 class NoteEditor extends StatefulWidget {
   const NoteEditor({super.key});
@@ -39,6 +40,9 @@ class _NoteEditorState extends State<NoteEditor> {
     Note note = arguments["note"];
     NotesDatabase notesDB = arguments["notesDB"];
 
+    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(note.time);
+    String time = DateFormat('dd MMMM yyyy - hh:mm').format(dateTime);
+
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -64,7 +68,7 @@ class _NoteEditorState extends State<NoteEditor> {
             textFormBuilder(note, notesDB, true),
             const Divider(),
             Text(
-              note.time,
+              time,
               style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
             ),
             const SizedBox(height: 10),

@@ -1,6 +1,5 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:intl/intl.dart';
 
 class NotesDatabase {
   // Database to save notes to
@@ -12,7 +11,7 @@ class NotesDatabase {
     // Opens the database
     String path = join(await getDatabasesPath(), "notes.db");
 
-    // await deleteDatabase(path);
+    await deleteDatabase(path); // For testing
     database = await openDatabase(path, version: 1, onCreate: _createDB);
   }
 
@@ -20,13 +19,14 @@ class NotesDatabase {
     // Creates database, if not created already
     const String idType = "INTEGER PRIMARY KEY AUTOINCREMENT";
     const String textType = "TEXT NOT NULL";
+    const String dateIntType = "INTEGER";
 
     await db.execute('''
 CREATE TABLE notes ( 
   _id $idType,
   title $textType,
   description $textType,
-  time $textType
+  time $dateIntType
   )
 ''');
   }
@@ -43,7 +43,7 @@ CREATE TABLE notes (
     Map<String, Object?> note = {
       "title": title,
       "description": description,
-      "time": DateFormat('dd MMMM yyyy - hh:mm').format(DateTime.now()).toString(),
+      "time": DateTime.now().millisecondsSinceEpoch,
     };
 
     database.insert("notes", note);
@@ -89,7 +89,7 @@ class Note{
   late int id;
   late String title;
   late String description;
-  late String time;
+  late int time;
 
   Note(this.id, this.title, this.description, this.time);
 
@@ -98,7 +98,7 @@ class Note{
       json["_id"] as int,
       json["title"] as String,
       json["description"] as String,
-      json["time"] as String,
+      json["time"] as int,
     );
   }
 
