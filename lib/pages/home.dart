@@ -127,8 +127,8 @@ class _HomeState extends State<Home> {
         onDragStart: (dragIndex) {
           if (!selectModeEnabled){
             HapticFeedback.selectionClick();
+            selectCard(dragIndex);
           }
-          selectCard(dragIndex);
           setState(() {});
         },
         dragWidgetBuilderV2: DragWidgetBuilderV2(builder: (int index, Widget child, ImageProvider? screenshot) {
@@ -138,6 +138,7 @@ class _HomeState extends State<Home> {
         padding: const EdgeInsets.all(8),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
+          mainAxisExtent: 150,
           mainAxisSpacing: 4,
           crossAxisSpacing: 4,
         ),
@@ -198,7 +199,7 @@ class _HomeState extends State<Home> {
                     Text(
                       note.description,
                       overflow: TextOverflow.ellipsis,
-                      maxLines: 5,
+                      maxLines: 4,
                       style: TextStyle(
                         color: Theme.of(context).unselectedWidgetColor,
                         fontSize: 16,
