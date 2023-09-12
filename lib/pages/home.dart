@@ -66,9 +66,12 @@ class _HomeState extends State<Home> {
           setState(() {
             final element = notesDB.list.removeAt(oldIndex);
             notesDB.list.insert(newIndex, element);
+
+            isSelected.removeAt(oldIndex);
+            isSelected.insert(newIndex, true);
           });
         },
-        dragStartDelay: const Duration(milliseconds: 500),
+        dragStartDelay: const Duration(milliseconds: 250),
         onDragStart: (dragIndex) {
           if (!selectModeEnabled){
             HapticFeedback.selectionClick();
@@ -76,6 +79,9 @@ class _HomeState extends State<Home> {
           selectCard(dragIndex);
           setState(() {});
         },
+        dragWidgetBuilderV2: DragWidgetBuilderV2(builder: (int index, Widget child, ImageProvider? screenshot) {
+          return child;
+        }),
 
         padding: const EdgeInsets.all(8),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -83,6 +89,7 @@ class _HomeState extends State<Home> {
           mainAxisSpacing: 4,
           crossAxisSpacing: 4,
         ),
+
 
         itemCount: notesDB.list.length,
         itemBuilder: (context, index) {
