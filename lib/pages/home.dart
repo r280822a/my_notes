@@ -3,8 +3,7 @@ import 'package:my_notes/main.dart';
 import 'package:my_notes/notes_db.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_reorderable_grid_view/entities/order_update_entity.dart';
-import 'package:flutter_reorderable_grid_view/widgets/widgets.dart';
+import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -35,83 +34,6 @@ class _HomeState extends State<Home> {
     await notesDB.toList();
 
     isSelected = List.filled(notesDB.list.length, false, growable: true);
-
-    generatedChildren = List.generate(
-      notesDB.list.length,
-      (index) {
-        final Note note = notesDB.list[index];
-
-        return GestureDetector(
-          key: Key(notesDB.list.elementAt(index).id.toString()),
-          onTap: () async {
-            // If select mode is enabled, select card
-            // Else, open note editor
-            if (selectModeEnabled){
-              selectCard(index);
-            } else{
-              await Navigator.pushNamed(
-                context,
-                "/note_editor",
-                arguments: {"notesDB":notesDB, "note":notesDB.list[index]},
-              );
-              // Update in case note deleted
-              isSelected = List.filled(notesDB.list.length, false, growable: true);
-            }
-            setState(() {});
-          },
-
-          // onLongPress: () {
-          //   if (!selectModeEnabled){
-          //     HapticFeedback.selectionClick();
-          //     selectCard(index);
-          //   }
-          //   setState(() {});
-          // },
-
-          child: Card(
-            elevation: 0,
-            color: Theme.of(context).colorScheme.surface,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-              side: BorderSide(
-                // If selected, add border
-                color: isSelected[index] ? Theme.of(context).colorScheme.outline : Theme.of(context).colorScheme.surface,
-                width: isSelected[index] ? 3 : 0,
-              ),
-            ),
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Preview of note
-                  Text(
-                    note.title,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Theme.of(context).textSelectionTheme.selectionColor,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  Text(
-                    note.description,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 5,
-                    style: TextStyle(
-                      color: Theme.of(context).unselectedWidgetColor,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      }
-    );
     loading = false;
     setState(() {});
   }
@@ -126,10 +48,6 @@ class _HomeState extends State<Home> {
     }
   }
 
-  final _scrollController = ScrollController();
-  final _gridViewKey = GlobalKey();
-  late final generatedChildren;
-
   @override
   Widget build(BuildContext context) {
     if (loading) {return loadingScreen(context);}
@@ -143,28 +61,93 @@ class _HomeState extends State<Home> {
 
       backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
 
-      body: ReorderableBuilder(
-        children: generatedChildren,
-        scrollController: _scrollController,
-        enableLongPress: false,
-        onReorder: (List<OrderUpdateEntity> orderUpdateEntities) {
-          for (final orderUpdateEntity in orderUpdateEntities) {
-            final fruit = notesDB.list.removeAt(orderUpdateEntity.oldIndex);
-            notesDB.list.insert(orderUpdateEntity.newIndex, fruit);
-          }
+      body: ReorderableGridView.builder(
+        onReorder: (oldIndex, newIndex) {
+          setState(() {
+            final element = notesDB.list.removeAt(oldIndex);
+            notesDB.list.insert(newIndex, element);
+          });
         },
-        builder: (children) {
-          return GridView(
-            padding: const EdgeInsets.all(8),
-            key: _gridViewKey,
-            controller: _scrollController,
-            children: children,
-            // crossAxisSpacing: 4,
-            // mainAxisSpacing: 4,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 4,
-              mainAxisSpacing: 4
+        dragStartDelay: const Duration(milliseconds: 500),
+        onDragStart: (dragIndex) {
+          if (!selectModeEnabled){
+            HapticFeedback.selectionClick();
+          }
+          selectCard(dragIndex);
+          setState(() {});
+        },
+
+        padding: const EdgeInsets.all(8),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisSpacing: 4,
+          crossAxisSpacing: 4,
+        ),
+
+        itemCount: notesDB.list.length,
+        itemBuilder: (context, index) {
+          // For each note in notesDB.list
+          final Note note = notesDB.list[index];
+
+          return GestureDetector(
+            key: Key(notesDB.list.elementAt(index).id.toString()),
+            onTap: () async {
+              // If select mode is enabled, select card
+              // Else, open note editor
+              if (selectModeEnabled){
+                selectCard(index);
+              } else{
+                await Navigator.pushNamed(
+                  context,
+                  "/note_editor",
+                  arguments: {"notesDB":notesDB, "note":notesDB.list[index]},
+                );
+                // Update in case note deleted
+                isSelected = List.filled(notesDB.list.length, false, growable: true);
+              }
+              setState(() {});
+            },
+
+            child: Card(
+              elevation: 0,
+              color: Theme.of(context).colorScheme.surface,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
+                side: BorderSide(
+                  // If selected, add border
+                  color: isSelected[index] ? Theme.of(context).colorScheme.outline : Theme.of(context).colorScheme.surface,
+                  width: isSelected[index] ? 3 : 0,
+                ),
+              ),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Preview of note
+                    Text(
+                      note.title,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: Theme.of(context).textSelectionTheme.selectionColor,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    Text(
+                      note.description,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 5,
+                      style: TextStyle(
+                        color: Theme.of(context).unselectedWidgetColor,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           );
         },
