@@ -11,7 +11,7 @@ class NotesDatabase {
     // Opens the database
     String path = join(await getDatabasesPath(), "notes.db");
 
-    await deleteDatabase(path); // For testing
+    // await deleteDatabase(path); // For testing
     database = await openDatabase(path, version: 1, onCreate: _createDB);
   }
 
