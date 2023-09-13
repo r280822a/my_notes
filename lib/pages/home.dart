@@ -113,15 +113,17 @@ class _HomeState extends State<Home> {
       backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
 
       body: ReorderableGridView.builder(
-        onReorder: (oldIndex, newIndex) {
-          setState(() {
-            final element = notesDB.list.removeAt(oldIndex);
-            notesDB.list.insert(newIndex, element);
+        onReorder: (oldIndex, newIndex) async {
+          final noteToReorder = notesDB.list[oldIndex];
+          await notesDB.deleteNote(noteToReorder);
+          await notesDB.insertNote(noteToReorder, newIndex);
+          // final element = notesDB.list.removeAt(oldIndex);
+          // notesDB.list.insert(newIndex, element);
 
-            isSelected.removeAt(oldIndex);
-            isSelected.insert(newIndex, false);
-            selectCard(newIndex);
-          });
+          isSelected.removeAt(oldIndex);
+          isSelected.insert(newIndex, false);
+          selectCard(newIndex);
+          setState(() {});
         },
         dragStartDelay: const Duration(milliseconds: 250),
         onDragStart: (dragIndex) {

@@ -17,9 +17,9 @@ class NotesDatabase {
 
   static Future _createDB(Database db, int version) async {
     // Creates database, if not created already
-    const String idType = "INTEGER PRIMARY KEY AUTOINCREMENT";
+    const String idType = "INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL";
     const String textType = "TEXT NOT NULL";
-    const String dateIntType = "INTEGER";
+    const String dateIntType = "INTEGER NOT NULL";
 
     await db.execute('''
 CREATE TABLE notes ( 
@@ -50,6 +50,32 @@ CREATE TABLE notes (
     List<Map<String, Object?>> lastRow = await database.query("notes", orderBy: "_id DESC",limit: 1);
     list.add(Note.fromJson(lastRow[0]));
     return (list.length - 1);
+  }
+
+  Future insertNote(Note note, int index) async {
+    // Inserts note into database and list at index
+
+    List<Note> itemsToMove = list.sublist(index, list.length);
+    List<int> idsToMove = itemsToMove.map((item) => item.id).toList();
+
+    await database.delete("notes",
+      where: '_id IN (${List.filled(idsToMove.length, "?").join(",")})',
+      whereArgs: idsToMove
+    );
+
+    Map<String, Object?> noteJson = note.toJson();
+    noteJson.remove("_id");
+    await database.insert("notes", noteJson);
+
+    Batch batch = database.batch();
+    for (Note element in itemsToMove) {
+      Map<String, Object?> elementJson = element.toJson();
+      elementJson.remove("_id");
+      batch.insert("notes", elementJson);
+    }
+    await batch.commit(noResult: true);
+
+    await toList();
   }
 
   Future updateNote(Note note) async {
