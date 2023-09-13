@@ -48,6 +48,63 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Card buildCard(int index, bool isDragBuilder){
+    // For each note in notesDB.list
+    final Note note = notesDB.list[index];
+
+    BorderSide borderSide = BorderSide(
+      // If selected, add border
+      color: isSelected[index] ? Theme.of(context).colorScheme.outline : Theme.of(context).colorScheme.surface,
+      width: isSelected[index] ? 3 : 0,
+    );
+
+    if (isDragBuilder) {
+      // Always add border if called from drag widget builder
+      borderSide = BorderSide(
+        color: Theme.of(context).colorScheme.outline,
+        width: 3,
+      );
+    }
+
+    return Card(
+      elevation: 0,
+      color: Theme.of(context).colorScheme.surface,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+        side: borderSide,
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Preview of note
+            Text(
+              note.title,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                color: Theme.of(context).textSelectionTheme.selectionColor,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            Text(
+              note.description,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 4,
+              style: TextStyle(
+                color: Theme.of(context).unselectedWidgetColor,
+                fontSize: 16,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     if (loading) {return loadingScreen(context);}
@@ -60,8 +117,8 @@ class _HomeState extends State<Home> {
         leading: selectModeEnabled ? IconButton(
           onPressed: () {
             // Close select mode, set all items in isSelected to false
-            selectModeEnabled = false;
             isSelected = List.filled(isSelected.length, false, growable: true);
+            selectModeEnabled = false;
             setState(() {});
           },
           icon: const Icon(Icons.close)
@@ -114,7 +171,7 @@ class _HomeState extends State<Home> {
 
       body: ReorderableGridView.builder(
         onReorder: (oldIndex, newIndex) async {
-          final noteToReorder = notesDB.list[oldIndex];
+          final Note noteToReorder = notesDB.list[oldIndex];
           await notesDB.deleteNote(noteToReorder);
           await notesDB.insertNote(noteToReorder, newIndex);
           // final element = notesDB.list.removeAt(oldIndex);
@@ -134,7 +191,7 @@ class _HomeState extends State<Home> {
           setState(() {});
         },
         dragWidgetBuilderV2: DragWidgetBuilderV2(builder: (int index, Widget child, ImageProvider? screenshot) {
-          return child;
+          return buildCard(index, true);
         }),
 
         padding: const EdgeInsets.all(8),
@@ -148,9 +205,6 @@ class _HomeState extends State<Home> {
 
         itemCount: notesDB.list.length,
         itemBuilder: (context, index) {
-          // For each note in notesDB.list
-          final Note note = notesDB.list[index];
-
           return GestureDetector(
             key: Key(notesDB.list.elementAt(index).id.toString()),
             onTap: () async {
@@ -170,47 +224,7 @@ class _HomeState extends State<Home> {
               setState(() {});
             },
 
-            child: Card(
-              elevation: 0,
-              color: Theme.of(context).colorScheme.surface,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-                side: BorderSide(
-                  // If selected, add border
-                  color: isSelected[index] ? Theme.of(context).colorScheme.outline : Theme.of(context).colorScheme.surface,
-                  width: isSelected[index] ? 3 : 0,
-                ),
-              ),
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Preview of note
-                    Text(
-                      note.title,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        color: Theme.of(context).textSelectionTheme.selectionColor,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-
-                    Text(
-                      note.description,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 4,
-                      style: TextStyle(
-                        color: Theme.of(context).unselectedWidgetColor,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            child: buildCard(index, false),
           );
         },
       ),

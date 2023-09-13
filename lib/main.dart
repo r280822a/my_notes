@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/pages/home.dart';
 import 'package:my_notes/pages/note_editor.dart';
-import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 
 void main() {
@@ -48,22 +47,20 @@ Scaffold loadingScreen(BuildContext context) {
 
     backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
 
-    body: MasonryGridView.count(
+    body: GridView.builder(
       padding: const EdgeInsets.all(8),
       itemCount: 10,
-      crossAxisCount: 2,
-      mainAxisSpacing: 4,
-      crossAxisSpacing: 4,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 4,
+        crossAxisSpacing: 4,
+        mainAxisExtent: 150,
+      ),
       itemBuilder: (context, index) {
         return Card(
           elevation: 0,
           color: Theme.of(context).colorScheme.surface,
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            child: const SizedBox(
-              height: 100,
-            )
-          ),
+          child: Container(),
         );
       },
     ),
