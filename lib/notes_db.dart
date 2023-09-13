@@ -53,29 +53,33 @@ CREATE TABLE notes (
   }
 
   Future insertNote(Note note, int index) async {
-    // Inserts note into database and list at index
+    await addNote("", "");
 
-    List<Note> itemsToMove = list.sublist(index, list.length);
-    List<int> idsToMove = itemsToMove.map((item) => item.id).toList();
+    for (int i = (list.length - 1); i > index; i--){
+      Note first = list[i - 1];
+      Note second = list[i];
+      Map<String, Object?> firstJson = first.toJson();
+      firstJson.remove("_id");
 
-    await database.delete("notes",
-      where: '_id IN (${List.filled(idsToMove.length, "?").join(",")})',
-      whereArgs: idsToMove
-    );
+      await database.update("notes", 
+        firstJson, 
+        where: "_id = ?", 
+        whereArgs: [second.id]
+      );
+    }
 
     Map<String, Object?> noteJson = note.toJson();
     noteJson.remove("_id");
-    await database.insert("notes", noteJson);
-
-    Batch batch = database.batch();
-    for (Note element in itemsToMove) {
-      Map<String, Object?> elementJson = element.toJson();
-      elementJson.remove("_id");
-      batch.insert("notes", elementJson);
-    }
-    await batch.commit(noResult: true);
+    await database.update("notes", 
+      noteJson, 
+      where: "_id = ?", 
+      whereArgs: [list[index].id]
+    );
 
     await toList();
+    for (Note note in list){
+      print(note.toJson());
+    }
   }
 
   Future updateNote(Note note) async {
