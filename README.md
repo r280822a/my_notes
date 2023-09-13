@@ -13,5 +13,9 @@ Makes use of a SQFLite to store notes on the device
 
 ### TODO
 - Search notes
+- Copy note
 - Add markdown support/allow user to alter text (e.g. make it bold, italic, make a header)
+- Add checkbox
+- Add images
+- Link multiple notes?
 - Animate transitions?
