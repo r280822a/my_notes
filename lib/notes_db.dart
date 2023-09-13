@@ -53,21 +53,24 @@ CREATE TABLE notes (
   }
 
   Future insertNote(Note note, int index) async {
+    // Add blank entry
     await addNote("", "");
 
+    // Push all items from (index + 1) to end of list up 1
+    // Essentially moving the blank entry to index
     for (int i = (list.length - 1); i > index; i--){
       Note first = list[i - 1];
-      Note second = list[i];
       Map<String, Object?> firstJson = first.toJson();
       firstJson.remove("_id");
 
       await database.update("notes", 
         firstJson, 
         where: "_id = ?", 
-        whereArgs: [second.id]
+        whereArgs: [list[i].id]
       );
     }
 
+    // Add note to index
     Map<String, Object?> noteJson = note.toJson();
     noteJson.remove("_id");
     await database.update("notes", 
@@ -76,10 +79,8 @@ CREATE TABLE notes (
       whereArgs: [list[index].id]
     );
 
+    // Update list
     await toList();
-    for (Note note in list){
-      print(note.toJson());
-    }
   }
 
   Future updateNote(Note note) async {
