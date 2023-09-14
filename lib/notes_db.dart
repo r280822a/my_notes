@@ -58,17 +58,22 @@ CREATE TABLE notes (
 
     // Push all items from (index + 1) to end of list up 1
     // Essentially moving the blank entry to index
+    Batch batch = database.batch();
     for (int i = (list.length - 1); i > index; i--){
       Note first = list[i - 1];
       Map<String, Object?> firstJson = first.toJson();
       firstJson.remove("_id");
 
-      await database.update("notes", 
+      batch.update("notes", 
         firstJson, 
         where: "_id = ?", 
         whereArgs: [list[i].id]
       );
+      list[i].title = first.title;
+      list[i].description = first.description;
+      list[i].time = first.time;
     }
+    await batch.commit(noResult: true);
 
     // Add note to index
     Map<String, Object?> noteJson = note.toJson();
@@ -80,7 +85,10 @@ CREATE TABLE notes (
     );
 
     // Update list
-    await toList();
+    // await toList();
+    list[index].title = note.title;
+    list[index].description = note.description;
+    list[index].time = note.time;
   }
 
   Future updateNote(Note note) async {
