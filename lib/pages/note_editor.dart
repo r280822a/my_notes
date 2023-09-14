@@ -35,6 +35,19 @@ class _NoteEditorState extends State<NoteEditor> {
 
   bool value = false;
 
+  TextFormField _textFormField(String initValue, bool hasMultiLines) {
+    return TextFormField(
+      decoration: const InputDecoration(
+        border: InputBorder.none,
+        isDense: true,
+        contentPadding: EdgeInsets.zero,
+      ),
+
+      initialValue: initValue,
+      maxLines: hasMultiLines ? null : 1,
+    );
+  }
+
   Widget renderer(String text) {
     List<Widget> renderedText = [];
 
@@ -45,16 +58,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
     if ((lineSplitText.isEmpty) || (lineSplitText.length == 1)){
       return Expanded(
-        child: TextFormField(
-          decoration: const InputDecoration(
-            border: InputBorder.none,
-            isDense: true,
-            contentPadding: EdgeInsets.zero,
-          ),
-      
-          initialValue: text,
-          maxLines: null,
-        ),
+        child: _textFormField(text, true),
       );
     }
 
@@ -64,18 +68,7 @@ class _NoteEditorState extends State<NoteEditor> {
       if (cbIndex != -1){
         if (textBuffer.isNotEmpty){
           String join = textBuffer.join("\n");
-          renderedText.add(
-            TextFormField(
-              decoration: const InputDecoration(
-                border: InputBorder.none,
-                isDense: true,
-                contentPadding: EdgeInsets.zero,
-              ),
-
-              initialValue: join,
-              maxLines: null,
-            ),
-          );
+          renderedText.add(_textFormField(join, true));
           textBuffer = [];
         }
 
@@ -91,15 +84,7 @@ class _NoteEditorState extends State<NoteEditor> {
                 },
               ),
               Flexible(
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    border: InputBorder.none,
-                    isDense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-
-                  initialValue: line.substring(3),
-                ),
+                child: _textFormField(line.substring(3), false)
               ),
             ],
           )
@@ -112,40 +97,19 @@ class _NoteEditorState extends State<NoteEditor> {
     }
 
 
-    if (textBuffer.isNotEmpty){
-      String join = textBuffer.join("\n");
+    if ((textBuffer.isNotEmpty) || (endsInCheckbox)){
+      String value = "";
+      if (textBuffer.isNotEmpty){
+        value = textBuffer.join("\n");
+      }
       renderedText.add(
         Expanded(
-          child: TextFormField(
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              isDense: true,
-              contentPadding: EdgeInsets.zero,
-            ),
-        
-            initialValue: join,
-            maxLines: null,
-          ),
+          child: _textFormField(value, true)
         ),
       );
-      textBuffer = [];
-    }
-
-    if (endsInCheckbox){
-      renderedText.add(
-        Expanded(
-          child: TextFormField(
-            decoration: const InputDecoration(
-              border: InputBorder.none,
-              isDense: true,
-              contentPadding: EdgeInsets.zero,
-            ),
-        
-            initialValue: "",
-            maxLines: null,
-          ),
-        ),
-      );
+      if (textBuffer.isNotEmpty){
+        textBuffer = [];
+      }
     }
 
     return Expanded(
