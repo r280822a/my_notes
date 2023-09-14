@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/notes_db.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert';
 
 class NoteEditor extends StatefulWidget {
   const NoteEditor({super.key});
@@ -29,6 +30,126 @@ class _NoteEditorState extends State<NoteEditor> {
         isTitle ? note.title = value : note.description = value;
         notesDB.updateNote(note);
       },
+    );
+  }
+
+  bool value = false;
+
+  Widget renderer(String text) {
+    List<Widget> renderedText = [];
+
+    List<String> lineSplitText = const LineSplitter().convert(text);
+    List<String> textBuffer = [];
+
+    bool endsInCheckbox = false;
+
+    if (lineSplitText.isEmpty){
+      return Expanded(
+        child: TextFormField(
+          decoration: const InputDecoration(
+            border: InputBorder.none,
+            isDense: true,
+            contentPadding: EdgeInsets.zero,
+          ),
+      
+          initialValue: text,
+          maxLines: null,
+        ),
+      );
+    }
+
+    for (String line in lineSplitText){
+      int cbIndex = line.indexOf("cb:");
+
+      if (cbIndex != -1){
+        if (textBuffer.isNotEmpty){
+          String join = textBuffer.join("\n");
+          renderedText.add(
+            TextFormField(
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                isDense: true,
+                contentPadding: EdgeInsets.zero,
+              ),
+
+              initialValue: join,
+              maxLines: null,
+            ),
+          );
+          textBuffer = [];
+        }
+
+        renderedText.add(
+          Row(
+            children: [
+              Checkbox(
+                value: value,
+                onChanged: (bool? value) {
+                  setState(() {
+                    this.value = !this.value;
+                  });
+                },
+              ),
+              Flexible(
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    border: InputBorder.none,
+                    isDense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+
+                  initialValue: line.substring(3),
+                ),
+              ),
+            ],
+          )
+        );
+        endsInCheckbox = true;
+      } else {
+        textBuffer.add(line);
+        endsInCheckbox = false;
+      }
+    }
+
+
+    if (textBuffer.isNotEmpty){
+      String join = textBuffer.join("\n");
+      renderedText.add(
+        TextFormField(
+          decoration: const InputDecoration(
+            border: InputBorder.none,
+            isDense: true,
+            contentPadding: EdgeInsets.zero,
+          ),
+
+          initialValue: join,
+          maxLines: null,
+        ),
+      );
+      textBuffer = [];
+    }
+
+    if (endsInCheckbox){
+      renderedText.add(
+        TextFormField(
+          decoration: const InputDecoration(
+            border: InputBorder.none,
+            isDense: true,
+            contentPadding: EdgeInsets.zero,
+          ),
+
+          initialValue: "",
+          maxLines: null,
+        ),
+      );
+    }
+
+    return Expanded(
+      child: SingleChildScrollView(
+        child: Column(
+          children: renderedText,
+        ),
+      ),
     );
   }
 
@@ -72,9 +193,10 @@ class _NoteEditorState extends State<NoteEditor> {
               style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
             ),
             const SizedBox(height: 10),
-            Expanded(
-              child: textFormBuilder(note, notesDB, false),
-            ),
+            renderer(note.description),
+            // Expanded(
+            //   child: textFormBuilder(note, notesDB, false),
+            // ),
           ],
         ),
       ),
