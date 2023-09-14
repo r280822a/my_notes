@@ -43,7 +43,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
     bool endsInCheckbox = false;
 
-    if (lineSplitText.isEmpty){
+    if ((lineSplitText.isEmpty) || (lineSplitText.length == 1)){
       return Expanded(
         child: TextFormField(
           decoration: const InputDecoration(
@@ -115,15 +115,17 @@ class _NoteEditorState extends State<NoteEditor> {
     if (textBuffer.isNotEmpty){
       String join = textBuffer.join("\n");
       renderedText.add(
-        TextFormField(
-          decoration: const InputDecoration(
-            border: InputBorder.none,
-            isDense: true,
-            contentPadding: EdgeInsets.zero,
+        Expanded(
+          child: TextFormField(
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
+            ),
+        
+            initialValue: join,
+            maxLines: null,
           ),
-
-          initialValue: join,
-          maxLines: null,
         ),
       );
       textBuffer = [];
@@ -131,24 +133,31 @@ class _NoteEditorState extends State<NoteEditor> {
 
     if (endsInCheckbox){
       renderedText.add(
-        TextFormField(
-          decoration: const InputDecoration(
-            border: InputBorder.none,
-            isDense: true,
-            contentPadding: EdgeInsets.zero,
+        Expanded(
+          child: TextFormField(
+            decoration: const InputDecoration(
+              border: InputBorder.none,
+              isDense: true,
+              contentPadding: EdgeInsets.zero,
+            ),
+        
+            initialValue: "",
+            maxLines: null,
           ),
-
-          initialValue: "",
-          maxLines: null,
         ),
       );
     }
 
     return Expanded(
-      child: SingleChildScrollView(
-        child: Column(
-          children: renderedText,
-        ),
+      child: CustomScrollView(
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Column(
+              children: renderedText,
+            ),
+          )
+        ],
       ),
     );
   }
