@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/notes_db.dart';
 import 'package:intl/intl.dart';
-import 'dart:convert';
+// import 'dart:convert';
 
 class NoteEditor extends StatefulWidget {
   const NoteEditor({super.key});
@@ -35,7 +35,11 @@ class _NoteEditorState extends State<NoteEditor> {
 
   bool value = false;
 
-  TextFormField _textFormField(String initValue, bool hasMultiLines) {
+  late Note note;
+  late NotesDatabase notesDB;
+  List<String> descriptionList = [];
+
+  TextFormField _textFormField(int index, String initValue, bool hasMultiLines) {
     return TextFormField(
       decoration: const InputDecoration(
         border: InputBorder.none,
@@ -45,20 +49,28 @@ class _NoteEditorState extends State<NoteEditor> {
 
       initialValue: initValue,
       maxLines: hasMultiLines ? null : 1,
+
+      onChanged: (value) {
+        String newDescription = descriptionList.join("\n");
+        print(note.description == newDescription);
+      },
     );
   }
 
-  Widget renderer(String text) {
+  Widget renderer() {
     List<Widget> renderedText = [];
+    String description = note.description;
 
-    List<String> lineSplitText = const LineSplitter().convert(text);
+    // List<String> lineSplitText = const LineSplitter().convert(description);
+    List<String> lineSplitText = description.split("\n");
     List<String> textBuffer = [];
 
     bool endsInCheckbox = false;
 
     if ((lineSplitText.isEmpty) || (lineSplitText.length == 1)){
+      descriptionList.add(description);
       return Expanded(
-        child: _textFormField(text, true),
+        child: _textFormField((descriptionList.length - 1), description, true),
       );
     }
 
@@ -68,10 +80,12 @@ class _NoteEditorState extends State<NoteEditor> {
       if (cbIndex != -1){
         if (textBuffer.isNotEmpty){
           String join = textBuffer.join("\n");
-          renderedText.add(_textFormField(join, true));
+          descriptionList.add(join);
+          renderedText.add(_textFormField((descriptionList.length - 1), join, true));
           textBuffer = [];
         }
 
+        descriptionList.add(line);
         renderedText.add(
           Row(
             children: [
@@ -84,7 +98,7 @@ class _NoteEditorState extends State<NoteEditor> {
                 },
               ),
               Flexible(
-                child: _textFormField(line.substring(3), false)
+                child: _textFormField((descriptionList.length - 1), line.substring(3), false)
               ),
             ],
           )
@@ -102,9 +116,11 @@ class _NoteEditorState extends State<NoteEditor> {
       if (textBuffer.isNotEmpty){
         value = textBuffer.join("\n");
       }
+
+      descriptionList.add(value);
       renderedText.add(
         Expanded(
-          child: _textFormField(value, true)
+          child: _textFormField((descriptionList.length - 1), value, true)
         ),
       );
       if (textBuffer.isNotEmpty){
@@ -131,8 +147,8 @@ class _NoteEditorState extends State<NoteEditor> {
   Widget build(BuildContext context) {
     // Retrieve arguements from previous page
     Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
-    Note note = arguments["note"];
-    NotesDatabase notesDB = arguments["notesDB"];
+    note = arguments["note"];
+    notesDB = arguments["notesDB"];
 
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(note.time);
     String time = DateFormat('dd MMMM yyyy - hh:mm').format(dateTime);
@@ -166,7 +182,7 @@ class _NoteEditorState extends State<NoteEditor> {
               style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
             ),
             const SizedBox(height: 10),
-            renderer(note.description),
+            renderer(),
             // Expanded(
             //   child: textFormBuilder(note, notesDB, false),
             // ),
