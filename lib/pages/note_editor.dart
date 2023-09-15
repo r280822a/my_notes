@@ -216,6 +216,25 @@ class _NoteEditorState extends State<NoteEditor> {
           ],
         ),
       ),
+
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.white,
+        child: Row(
+          children: [
+            IconButton(
+              onPressed: () {
+                descriptionList.add("▢ ");
+                String newDescription = descriptionList.join("\n");
+                note.description = newDescription;
+                notesDB.updateNote(note);
+
+                setState(() {});
+              },
+              icon: const Icon(Icons.add_box_outlined)
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
