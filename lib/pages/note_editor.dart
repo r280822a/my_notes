@@ -33,7 +33,8 @@ class _NoteEditorState extends State<NoteEditor> {
     );
   }
 
-  bool value = false;
+
+  bool value = false; // TEMPORARY
 
   late Note note;
   late NotesDatabase notesDB;
@@ -51,9 +52,45 @@ class _NoteEditorState extends State<NoteEditor> {
       maxLines: hasMultiLines ? null : 1,
 
       onChanged: (value) {
+        int cbIndex = descriptionList[index].indexOf("▢ ");
+        if (cbIndex == 0) {
+          value = "▢ " + value;
+        }
+        descriptionList[index] = value;
         String newDescription = descriptionList.join("\n");
-        print(note.description == newDescription);
+
+        note.description = newDescription;
+        notesDB.updateNote(note);
       },
+    );
+  }
+
+  Row _checkBox(String line, int index, String initValue, bool hasMultiLines){
+    return Row(
+      children: [
+        Checkbox(
+          value: this.value,
+          onChanged: (bool? value) {
+            setState(() {
+              this.value = !this.value;
+            });
+          },
+        ),
+        Flexible(
+          child: _textFormField((descriptionList.length - 1), line.substring(2), false)
+        ),
+        IconButton(
+          onPressed: () {
+            descriptionList.removeAt(index);
+            String newDescription = descriptionList.join("\n");
+            note.description = newDescription;
+            notesDB.updateNote(note);
+
+            setState(() {});
+          }, 
+          icon: const Icon(Icons.delete_outline)
+        )
+      ],
     );
   }
 
@@ -75,9 +112,9 @@ class _NoteEditorState extends State<NoteEditor> {
     }
 
     for (String line in lineSplitText){
-      int cbIndex = line.indexOf("cb:");
+      int cbIndex = line.indexOf("▢ ");
 
-      if (cbIndex != -1){
+      if (cbIndex == 0){
         if (textBuffer.isNotEmpty){
           String join = textBuffer.join("\n");
           descriptionList.add(join);
@@ -86,23 +123,12 @@ class _NoteEditorState extends State<NoteEditor> {
         }
 
         descriptionList.add(line);
-        renderedText.add(
-          Row(
-            children: [
-              Checkbox(
-                value: value,
-                onChanged: (bool? value) {
-                  setState(() {
-                    this.value = !this.value;
-                  });
-                },
-              ),
-              Flexible(
-                child: _textFormField((descriptionList.length - 1), line.substring(3), false)
-              ),
-            ],
-          )
-        );
+        renderedText.add(_checkBox(
+          line, 
+          (descriptionList.length - 1), 
+          line.substring(2), 
+          false
+        ));
         endsInCheckbox = true;
       } else {
         textBuffer.add(line);
@@ -123,9 +149,6 @@ class _NoteEditorState extends State<NoteEditor> {
           child: _textFormField((descriptionList.length - 1), value, true)
         ),
       );
-      if (textBuffer.isNotEmpty){
-        textBuffer = [];
-      }
     }
 
     return Expanded(
@@ -153,6 +176,8 @@ class _NoteEditorState extends State<NoteEditor> {
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(note.time);
     String time = DateFormat('dd MMMM yyyy - hh:mm').format(dateTime);
 
+    descriptionList.clear();
+
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -164,7 +189,8 @@ class _NoteEditorState extends State<NoteEditor> {
                 Navigator.pop(context);
               }
             }, 
-            icon: const Icon(Icons.delete_outline_outlined)
+            icon: const Icon(Icons.delete_outline),
+            color: Colors.red[600],
           )
         ],
       ),

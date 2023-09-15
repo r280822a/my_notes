@@ -164,7 +164,8 @@ class _HomeState extends State<Home> {
               selectModeEnabled = false;
               setState(() {});
             }, 
-            icon: const Icon(Icons.delete_outline_outlined)
+            icon: const Icon(Icons.delete_outline),
+            color: Colors.red[600],
           )
         ] : [],
       ),
@@ -201,7 +202,7 @@ class _HomeState extends State<Home> {
         padding: const EdgeInsets.all(8),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          mainAxisExtent: 150,
+          mainAxisExtent: 155,
           mainAxisSpacing: 4,
           crossAxisSpacing: 4,
         ),
