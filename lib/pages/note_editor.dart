@@ -48,13 +48,14 @@ class _NoteEditorState extends State<NoteEditor> {
         contentPadding: EdgeInsets.zero,
       ),
 
+      key: Key(initValue.toString()),
       initialValue: initValue,
       maxLines: hasMultiLines ? null : 1,
 
       onChanged: (value) {
         int cbIndex = descriptionList[index].indexOf("▢ ");
         if (cbIndex == 0) {
-          value = "▢ " + value;
+          value = "▢ $value";
         }
         descriptionList[index] = value;
         String newDescription = descriptionList.join("\n");
@@ -69,7 +70,7 @@ class _NoteEditorState extends State<NoteEditor> {
     return Row(
       children: [
         Checkbox(
-          value: this.value,
+          value: value,
           onChanged: (bool? value) {
             setState(() {
               this.value = !this.value;
