@@ -231,17 +231,19 @@ class _NoteEditorState extends State<NoteEditor> {
         ),
       ),
 
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+
       floatingActionButton: Material(
         child: Row(
           children: [
             Container(
-              padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
+              padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
               child: IconButton(
                 onPressed: () {
                   // Default offset and index are at end
                   int descIndex = (descriptionList.length - 1);
                   int offset = descriptionList[descIndex].length;
-                  
+
                   // Find currently selected text controller
                   // Store its index and offset
                   for (int i = 0; i < textControllers.length; i++){
@@ -266,7 +268,7 @@ class _NoteEditorState extends State<NoteEditor> {
                   String newDescription = descriptionList.join("\n");
                   note.description = newDescription;
                   notesDB.updateNote(note);
-                  
+
                   setState(() {});
                 },
                 icon: const Icon(Icons.add_box_outlined),
