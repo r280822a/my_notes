@@ -41,7 +41,7 @@ class _NoteEditorState extends State<NoteEditor> {
   late NotesDatabase notesDB;
   List<String> descriptionList = [];
   List<TextEditingController> textControllers = [];
-  // TextEditingController textController = TextEditingController();
+  final String checkboxStr = "▢ ";
 
   TextFormField _textFormField(int index, String initValue, bool hasMultiLines) {
     return TextFormField(
@@ -57,9 +57,9 @@ class _NoteEditorState extends State<NoteEditor> {
       controller: textControllers[index],
 
       onChanged: (value) {
-        int cbIndex = descriptionList[index].indexOf("▢ ");
+        int cbIndex = descriptionList[index].indexOf(checkboxStr);
         if (cbIndex == 0) {
-          value = "▢ $value";
+          value = "$checkboxStr$value";
         }
         descriptionList[index] = value;
         String newDescription = descriptionList.join("\n");
@@ -121,7 +121,7 @@ class _NoteEditorState extends State<NoteEditor> {
     }
 
     for (String line in lineSplitText){
-      int cbIndex = line.indexOf("▢ ");
+      int cbIndex = line.indexOf(checkboxStr);
 
       if (cbIndex == 0){
         if (textBuffer.isNotEmpty && !(textBuffer.every((element) => element == ""))){
@@ -261,7 +261,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
                   // Add checkbox
                   List<String> textSplit = descriptionList[descIndex].split("\n");
-                  textSplit.insert(substringSplit.length, "▢ ");
+                  textSplit.insert(substringSplit.length, checkboxStr);
                   descriptionList[descIndex] = textSplit.join("\n");
 
                   // Update note
