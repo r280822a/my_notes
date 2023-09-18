@@ -1,8 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:my_notes/notes_db.dart';
 import 'package:intl/intl.dart';
-// import 'dart:convert';
 
 class NoteEditor extends StatefulWidget {
   const NoteEditor({super.key});
@@ -39,11 +37,15 @@ class _NoteEditorState extends State<NoteEditor> {
 
   late Note note;
   late NotesDatabase notesDB;
-  List<String> descriptionList = [];
-  List<TextEditingController> textControllers = [];
+  
   final String checkboxStr = "▢ ";
 
+  // For each TextFormField
+  List<String> descriptionList = []; // Seperate item for each textblock and checkbox
+  List<TextEditingController> textControllers = [];
+
   TextFormField _textFormField(int index, String initValue, bool hasMultiLines) {
+    // Builds TextFormField for each textblock and checkbox
     return TextFormField(
       decoration: const InputDecoration(
         border: InputBorder.none,
@@ -52,7 +54,6 @@ class _NoteEditorState extends State<NoteEditor> {
       ),
 
       key: Key(initValue.toString() + index.toString()),
-      // initialValue: initValue,
       maxLines: hasMultiLines ? null : 1,
       controller: textControllers[index],
 
@@ -70,22 +71,25 @@ class _NoteEditorState extends State<NoteEditor> {
     );
   }
 
-  Row _checkBox(String line, int index, String initValue, bool hasMultiLines){
+  Row _checkBox(int index, String initValue, bool hasMultiLines){
+    // To build checkbox
     return Row(
       children: [
         Checkbox(
           value: value,
           onChanged: (bool? value) {
+            // Select checkbox
             setState(() {
               this.value = !this.value;
             });
           },
         ),
         Flexible(
-          child: _textFormField((descriptionList.length - 1), line.substring(2), false)
+          child: _textFormField((descriptionList.length - 1), initValue, false)
         ),
         IconButton(
           onPressed: () {
+            // Remove checkbox
             descriptionList.removeAt(index);
             String newDescription = descriptionList.join("\n");
             note.description = newDescription;
@@ -100,19 +104,23 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
   Widget renderer() {
+    // Renders any checkboxes
+
+    // Clear before rendering
     descriptionList.clear();
     textControllers.clear();
 
+    // List of textformfields and checkboxes for description
     List<Widget> renderedText = [];
     String description = note.description;
 
     // List<String> lineSplitText = const LineSplitter().convert(description);
     List<String> lineSplitText = description.split("\n");
-    List<String> textBuffer = [];
-
-    bool endsInCheckbox = false;
 
     if ((lineSplitText.isEmpty) || (lineSplitText.length == 1)){
+      // If only 1 line or blank
+
+      // Add text to lists
       descriptionList.add(description);
       textControllers.add(TextEditingController(text: description));
       return Expanded(
@@ -120,28 +128,37 @@ class _NoteEditorState extends State<NoteEditor> {
       );
     }
 
+    List<String> textBuffer = [];
+    bool endsInCheckbox = false;
     for (String line in lineSplitText){
+      // Render line by line
       int cbIndex = line.indexOf(checkboxStr);
 
       if (cbIndex == 0){
+        // If line is a checkbox
         if (textBuffer.isNotEmpty && !(textBuffer.every((element) => element == ""))){
+          // If any text in text buffer
+          // Join together to form 1 textblock
           String join = textBuffer.join("\n");
+
+          // Add textblock to lists
           descriptionList.add(join);
           textControllers.add(TextEditingController(text: join));
           renderedText.add(_textFormField((descriptionList.length - 1), join, true));
-          textBuffer = [];
+          textBuffer = []; // Reset buffer
         }
 
+        // Add checkbox to lists
         descriptionList.add(line);
         textControllers.add(TextEditingController(text: line.substring(2)));
         renderedText.add(_checkBox(
-          line, 
           (descriptionList.length - 1), 
           line.substring(2), 
           false
         ));
         endsInCheckbox = true;
       } else {
+        // If not, add line to buffer
         textBuffer.add(line);
         endsInCheckbox = false;
       }
@@ -149,11 +166,14 @@ class _NoteEditorState extends State<NoteEditor> {
 
 
     if ((textBuffer.isNotEmpty) || (endsInCheckbox)){
-      String value = "";
+      String value = ""; // Blank line if ends in checkbox
       if (textBuffer.isNotEmpty){
+        // If any text in text buffer
+        // Join together to form 1 textblock
         value = textBuffer.join("\n");
       }
 
+      // Add textblock to lists
       descriptionList.add(value);
       textControllers.add(TextEditingController(text: value));
       renderedText.add(
@@ -163,6 +183,8 @@ class _NoteEditorState extends State<NoteEditor> {
       );
     }
 
+
+    // To give space for floatingactionbutton
     renderedText.add(
       const SizedBox(height: 60),
     );
@@ -186,6 +208,7 @@ class _NoteEditorState extends State<NoteEditor> {
   Widget build(BuildContext context) {
     // Retrieve arguements from previous page
     Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
+    // Set attributes
     note = arguments["note"];
     notesDB = arguments["notesDB"];
 
@@ -240,6 +263,8 @@ class _NoteEditorState extends State<NoteEditor> {
               padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
               child: IconButton(
                 onPressed: () {
+                  // Adds checkbox
+
                   // Default offset and index are at end
                   int descIndex = (descriptionList.length - 1);
                   int offset = descriptionList[descIndex].length;
@@ -259,7 +284,7 @@ class _NoteEditorState extends State<NoteEditor> {
                   String substring = descriptionList[descIndex].substring(0, offset);
                   List<String> substringSplit = substring.split("\n");
 
-                  // Add checkbox
+                  // Add checkbox string
                   List<String> textSplit = descriptionList[descIndex].split("\n");
                   textSplit.insert(substringSplit.length, checkboxStr);
                   descriptionList[descIndex] = textSplit.join("\n");
