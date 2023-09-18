@@ -124,7 +124,7 @@ class _NoteEditorState extends State<NoteEditor> {
       int cbIndex = line.indexOf("▢ ");
 
       if (cbIndex == 0){
-        if (textBuffer.isNotEmpty){
+        if (textBuffer.isNotEmpty && !(textBuffer.every((element) => element == ""))){
           String join = textBuffer.join("\n");
           descriptionList.add(join);
           textControllers.add(TextEditingController(text: join));
