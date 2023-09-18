@@ -239,16 +239,16 @@ class _NoteEditorState extends State<NoteEditor> {
               child: IconButton(
                 onPressed: () {
                   // Default offset and index are at end
-                  int offset = 0;
                   int descIndex = (descriptionList.length - 1);
+                  int offset = descriptionList[descIndex].length;
                   
                   // Find currently selected text controller
-                  // Store its offset and index
+                  // Store its index and offset
                   for (int i = 0; i < textControllers.length; i++){
                     final int baseOffset = textControllers[i].selection.baseOffset;
                     if (baseOffset != -1){
-                      offset = baseOffset;
                       descIndex = i;
+                      offset = baseOffset;
                     }
                   }
 
