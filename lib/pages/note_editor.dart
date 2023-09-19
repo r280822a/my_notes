@@ -10,6 +10,7 @@ class NoteEditor extends StatefulWidget {
 }
 
 class _NoteEditorState extends State<NoteEditor> {
+  // OLD FUNCTION [FOR TESTING ONLY]
   TextFormField textFormBuilder(Note note, NotesDatabase notesDB, bool isTitle){
     // To edit title/description
     return TextFormField(
@@ -33,16 +34,38 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
 
-  bool value = false; // TEMPORARY
-
   late Note note;
   late NotesDatabase notesDB;
   
-  final String checkboxStr = "▢ ";
+  // Checkbox symbols
+  final String checkboxStr = "☐ ";
+  final String checkboxTickedStr = "☑ ";
 
-  // For each TextFormField
+  // For each _textFormField
   List<String> descriptionList = []; // Seperate item for each textblock and checkbox
   List<TextEditingController> textControllers = [];
+
+  TextFormField _titleField(){
+    // Builds TextFormField for title
+    return TextFormField(
+      decoration: const InputDecoration(
+        border: InputBorder.none,
+        isDense: true,
+        contentPadding: EdgeInsets.zero,
+      ),
+
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 23,
+      ),
+      maxLines: 1,
+      initialValue: note.title,
+      onChanged: (value) {
+        note.title = value;
+        notesDB.updateNote(note);
+      },
+    );
+  }
 
   TextFormField _textFormField(int index, String initValue, bool hasMultiLines) {
     // Builds TextFormField for each textblock and checkbox
@@ -59,8 +82,12 @@ class _NoteEditorState extends State<NoteEditor> {
 
       onChanged: (value) {
         int cbIndex = descriptionList[index].indexOf(checkboxStr);
+        int cbTickedIndex = descriptionList[index].indexOf(checkboxTickedStr);
+
         if (cbIndex == 0) {
           value = "$checkboxStr$value";
+        } else if (cbTickedIndex == 0){
+          value = "$checkboxTickedStr$value";
         }
         descriptionList[index] = value;
         String newDescription = descriptionList.join("\n");
@@ -71,17 +98,30 @@ class _NoteEditorState extends State<NoteEditor> {
     );
   }
 
-  Row _checkBox(int index, String initValue, bool hasMultiLines){
+  Row _checkBox(bool isTicked, int index, String initValue, bool hasMultiLines){
     // To build checkbox
     return Row(
       children: [
         Checkbox(
-          value: value,
+          value: isTicked,
           onChanged: (bool? value) {
             // Select checkbox
-            setState(() {
-              this.value = !this.value;
-            });
+
+            // Symbol to put at start
+            String str = checkboxTickedStr;
+            if (isTicked){
+              str = checkboxStr;
+            }
+
+            // Change checkbox symbol
+            descriptionList[index] = str + descriptionList[index].substring(2);
+
+            // Update note
+            String newDescription = descriptionList.join("\n");
+            note.description = newDescription;
+            notesDB.updateNote(note);
+
+            setState(() {});
           },
         ),
         Flexible(
@@ -130,11 +170,13 @@ class _NoteEditorState extends State<NoteEditor> {
 
     List<String> textBuffer = [];
     bool endsInCheckbox = false;
+    bool isTicked = false;
     for (String line in lineSplitText){
       // Render line by line
       int cbIndex = line.indexOf(checkboxStr);
+      int cbTickedIndex = line.indexOf(checkboxTickedStr);
 
-      if (cbIndex == 0){
+      if ((cbIndex == 0) || (cbTickedIndex == 0)){
         // If line is a checkbox
         if (textBuffer.isNotEmpty && !(textBuffer.every((element) => element == ""))){
           // If any text in text buffer
@@ -148,10 +190,16 @@ class _NoteEditorState extends State<NoteEditor> {
           textBuffer = []; // Reset buffer
         }
 
+        isTicked = false;
+        if (cbTickedIndex == 0){
+          isTicked = true;
+        }
+
         // Add checkbox to lists
         descriptionList.add(line);
         textControllers.add(TextEditingController(text: line.substring(2)));
         renderedText.add(_checkBox(
+          isTicked,
           (descriptionList.length - 1), 
           line.substring(2), 
           false
@@ -238,7 +286,8 @@ class _NoteEditorState extends State<NoteEditor> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Display note
-            textFormBuilder(note, notesDB, true),
+            // textFormBuilder(note, notesDB, true),
+            _titleField(),
             const Divider(),
             Text(
               time,
