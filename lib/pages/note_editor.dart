@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/notes_db.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 
 class NoteEditor extends StatefulWidget {
   const NoteEditor({super.key});
@@ -266,17 +267,39 @@ class _NoteEditorState extends State<NoteEditor> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          IconButton(
-            onPressed: () async {
-              // Deletes note
-              await notesDB.deleteNote(note);
-              if (mounted){
-                Navigator.pop(context);
-              }
-            }, 
-            icon: const Icon(Icons.delete_outline),
-            color: Colors.red[600],
-          )
+          PopupMenuButton(
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                onTap: () {
+                  String copiedText = "${note.title}\n${note.description}";
+                  Clipboard.setData(ClipboardData(text: copiedText));
+                },
+                child: const Row(
+                  children: [
+                    Icon(Icons.copy),
+                    SizedBox(width: 10),
+                    Text("Copy"),
+                  ],
+                )
+              ),
+              PopupMenuItem(
+                onTap: () async {
+                  // Deletes note
+                  await notesDB.deleteNote(note);
+                  if (mounted){
+                    Navigator.pop(context);
+                  }
+                },
+                child: Row(
+                  children: [
+                    Icon(Icons.delete_outline, color: Colors.red[600]),
+                    const SizedBox(width: 10),
+                    const Text("Delete"),
+                  ],
+                )
+              ),
+            ]
+          ),
         ],
       ),
 
