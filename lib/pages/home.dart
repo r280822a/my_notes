@@ -16,9 +16,11 @@ class _HomeState extends State<Home> {
   late NotesDatabase notesDB;
   bool loading = true;
 
-  // List to see if note is selected
+  // List to see if note is selected for given index
   List<bool> isSelected = [];
   bool selectModeEnabled = false;
+
+  final SearchController controller = SearchController();
 
   @override
   void initState() {
@@ -50,7 +52,7 @@ class _HomeState extends State<Home> {
 
 
   Card buildCard(int index, bool isDragBuilder){
-    // For each note in notesDB.list
+    // Builds card for a given note
     final Note note = notesDB.list[index];
 
     BorderSide borderSide = BorderSide(
@@ -106,8 +108,6 @@ class _HomeState extends State<Home> {
     );
   }
 
-  final SearchController controller = SearchController();
-
   @override
   Widget build(BuildContext context) {
     if (loading) {return loadingScreen(context);}
@@ -116,7 +116,7 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
 
-        // If a card is selected then display buttons, else display search
+        // Display cancel button for select mode, else display search
         leading: selectModeEnabled ? IconButton(
           onPressed: () {
             // Close select mode, set all items in isSelected to false
@@ -126,6 +126,7 @@ class _HomeState extends State<Home> {
           },
           icon: const Icon(Icons.close)
         ) : SearchAnchor(
+          // Allows you to search for a note, based on title
           searchController: controller,
           builder: (BuildContext context, SearchController controller) {
             return IconButton(
@@ -134,7 +135,9 @@ class _HomeState extends State<Home> {
             );
           },
           viewBuilder: (Iterable<Widget> iterable) {
+            // Builds general layout
             return GridView(
+              // Same layout as body
               padding: const EdgeInsets.all(8),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -149,36 +152,37 @@ class _HomeState extends State<Home> {
 
           suggestionsBuilder: 
           (BuildContext context, SearchController controller) {
-            if (controller.text.isNotEmpty){
-              List<Widget> cardList = [];
+            // Builds search results
+            if (controller.text.isEmpty){return [];}
 
-              for (int i = 0; i < notesDB.list.length; i++){
-                if (notesDB.list[i].title.toLowerCase().contains(controller.text.toLowerCase())){
-                  cardList.add(
-                    GestureDetector(
-                      onTap: () async {
-                        // Open note editor
-                        await Navigator.pushNamed(
-                          context,
-                          "/note_editor",
-                          arguments: {"notesDB":notesDB, "note":notesDB.list[i]},
-                        );
-                        // Update in case note deleted
-                        isSelected = List.filled(notesDB.list.length, false, growable: true);
-                        setState(() {});
-                      },
-                      child: buildCard(i, false)
-                    )
-                  );
-                }
+            List<Widget> cardList = [];
+
+            for (int i = 0; i < notesDB.list.length; i++){
+              if (notesDB.list[i].title.toLowerCase().contains(controller.text.toLowerCase())){
+                // If note title typed in text field, add card
+                cardList.add(
+                  GestureDetector(
+                    onTap: () async {
+                      // Open note editor
+                      await Navigator.pushNamed(
+                        context,
+                        "/note_editor",
+                        arguments: {"notesDB":notesDB, "note":notesDB.list[i]},
+                      );
+                      // Update in case note deleted
+                      isSelected = List.filled(notesDB.list.length, false, growable: true);
+                      setState(() {});
+                    },
+                    child: buildCard(i, false)
+                  )
+                );
               }
-              return cardList;
             }
-
-            return [];
+            return cardList;
           }
         ),
 
+        // Display buttons for select mode, else nothing
         actions: selectModeEnabled ? [
           IconButton(
             onPressed: () async {
@@ -221,73 +225,7 @@ class _HomeState extends State<Home> {
             icon: const Icon(Icons.delete_outline),
             color: Colors.red[600],
           )
-        ] : [
-          // SearchAnchor(
-          //   searchController: controller,
-          //   builder: (BuildContext context, SearchController controller) {
-          //     return IconButton(
-          //       icon: const Icon(Icons.search),
-          //       onPressed: () {
-          //         controller.openView();
-          //       },
-          //     );
-          //   },
-          //   viewBuilder: (Iterable<Widget> iterable) {
-          //     return GridView(
-          //       padding: const EdgeInsets.all(8),
-          //       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          //         crossAxisCount: 2,
-          //         mainAxisExtent: 155,
-          //         mainAxisSpacing: 4,
-          //         crossAxisSpacing: 4,
-          //       ),
-
-          //       children: iterable.toList(),
-          //     );
-          //   },
-          //   suggestionsBuilder: 
-          //   (BuildContext context, SearchController controller) {
-          //     if (controller.text.isNotEmpty){
-          //       List<Widget> cardList = [];
-          //       for (int i = 0; i < notesDB.list.length; i++){
-          //         if (notesDB.list[i].title.toLowerCase().contains(controller.text.toLowerCase())){
-          //           cardList.add(
-          //             GestureDetector(
-          //               onTap: () async {
-          //                 // Open note editor
-          //                 await Navigator.pushNamed(
-          //                   context,
-          //                   "/note_editor",
-          //                   arguments: {"notesDB":notesDB, "note":notesDB.list[i]},
-          //                 );
-          //                 // Update in case note deleted
-          //                 isSelected = List.filled(notesDB.list.length, false, growable: true);
-          //                 setState(() {});
-          //               },
-          //               child: buildCard(i, false)
-          //             )
-          //           );
-          //         }
-          //       }
-          //       return cardList;
-          //     }
-
-          //     return [];
-
-          //     // return List<ListTile>.generate(5, (int index) {
-          //     //   final String item = 'item $index';
-          //     //   return ListTile(
-          //     //     title: Text(item),
-          //     //     onTap: () {
-          //     //       setState(() {
-          //     //         controller.closeView(item);
-          //     //       });
-          //     //     },
-          //     //   );
-          //     // });
-          //   }
-          // ),
-        ],
+        ] : [],
       ),
 
 
