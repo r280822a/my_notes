@@ -11,10 +11,10 @@ Makes use of a SQFLite to store notes on the device
 - Haptic feedback when first selecting a note
 - Drag & reorder notes
 - Add checkboxes
-
-### TODO
 - Search notes
 - Copy note
+
+### TODO
 - Add images
 - Indent checkbox/drag checkbox if in list
 - Add markdown support/allow user to alter text (e.g. make it bold, italic, make a header)
