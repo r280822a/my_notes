@@ -11,30 +11,6 @@ class NoteEditor extends StatefulWidget {
 }
 
 class _NoteEditorState extends State<NoteEditor> {
-  // OLD FUNCTION [FOR TESTING ONLY]
-  TextFormField textFormBuilder(Note note, NotesDatabase notesDB, bool isTitle){
-    // To edit title/description
-    return TextFormField(
-      decoration: const InputDecoration(
-        border: InputBorder.none,
-        isDense: true,
-        contentPadding: EdgeInsets.zero,
-      ),
-
-      style: TextStyle(
-        fontWeight: isTitle ? FontWeight.bold : FontWeight.normal,
-        fontSize: isTitle ? 23 : 16,
-      ),
-      maxLines: isTitle ? 1 : null,
-      initialValue: isTitle ? note.title : note.description,
-      onChanged: (value) {
-        isTitle ? note.title = value : note.description = value;
-        notesDB.updateNote(note);
-      },
-    );
-  }
-
-
   late Note note;
   late NotesDatabase notesDB;
   
@@ -45,6 +21,8 @@ class _NoteEditorState extends State<NoteEditor> {
   // For each _textFormField
   List<String> descriptionList = []; // Seperate item for each textblock and checkbox
   List<TextEditingController> textControllers = [];
+
+  bool displayRaw = false;
 
   TextFormField _titleField(){
     // Builds TextFormField for title
@@ -67,6 +45,30 @@ class _NoteEditorState extends State<NoteEditor> {
       },
     );
   }
+
+  TextFormField _rawDescFormField(){
+    // Builds TextFormField for unrendered description (mainly for testing)
+    // Only affects checkboxes
+    return TextFormField(
+      decoration: const InputDecoration(
+        border: InputBorder.none,
+        isDense: true,
+        contentPadding: EdgeInsets.zero,
+      ),
+
+      style: const TextStyle(
+        fontWeight: FontWeight.normal,
+        fontSize: 16,
+      ),
+      maxLines: null,
+      initialValue: note.description,
+      onChanged: (value) {
+        note.description = value;
+        notesDB.updateNote(note);
+      },
+    );
+  }
+
 
   TextFormField _textFormField(int index, String initValue, bool hasMultiLines) {
     // Builds TextFormField for each textblock and checkbox
@@ -253,6 +255,7 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
 
+
   @override
   Widget build(BuildContext context) {
     // Retrieve arguements from previous page
@@ -284,6 +287,20 @@ class _NoteEditorState extends State<NoteEditor> {
                 )
               ),
               PopupMenuItem(
+                onTap: () {
+                  // Displays raw/rendered descripiton
+                  displayRaw = !displayRaw;
+                  setState(() {});
+                },
+                child: Row(
+                  children: [
+                    const Icon(Icons.edit_note),
+                    const SizedBox(width: 10),
+                    Text(displayRaw ? "View rendered" : "View raw"),
+                  ],
+                )
+              ),
+              PopupMenuItem(
                 onTap: () async {
                   // Deletes note
                   await notesDB.deleteNote(note);
@@ -304,13 +321,13 @@ class _NoteEditorState extends State<NoteEditor> {
         ],
       ),
 
+
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Display note
-            // textFormBuilder(note, notesDB, true),
             _titleField(),
             const Divider(),
             Text(
@@ -318,17 +335,15 @@ class _NoteEditorState extends State<NoteEditor> {
               style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
             ),
             const SizedBox(height: 10),
-            renderer(),
-            // Expanded(
-            //   child: textFormBuilder(note, notesDB, false),
-            // ),
-            // const SizedBox(height: 60),
+
+            displayRaw ? Expanded(child: _rawDescFormField()) : renderer(),
+            displayRaw ? const SizedBox(height: 30) : const SizedBox(height: 0),
           ],
         ),
       ),
 
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Material(
         child: Row(
           children: [
