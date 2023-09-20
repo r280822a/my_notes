@@ -275,7 +275,7 @@ class _NoteEditorState extends State<NoteEditor> {
               PopupMenuItem(
                 onTap: () {
                   // Copies note to clipboard
-                  String copiedText = "${note.title}\n${note.description}";
+                  String copiedText = "${note.title}\n\n${note.description}";
                   Clipboard.setData(ClipboardData(text: copiedText));
                 },
                 child: const Row(
