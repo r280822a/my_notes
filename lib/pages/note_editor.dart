@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_notes/notes_db.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
+import 'package:my_notes/helper_widget.dart';
 
 class NoteEditor extends StatefulWidget {
   const NoteEditor({super.key});
@@ -220,7 +221,7 @@ class _NoteEditorState extends State<NoteEditor> {
         String link = line.substring(6);
         link = link.substring(0, link.length - 1);
 
-        double containerSize = 60;
+        double size = 60;
 
         // Add image to lists
         descriptionList.add(line);
@@ -232,53 +233,21 @@ class _NoteEditorState extends State<NoteEditor> {
             loadingBuilder: (context, child, loadingProgress) {
               if (loadingProgress == null) return child;
 
-              return SizedBox(
+              return roundedSquare(
                 // Progress indicator inside square with rounded edges
-                height: containerSize,
-                width: containerSize,
-                child: Stack(
-                  children: <Widget>[
-                    Center(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceVariant,
-                          borderRadius: const BorderRadius.all(Radius.circular(20))
-                        ),
-                        child: SizedBox(height: containerSize, width: containerSize)
-                      ),
-                    ),
-                    Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null ? 
-                          loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                          : null,
-                      )
-                    ),
-                  ],
+                size, 
+                CircularProgressIndicator(
+                  value: loadingProgress.expectedTotalBytes != null ? 
+                    loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                    : null,
                 ),
+                context
               );
             },
 
             errorBuilder: (context, error, stackTrace) {
-              return SizedBox(
-                // Error icon inside square with rounded edges
-                height: containerSize,
-                width: containerSize,
-                child: Stack(
-                  children: <Widget>[
-                    Center(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).colorScheme.surfaceVariant,
-                          borderRadius: const BorderRadius.all(Radius.circular(20))
-                        ),
-                        child: SizedBox(height: containerSize, width: containerSize)
-                      ),
-                    ),
-                    const Center(child: Icon(Icons.error)),
-                  ],
-                ),
-              );
+              // Error icon inside square with rounded edges
+              return roundedSquare(size, const Icon(Icons.error), context);
             },
           ),
         ));
