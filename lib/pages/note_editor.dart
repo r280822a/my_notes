@@ -172,7 +172,7 @@ class _NoteEditorState extends State<NoteEditor> {
     }
 
     List<String> textBuffer = [];
-    bool endsInCheckbox = false;
+    bool endsInNonText = false;
     bool isTicked = false;
     for (String line in lineSplitText){
       // Render line by line
@@ -183,7 +183,7 @@ class _NoteEditorState extends State<NoteEditor> {
       int imgIndex = line.indexOf(RegExp(r'^\[img\]\(([^]*)\)$'));
 
       if ((cbIndex == 0) || (cbTickedIndex == 0) || (imgIndex == 0)){
-        // If about to add a checkbox/image widget
+        // If about to add a non-text widget
         if (textBuffer.isNotEmpty && !(textBuffer.every((element) => element == ""))){
           // If any text in text buffer
           // Join together to form 1 textblock
@@ -214,11 +214,13 @@ class _NoteEditorState extends State<NoteEditor> {
           line.substring(2), 
           false
         ));
-        endsInCheckbox = true;
+        endsInNonText = true;
       } else if (imgIndex == 0) {
         // Get link for image
         String link = line.substring(6);
         link = link.substring(0, link.length - 1);
+
+        double containerSize = 60;
 
         // Add image to lists
         descriptionList.add(line);
@@ -230,30 +232,66 @@ class _NoteEditorState extends State<NoteEditor> {
             loadingBuilder: (context, child, loadingProgress) {
               if (loadingProgress == null) return child;
 
-              // Progress indicator when loading
-              return Center(
-                child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null ? 
-                      loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                      : null,
+              return SizedBox(
+                // Progress indicator inside square with rounded edges
+                height: containerSize,
+                width: containerSize,
+                child: Stack(
+                  children: <Widget>[
+                    Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          borderRadius: const BorderRadius.all(Radius.circular(20))
+                        ),
+                        child: SizedBox(height: containerSize, width: containerSize)
+                      ),
+                    ),
+                    Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null ? 
+                          loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                          : null,
+                      )
+                    ),
+                  ],
                 ),
               );
             },
 
             errorBuilder: (context, error, stackTrace) {
-              return const Icon(Icons.error);
+              return SizedBox(
+                // Error icon inside square with rounded edges
+                height: containerSize,
+                width: containerSize,
+                child: Stack(
+                  children: <Widget>[
+                    Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          borderRadius: const BorderRadius.all(Radius.circular(20))
+                        ),
+                        child: SizedBox(height: containerSize, width: containerSize)
+                      ),
+                    ),
+                    const Center(child: Icon(Icons.error)),
+                  ],
+                ),
+              );
             },
           ),
         ));
+        endsInNonText = true;
       } else {
         // If not, add line to buffer
         textBuffer.add(line);
-        endsInCheckbox = false;
+        endsInNonText = false;
       }
     }
 
 
-    if ((textBuffer.isNotEmpty) || (endsInCheckbox)){
+    if ((textBuffer.isNotEmpty) || (endsInNonText)){
       String value = ""; // Blank line if ends in checkbox
       if (textBuffer.isNotEmpty){
         // If any text in text buffer
