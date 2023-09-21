@@ -314,6 +314,12 @@ class _NoteEditorState extends State<NoteEditor> {
                   // Copies note to clipboard
                   String copiedText = "${note.title}\n\n${note.description}";
                   Clipboard.setData(ClipboardData(text: copiedText));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Copied to clipboard"),
+                      behavior: SnackBarBehavior.floating
+                    ),
+                  );
                 },
                 child: const Row(
                   children: [
