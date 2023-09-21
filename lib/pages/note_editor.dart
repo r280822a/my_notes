@@ -179,8 +179,11 @@ class _NoteEditorState extends State<NoteEditor> {
       int cbIndex = line.indexOf(checkboxStr);
       int cbTickedIndex = line.indexOf(checkboxTickedStr);
 
-      if ((cbIndex == 0) || (cbTickedIndex == 0)){
-        // If line is a checkbox
+      // Matches any string matching "[img](...)" with '...' being anything
+      int imgIndex = line.indexOf(RegExp(r'^\[img\]\(([^]*)\)$'));
+
+      if ((cbIndex == 0) || (cbTickedIndex == 0) || (imgIndex == 0)){
+        // If about to add a checkbox/image widget
         if (textBuffer.isNotEmpty && !(textBuffer.every((element) => element == ""))){
           // If any text in text buffer
           // Join together to form 1 textblock
@@ -192,6 +195,10 @@ class _NoteEditorState extends State<NoteEditor> {
           renderedText.add(_textFormField((descriptionList.length - 1), join, true));
           textBuffer = []; // Reset buffer
         }
+      }
+
+      if ((cbIndex == 0) || (cbTickedIndex == 0)){
+        // If line is a checkbox
 
         isTicked = false;
         if (cbTickedIndex == 0){
@@ -208,6 +215,36 @@ class _NoteEditorState extends State<NoteEditor> {
           false
         ));
         endsInCheckbox = true;
+      } else if (imgIndex == 0) {
+        // Get link for image
+        String link = line.substring(6);
+        link = link.substring(0, link.length - 1);
+
+        // Add image to lists
+        descriptionList.add(line);
+        textControllers.add(TextEditingController(text: line));
+        renderedText.add(Container(
+          padding: const EdgeInsets.all(8.0),
+          child: Image.network(
+            link,
+            loadingBuilder: (context, child, loadingProgress) {
+              if (loadingProgress == null) return child;
+
+              // Progress indicator when loading
+              return Center(
+                child: CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null ? 
+                      loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                      : null,
+                ),
+              );
+            },
+
+            errorBuilder: (context, error, stackTrace) {
+              return const Icon(Icons.error);
+            },
+          ),
+        ));
       } else {
         // If not, add line to buffer
         textBuffer.add(line);
