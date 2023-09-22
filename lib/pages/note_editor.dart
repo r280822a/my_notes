@@ -147,6 +147,63 @@ class _NoteEditorState extends State<NoteEditor> {
     );
   }
 
+  PopupMenuButton _image(String link, int index) {
+    double size = 60;
+
+    return PopupMenuButton(
+      position: PopupMenuPosition.under,
+      onOpened: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          onTap: () {
+            // DELETE IMAGE
+            descriptionList.removeAt(index);
+            String newDescription = descriptionList.join("\n");
+            note.description = newDescription;
+            notesDB.updateNote(note);
+
+            setState(() {});
+          },
+          child: Row(
+            children: [
+              Icon(Icons.delete_outline, color: Colors.red[600]),
+              const SizedBox(width: 10),
+              const Text("Delete"),
+            ],
+          ),
+        ),
+      ],
+      child: Container(
+        padding: const EdgeInsets.all(8.0),
+        child: Image.network(
+          link,
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+
+            return roundedSquare(
+              // Progress indicator inside square with rounded edges
+              size, 
+              CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null ? 
+                  loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                  : null,
+              ),
+              context
+            );
+          },
+
+          errorBuilder: (context, error, stackTrace) {
+            // Error icon inside square with rounded edges
+            return roundedSquare(size, const Icon(Icons.error), context);
+          },
+        ),
+      ),
+    );
+  }
+
   Widget renderer() {
     // Renders any checkboxes
 
@@ -221,36 +278,10 @@ class _NoteEditorState extends State<NoteEditor> {
         String link = line.substring(6);
         link = link.substring(0, link.length - 1);
 
-        double size = 60;
-
         // Add image to lists
         descriptionList.add(line);
         textControllers.add(TextEditingController(text: line));
-        renderedText.add(Container(
-          padding: const EdgeInsets.all(8.0),
-          child: Image.network(
-            link,
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-
-              return roundedSquare(
-                // Progress indicator inside square with rounded edges
-                size, 
-                CircularProgressIndicator(
-                  value: loadingProgress.expectedTotalBytes != null ? 
-                    loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                    : null,
-                ),
-                context
-              );
-            },
-
-            errorBuilder: (context, error, stackTrace) {
-              // Error icon inside square with rounded edges
-              return roundedSquare(size, const Icon(Icons.error), context);
-            },
-          ),
-        ));
+        renderedText.add(_image(link, (descriptionList.length - 1)));
         endsInNonText = true;
       } else {
         // If not, add line to buffer
@@ -387,7 +418,7 @@ class _NoteEditorState extends State<NoteEditor> {
             const SizedBox(height: 10),
 
             displayRaw ? Expanded(child: _rawDescFormField()) : renderer(),
-            displayRaw ? const SizedBox(height: 30) : const SizedBox(height: 0),
+            displayRaw ? const SizedBox(height: 60) : const SizedBox(height: 0),
           ],
         ),
       ),
