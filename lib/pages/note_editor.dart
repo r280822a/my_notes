@@ -497,15 +497,21 @@ class _NoteEditorState extends State<NoteEditor> {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: const Text("Enter link below"),
+                    title: const Text("Enter image link below"),
                     content: TextField(
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        label: Text("Link"),
+                      ),
                       controller: linkController,
                     ),
                     actions: [
-                      ElevatedButton(
+                      TextButton(
                         onPressed: () {
-                          String link = "[img](${linkController.text})";
-                          addNonText(link, descIndex, offset);
+                          if (linkController.text != ""){
+                            String link = "[img](${linkController.text})";
+                            addNonText(link, descIndex, offset);
+                          }
                           Navigator.pop(context);
                         },
                         child: const Text("Ok")
