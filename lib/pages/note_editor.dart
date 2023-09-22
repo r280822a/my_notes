@@ -242,8 +242,8 @@ class _NoteEditorState extends State<NoteEditor> {
 
       if ((cbIndex == 0) || (cbTickedIndex == 0) || (imgIndex == 0)){
         // If about to add a non-text widget
-        if (textBuffer.isNotEmpty && !(textBuffer.every((element) => element == ""))){
-          // If any text in text buffer
+        if (textBuffer.isNotEmpty && !((textBuffer.length == 1) && (textBuffer[0] == ""))){
+          // If any text in text buffer (ignore single line gaps)
           // Join together to form 1 textblock
           String join = textBuffer.join("\n");
 
@@ -327,6 +327,52 @@ class _NoteEditorState extends State<NoteEditor> {
         ],
       ),
     );
+  }
+
+
+  Map<String, int> getCurrentTextPos(){
+    // Gets current position of the cursor
+
+    // Default offset and index are at end
+    int descIndex = (descriptionList.length - 1);
+    int offset = descriptionList[descIndex].length;
+
+    // Find currently selected text controller
+    // Store its index and offset
+    for (int i = 0; i < textControllers.length; i++){
+      final int baseOffset = textControllers[i].selection.baseOffset;
+      if (baseOffset != -1){
+        descIndex = i;
+        offset = baseOffset;
+      }
+    }
+
+    Map<String, int> result = {
+      "descIndex": descIndex,
+      "offset": offset
+    };
+    return result;
+  }
+
+  void addNonText(String strToAdd, int descIndex, int offset) {
+    // Adds non text widget (checkbox or image)
+
+    // Split text from start till index 
+    // To find which line to add string (at substringSplit.length)
+    String substring = descriptionList[descIndex].substring(0, offset);
+    List<String> substringSplit = substring.split("\n");
+
+    // Add string
+    List<String> textSplit = descriptionList[descIndex].split("\n");
+    textSplit.insert(substringSplit.length, strToAdd);
+    descriptionList[descIndex] = textSplit.join("\n");
+
+    // Update note
+    String newDescription = descriptionList.join("\n");
+    note.description = newDescription;
+    notesDB.updateNote(note);
+
+    setState(() {});
   }
 
 
@@ -432,42 +478,44 @@ class _NoteEditorState extends State<NoteEditor> {
               padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
               child: IconButton(
                 onPressed: () {
-                  // Adds checkbox
-
-                  // Default offset and index are at end
-                  int descIndex = (descriptionList.length - 1);
-                  int offset = descriptionList[descIndex].length;
-
-                  // Find currently selected text controller
-                  // Store its index and offset
-                  for (int i = 0; i < textControllers.length; i++){
-                    final int baseOffset = textControllers[i].selection.baseOffset;
-                    if (baseOffset != -1){
-                      descIndex = i;
-                      offset = baseOffset;
-                    }
-                  }
-
-                  // Split text from start till index 
-                  // To find which line to add checkbox (at substringSplit.length)
-                  String substring = descriptionList[descIndex].substring(0, offset);
-                  List<String> substringSplit = substring.split("\n");
-
-                  // Add checkbox string
-                  List<String> textSplit = descriptionList[descIndex].split("\n");
-                  textSplit.insert(substringSplit.length, checkboxStr);
-                  descriptionList[descIndex] = textSplit.join("\n");
-
-                  // Update note
-                  String newDescription = descriptionList.join("\n");
-                  note.description = newDescription;
-                  notesDB.updateNote(note);
-
-                  setState(() {});
+                  Map<String, int> currentPos = getCurrentTextPos();
+                  int descIndex = currentPos["descIndex"] as int;
+                  int offset = currentPos["offset"] as int;
+                  addNonText(checkboxStr, descIndex, offset);
                 },
                 icon: const Icon(Icons.add_box_outlined),
                 color: Theme.of(context).colorScheme.onBackground,
               ),
+            ),
+            IconButton(
+              onPressed: () {
+                Map<String, int> currentPos = getCurrentTextPos();
+                int descIndex = currentPos["descIndex"] as int;
+                int offset = currentPos["offset"] as int;
+
+                TextEditingController linkController = TextEditingController();
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                    title: const Text("Enter link below"),
+                    content: TextField(
+                      controller: linkController,
+                    ),
+                    actions: [
+                      ElevatedButton(
+                        onPressed: () {
+                          String link = "[img](${linkController.text})";
+                          addNonText(link, descIndex, offset);
+                          Navigator.pop(context);
+                        },
+                        child: const Text("Ok")
+                      )
+                    ],
+                  ),
+                );
+              },
+              icon: const Icon(Icons.add_photo_alternate_outlined),
+              color: Theme.of(context).colorScheme.onBackground,
             ),
           ],
         ),
