@@ -47,229 +47,58 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
 
-  TextFormField _titleField(){
-    // Builds TextFormField for title
-    return TextFormField(
-      decoration: const InputDecoration(
-        border: InputBorder.none,
-        isDense: true,
-        contentPadding: EdgeInsets.zero,
-      ),
+  void selectDescCheckBox(bool isTicked, int index){
+    // Select checkbox
 
-      style: const TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: 23,
-      ),
-      maxLines: 1,
-      initialValue: note.title,
-      onChanged: (value) {
-        note.title = value;
-        notesDB.updateNote(note);
-      },
-    );
+    // Symbol to put at start
+    String str = checkboxTickedStr;
+    if (isTicked){
+      str = checkboxStr;
+    }
+
+    // Change checkbox symbol
+    descriptionList[index] = str + descriptionList[index].substring(2);
+
+    // Update note
+    String newDescription = descriptionList.join("\n");
+    note.description = newDescription;
+    notesDB.updateNote(note);
+
+    setState(() {});
   }
 
-  TextFormField _rawDescFormField(){
-    // Builds TextFormField for unrendered description (mainly for testing)
-    // Only affects checkboxes
-    return TextFormField(
-      decoration: const InputDecoration(
-        border: InputBorder.none,
-        isDense: true,
-        contentPadding: EdgeInsets.zero,
-      ),
+  void removeDescCheckBox(int index){
+    // Remove checkbox
+    descriptionList.removeAt(index);
+    String newDescription = descriptionList.join("\n");
+    note.description = newDescription;
+    notesDB.updateNote(note);
 
-      style: const TextStyle(
-        fontWeight: FontWeight.normal,
-        fontSize: 16,
-      ),
-      maxLines: null,
-      initialValue: note.description,
-      onChanged: (value) {
-        note.description = value;
-        notesDB.updateNote(note);
-      },
-    );
+    setState(() {});
   }
 
+  void removeDescNetworkImage(int index){
+    // Remove image
+    descriptionList.removeAt(index);
+    String newDescription = descriptionList.join("\n");
+    note.description = newDescription;
+    notesDB.updateNote(note);
 
-  TextFormField _textFormField(int index, String initValue, bool hasMultiLines) {
-    // Builds TextFormField for each textblock and checkbox
-    return TextFormField(
-      decoration: const InputDecoration(
-        border: InputBorder.none,
-        isDense: true,
-        contentPadding: EdgeInsets.zero,
-      ),
-
-      key: Key(initValue.toString() + index.toString()),
-      maxLines: hasMultiLines ? null : 1,
-      controller: textControllers[index],
-
-      onChanged: (value) {
-        int cbIndex = descriptionList[index].indexOf(checkboxStr);
-        int cbTickedIndex = descriptionList[index].indexOf(checkboxTickedStr);
-
-        if (cbIndex == 0) {
-          value = "$checkboxStr$value";
-        } else if (cbTickedIndex == 0){
-          value = "$checkboxTickedStr$value";
-        }
-        descriptionList[index] = value;
-        String newDescription = descriptionList.join("\n");
-
-        note.description = newDescription;
-        notesDB.updateNote(note);
-      },
-    );
+    setState(() {});
   }
 
-  Row _checkBox(bool isTicked, int index, String initValue, bool hasMultiLines){
-    // To build checkbox
-    return Row(
-      children: [
-        Checkbox(
-          value: isTicked,
-          onChanged: (bool? value) {
-            // Select checkbox
+  void deleteDescLocalImage(int index, String imageName){
+    // Deletes image
+    descriptionList.removeAt(index);
+    String newDescription = descriptionList.join("\n");
+    note.description = newDescription;
+    notesDB.updateNote(note);
 
-            // Symbol to put at start
-            String str = checkboxTickedStr;
-            if (isTicked){
-              str = checkboxStr;
-            }
+    File(p.join(path, imageName)).deleteSync();
 
-            // Change checkbox symbol
-            descriptionList[index] = str + descriptionList[index].substring(2);
-
-            // Update note
-            String newDescription = descriptionList.join("\n");
-            note.description = newDescription;
-            notesDB.updateNote(note);
-
-            setState(() {});
-          },
-        ),
-        Flexible(
-          child: _textFormField((descriptionList.length - 1), initValue, false)
-        ),
-        IconButton(
-          onPressed: () {
-            // Remove checkbox
-            descriptionList.removeAt(index);
-            String newDescription = descriptionList.join("\n");
-            note.description = newDescription;
-            notesDB.updateNote(note);
-
-            setState(() {});
-          }, 
-          icon: const Icon(Icons.delete_outline)
-        )
-      ],
-    );
+    setState(() {});
   }
 
-  PopupMenuButton _networkImage(String link, int index) {
-    double size = 60;
-
-    return PopupMenuButton(
-      position: PopupMenuPosition.under,
-      onOpened: () {
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-
-      itemBuilder: (context) => [
-        PopupMenuItem(
-          onTap: () {
-            // Deletes image
-            descriptionList.removeAt(index);
-            String newDescription = descriptionList.join("\n");
-            note.description = newDescription;
-            notesDB.updateNote(note);
-
-            setState(() {});
-          },
-          child: Row(
-            children: [
-              Icon(Icons.delete_outline, color: Colors.red[600]),
-              const SizedBox(width: 10),
-              const Text("Delete"),
-            ],
-          ),
-        ),
-      ],
-      child: Container(
-        padding: const EdgeInsets.all(8.0),
-        child: Image.network(
-          link,
-          loadingBuilder: (context, child, loadingProgress) {
-            if (loadingProgress == null) return child;
-
-            return roundedSquare(
-              // Progress indicator inside square with rounded edges
-              size, 
-              CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null ? 
-                  loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                  : null,
-              ),
-              context
-            );
-          },
-
-          errorBuilder: (context, error, stackTrace) {
-            // Error icon inside square with rounded edges
-            return roundedSquare(size, const Icon(Icons.error), context);
-          },
-        ),
-      ),
-    );
-  }
-
-  PopupMenuButton _localImage(String imageName, int index) {
-    double size = 60;
-
-    return PopupMenuButton(
-      position: PopupMenuPosition.under,
-      onOpened: () {
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-
-      itemBuilder: (context) => [
-        PopupMenuItem(
-          onTap: () {
-            // Deletes image
-            descriptionList.removeAt(index);
-            String newDescription = descriptionList.join("\n");
-            note.description = newDescription;
-            notesDB.updateNote(note);
-
-            File(p.join(path, imageName)).deleteSync();
-
-            setState(() {});
-          },
-          child: Row(
-            children: [
-              Icon(Icons.delete_outline, color: Colors.red[600]),
-              const SizedBox(width: 10),
-              const Text("Delete"),
-            ],
-          ),
-        ),
-      ],
-      child: Container(
-        padding: const EdgeInsets.all(8.0),
-        child: Image.file(
-          File(p.join(path, imageName)),
-
-          errorBuilder: (context, error, stackTrace) {
-            // Error icon inside square with rounded edges
-            return roundedSquare(size, const Icon(Icons.error), context);
-          },
-        ),
-      ),
-    );
-  }
 
   Widget renderer() {
     // Renders any checkboxes
@@ -292,7 +121,7 @@ class _NoteEditorState extends State<NoteEditor> {
       descriptionList.add(description);
       textControllers.add(TextEditingController(text: description));
       return Expanded(
-        child: _textFormField((descriptionList.length - 1), description, true),
+        child: DescFormField(textControllers: textControllers, checkboxStr: checkboxStr, checkboxTickedStr: checkboxTickedStr, descriptionList: descriptionList, note: note, notesDB: notesDB, index: (descriptionList.length - 1), initValue: description, hasMultiLines: true),
       );
     }
 
@@ -317,7 +146,7 @@ class _NoteEditorState extends State<NoteEditor> {
           // Add textblock to lists
           descriptionList.add(join);
           textControllers.add(TextEditingController(text: join));
-          renderedText.add(_textFormField((descriptionList.length - 1), join, true));
+          renderedText.add(DescFormField(textControllers: textControllers, checkboxStr: checkboxStr, checkboxTickedStr: checkboxTickedStr, descriptionList: descriptionList, note: note, notesDB: notesDB, index: (descriptionList.length - 1), initValue: join, hasMultiLines: true));
           textBuffer = []; // Reset buffer
         }
       }
@@ -333,12 +162,7 @@ class _NoteEditorState extends State<NoteEditor> {
         // Add checkbox to lists
         descriptionList.add(line);
         textControllers.add(TextEditingController(text: line.substring(2)));
-        renderedText.add(_checkBox(
-          isTicked,
-          (descriptionList.length - 1), 
-          line.substring(2), 
-          false
-        ));
+        renderedText.add(DescCheckBox(textControllers: textControllers, checkboxStr: checkboxStr, checkboxTickedStr: checkboxTickedStr, descriptionList: descriptionList, note: note, notesDB: notesDB, isTicked: isTicked, index: (descriptionList.length - 1), initValue: line.substring(2), hasMultiLines: false, selectDescCheckBox: selectDescCheckBox, removeDescCheckBox: removeDescCheckBox,));
         endsInNonText = true;
       } else if (imgIndex == 0) {
         // Get link for image
@@ -351,9 +175,9 @@ class _NoteEditorState extends State<NoteEditor> {
         textControllers.add(TextEditingController(text: line));
         if (image.startsWith("assets/")){
           image = image.substring(7, image.length);
-          renderedText.add(_localImage(image, (descriptionList.length - 1)));
+          renderedText.add(DescLocalImage(path: path, imageName: image, index: (descriptionList.length - 1), deleteDescLocalImage: deleteDescLocalImage));
         } else {
-          renderedText.add(_networkImage(image, (descriptionList.length - 1)));
+          renderedText.add(DescNetworkImage(link: image, index: (descriptionList.length - 1), removeDescNetworkImage: removeDescNetworkImage,));
         }
         endsInNonText = true;
       } else {
@@ -377,7 +201,7 @@ class _NoteEditorState extends State<NoteEditor> {
       textControllers.add(TextEditingController(text: value));
       renderedText.add(
         Expanded(
-          child: _textFormField((descriptionList.length - 1), value, true)
+          child: DescFormField(textControllers: textControllers, checkboxStr: checkboxStr, checkboxTickedStr: checkboxTickedStr, descriptionList: descriptionList, note: note, notesDB: notesDB, index: (descriptionList.length - 1), initValue: value, hasMultiLines: true)
         ),
       );
     }
@@ -547,7 +371,7 @@ class _NoteEditorState extends State<NoteEditor> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Display note
-            _titleField(),
+            TitleFormField(note: note, notesDB: notesDB),
             const Divider(),
             Text(
               time,
@@ -555,8 +379,8 @@ class _NoteEditorState extends State<NoteEditor> {
             ),
             const SizedBox(height: 10),
 
-            displayRaw ? Expanded(child: _rawDescFormField()) : renderer(),
-            displayRaw ? const SizedBox(height: 60) : const SizedBox(height: 0),
+            displayRaw ? Expanded(child: RawDescFormField(note: note, notesDB: notesDB)) : renderer(),
+            displayRaw ? const SizedBox(height: 40) : const SizedBox(height: 0),
           ],
         ),
       ),
