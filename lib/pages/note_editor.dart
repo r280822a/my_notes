@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/notes_db.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
-import 'package:my_notes/helper_widget.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'dart:io';
+
+import 'package:my_notes/notes_db.dart';
+import 'package:my_notes/widgets/note_editor/all.dart';
+import 'package:my_notes/widgets/loading_pages/loading_note_editor.dart';
+
+import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+
+// Checkbox symbols
+const String checkboxStr = "☐ ";
+const String checkboxTickedStr = "☑ ";
 
 class NoteEditor extends StatefulWidget {
   const NoteEditor({super.key});
@@ -18,10 +25,6 @@ class NoteEditor extends StatefulWidget {
 class _NoteEditorState extends State<NoteEditor> {
   late Note note;
   late NotesDatabase notesDB;
-  
-  // Checkbox symbols
-  final String checkboxStr = "☐ ";
-  final String checkboxTickedStr = "☑ ";
 
   // For each _textFormField
   List<String> descriptionList = []; // Seperate item for each textblock and checkbox
@@ -46,7 +49,7 @@ class _NoteEditorState extends State<NoteEditor> {
     setState(() {});
   }
 
-
+  // ===== Methods used in imported widgets =====
   void selectDescCheckBox(bool isTicked, int index){
     // Select checkbox
 
@@ -100,6 +103,7 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
 
+  // ===== Renderer =====
   Widget renderer() {
     // Renders any checkboxes
 
@@ -114,20 +118,10 @@ class _NoteEditorState extends State<NoteEditor> {
     // List<String> lineSplitText = const LineSplitter().convert(description);
     List<String> lineSplitText = description.split("\n");
 
-    if ((lineSplitText.isEmpty) || (lineSplitText.length == 1)){
-      // If only 1 line or blank
-
-      // Add text to lists
-      descriptionList.add(description);
-      textControllers.add(TextEditingController(text: description));
-      return Expanded(
-        child: DescFormField(textControllers: textControllers, checkboxStr: checkboxStr, checkboxTickedStr: checkboxTickedStr, descriptionList: descriptionList, note: note, notesDB: notesDB, index: (descriptionList.length - 1), initValue: description, hasMultiLines: true),
-      );
-    }
-
     List<String> textBuffer = [];
     bool endsInNonText = false;
     bool isTicked = false;
+
     for (String line in lineSplitText){
       // Render line by line
       int cbIndex = line.indexOf(checkboxStr);
@@ -146,7 +140,15 @@ class _NoteEditorState extends State<NoteEditor> {
           // Add textblock to lists
           descriptionList.add(join);
           textControllers.add(TextEditingController(text: join));
-          renderedText.add(DescFormField(textControllers: textControllers, checkboxStr: checkboxStr, checkboxTickedStr: checkboxTickedStr, descriptionList: descriptionList, note: note, notesDB: notesDB, index: (descriptionList.length - 1), initValue: join, hasMultiLines: true));
+          renderedText.add(DescFormField(
+            textControllers: textControllers,
+            descriptionList: descriptionList,
+            note: note,
+            notesDB: notesDB,
+            index: (descriptionList.length - 1),
+            initValue: join,
+            hasMultiLines: true
+          ));
           textBuffer = []; // Reset buffer
         }
       }
@@ -162,7 +164,18 @@ class _NoteEditorState extends State<NoteEditor> {
         // Add checkbox to lists
         descriptionList.add(line);
         textControllers.add(TextEditingController(text: line.substring(2)));
-        renderedText.add(DescCheckBox(textControllers: textControllers, checkboxStr: checkboxStr, checkboxTickedStr: checkboxTickedStr, descriptionList: descriptionList, note: note, notesDB: notesDB, isTicked: isTicked, index: (descriptionList.length - 1), initValue: line.substring(2), hasMultiLines: false, selectDescCheckBox: selectDescCheckBox, removeDescCheckBox: removeDescCheckBox,));
+        renderedText.add(DescCheckBox(
+          textControllers: textControllers,
+          descriptionList: descriptionList,
+          note: note,
+          notesDB: notesDB,
+          isTicked: isTicked,
+          index: (descriptionList.length - 1),
+          initValue: line.substring(2),
+          hasMultiLines: false,
+          selectDescCheckBox: selectDescCheckBox,
+          removeDescCheckBox: removeDescCheckBox
+        ));
         endsInNonText = true;
       } else if (imgIndex == 0) {
         // Get link for image
@@ -175,9 +188,18 @@ class _NoteEditorState extends State<NoteEditor> {
         textControllers.add(TextEditingController(text: line));
         if (image.startsWith("assets/")){
           image = image.substring(7, image.length);
-          renderedText.add(DescLocalImage(path: path, imageName: image, index: (descriptionList.length - 1), deleteDescLocalImage: deleteDescLocalImage));
+          renderedText.add(DescLocalImage(
+            path: path,
+            imageName: image,
+            index: (descriptionList.length - 1),
+            deleteDescLocalImage: deleteDescLocalImage
+          ));
         } else {
-          renderedText.add(DescNetworkImage(link: image, index: (descriptionList.length - 1), removeDescNetworkImage: removeDescNetworkImage,));
+          renderedText.add(DescNetworkImage(
+            link: image,
+            index: (descriptionList.length - 1),
+            removeDescNetworkImage: removeDescNetworkImage
+          ));
         }
         endsInNonText = true;
       } else {
@@ -201,7 +223,15 @@ class _NoteEditorState extends State<NoteEditor> {
       textControllers.add(TextEditingController(text: value));
       renderedText.add(
         Expanded(
-          child: DescFormField(textControllers: textControllers, checkboxStr: checkboxStr, checkboxTickedStr: checkboxTickedStr, descriptionList: descriptionList, note: note, notesDB: notesDB, index: (descriptionList.length - 1), initValue: value, hasMultiLines: true)
+          child: DescFormField(
+            textControllers: textControllers,
+            descriptionList: descriptionList,
+            note: note,
+            notesDB: notesDB,
+            index: (descriptionList.length - 1),
+            initValue: value,
+            hasMultiLines: true
+          )
         ),
       );
     }
@@ -227,6 +257,7 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
 
+  // ===== Methods used in build function =====
   Map<String, int> getCurrentTextPos(){
     // Gets current position of the cursor
 
@@ -290,10 +321,10 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
 
-
+  // ===== Build function =====
   @override
   Widget build(BuildContext context) {
-    if (path == ""){return loadingNoteEditorScreen(context);}
+    if (path == ""){return const LoadingNoteEditor();}
 
     // Retrieve arguements from previous page
     Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
@@ -413,6 +444,7 @@ class _NoteEditorState extends State<NoteEditor> {
                       child: Column(
                         children: [
                           const SizedBox(height: 20),
+                          // Local image button
                           TextButton(
                             onPressed: () async {
                               // Adds local image
@@ -437,6 +469,7 @@ class _NoteEditorState extends State<NoteEditor> {
                               ],
                             ),
                           ),
+                          // Network image button
                           TextButton(
                             onPressed: () {
                               // Adds network image

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/notes_db.dart';
-// import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter/services.dart';
+
+import 'package:my_notes/notes_db.dart';
+import 'package:my_notes/widgets/loading_pages/loading_home.dart';
+
+// import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
-import 'package:my_notes/helper_widget.dart';
+
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -110,7 +113,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    if (loading) {return loadingHomeScreen(context);}
+    if (loading) {return const LoadingHome();}
 
     return Scaffold(
       appBar: AppBar(
