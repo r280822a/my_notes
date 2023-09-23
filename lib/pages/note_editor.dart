@@ -181,7 +181,7 @@ class _NoteEditorState extends State<NoteEditor> {
       itemBuilder: (context) => [
         PopupMenuItem(
           onTap: () {
-            // DELETE IMAGE
+            // Deletes image
             descriptionList.removeAt(index);
             String newDescription = descriptionList.join("\n");
             note.description = newDescription;
@@ -238,7 +238,7 @@ class _NoteEditorState extends State<NoteEditor> {
       itemBuilder: (context) => [
         PopupMenuItem(
           onTap: () {
-            // DELETE IMAGE
+            // Deletes image
             descriptionList.removeAt(index);
             String newDescription = descriptionList.join("\n");
             note.description = newDescription;
@@ -452,10 +452,7 @@ class _NoteEditorState extends State<NoteEditor> {
     File imageFile;
     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
 
-    if (image == null) {
-      print('No image selected');
-      return "";
-    }
+    if (image == null) {return "";}
 
     // Convert XFile to file
     imageFile = File(image.path);
@@ -465,7 +462,6 @@ class _NoteEditorState extends State<NoteEditor> {
     String imageName = split[split.length - 1];
 
     await imageFile.copy("$path/$imageName");
-    print('image selected!');
     return imageName;
   }
 
@@ -585,52 +581,91 @@ class _NoteEditorState extends State<NoteEditor> {
             ),
             IconButton(
               onPressed: () {
-                Map<String, int> currentPos = getCurrentTextPos();
-                int descIndex = currentPos["descIndex"] as int;
-                int offset = currentPos["offset"] as int;
-
-                TextEditingController linkController = TextEditingController();
-                showDialog(
+                showModalBottomSheet(
                   context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text("Enter image link below"),
-                    content: TextField(
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        label: Text("Link"),
+                  builder: (BuildContext context) {
+                    return SizedBox(
+                      height: 120,
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 20),
+                          TextButton(
+                            onPressed: () async {
+                              // Adds local image
+                              Navigator.pop(context);
+                              String imageName = await pickImage();
+
+                              Map<String, int> currentPos = getCurrentTextPos();
+                              int descIndex = currentPos["descIndex"] as int;
+                              int offset = currentPos["offset"] as int;
+
+                              String link = "[img](assets/$imageName)";
+                              addNonText(link, descIndex, offset);
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: Theme.of(context).colorScheme.onBackground,
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(Icons.photo_library_outlined),
+                                SizedBox(width: 10),
+                                Text("Add Local Image")
+                              ],
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              // Adds network image
+                              Navigator.pop(context);
+                              Map<String, int> currentPos = getCurrentTextPos();
+                              int descIndex = currentPos["descIndex"] as int;
+                              int offset = currentPos["offset"] as int;
+
+                              TextEditingController linkController = TextEditingController();
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text("Enter image link below"),
+                                  content: TextField(
+                                    decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      label: Text("Link"),
+                                    ),
+                                    controller: linkController,
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        if (linkController.text != ""){
+                                          String link = "[img](${linkController.text})";
+                                          addNonText(link, descIndex, offset);
+                                        }
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text("Ok")
+                                    )
+                                  ],
+                                ),
+                              );
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: Theme.of(context).colorScheme.onBackground,
+                            ),
+                            child: const Row(
+                              children: [
+                                Icon(Icons.insert_link_outlined),
+                                SizedBox(width: 10),
+                                Text("Add Network Image")
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      controller: linkController,
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          if (linkController.text != ""){
-                            String link = "[img](${linkController.text})";
-                            addNonText(link, descIndex, offset);
-                          }
-                          Navigator.pop(context);
-                        },
-                        child: const Text("Ok")
-                      )
-                    ],
-                  ),
+                    );
+                  },
                 );
               },
               icon: const Icon(Icons.add_photo_alternate_outlined),
-              color: Theme.of(context).colorScheme.onBackground,
-            ),
-            IconButton(
-              onPressed: () async {
-                String imageName = await pickImage();
-
-                Map<String, int> currentPos = getCurrentTextPos();
-                int descIndex = currentPos["descIndex"] as int;
-                int offset = currentPos["offset"] as int;
-
-                String link = "[img](assets/$imageName)";
-                addNonText(link, descIndex, offset);
-              },
-              icon: const Icon(Icons.add_photo_alternate, size: 28),
               color: Theme.of(context).colorScheme.onBackground,
             ),
           ],
