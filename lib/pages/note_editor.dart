@@ -3,6 +3,10 @@ import 'package:my_notes/notes_db.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 import 'package:my_notes/helper_widget.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
 
 class NoteEditor extends StatefulWidget {
   const NoteEditor({super.key});
@@ -24,6 +28,24 @@ class _NoteEditorState extends State<NoteEditor> {
   List<TextEditingController> textControllers = [];
 
   bool displayRaw = false;
+
+  String path = "";
+
+  @override
+  void initState() {
+    super.initState();
+    getPath();
+  }
+
+  void getPath() async {
+    // Stores path for local images
+    Directory docDir = await getApplicationDocumentsDirectory();
+    String docPath = docDir.path.toString();
+    path = p.join(docPath, "assets");
+    await Directory(path).create(recursive: true);
+    setState(() {});
+  }
+
 
   TextFormField _titleField(){
     // Builds TextFormField for title
@@ -147,7 +169,7 @@ class _NoteEditorState extends State<NoteEditor> {
     );
   }
 
-  PopupMenuButton _image(String link, int index) {
+  PopupMenuButton _networkImage(String link, int index) {
     double size = 60;
 
     return PopupMenuButton(
@@ -194,6 +216,51 @@ class _NoteEditorState extends State<NoteEditor> {
               context
             );
           },
+
+          errorBuilder: (context, error, stackTrace) {
+            // Error icon inside square with rounded edges
+            return roundedSquare(size, const Icon(Icons.error), context);
+          },
+        ),
+      ),
+    );
+  }
+
+  PopupMenuButton _localImage(String imageName, int index) {
+    double size = 60;
+
+    return PopupMenuButton(
+      position: PopupMenuPosition.under,
+      onOpened: () {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
+
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          onTap: () {
+            // DELETE IMAGE
+            descriptionList.removeAt(index);
+            String newDescription = descriptionList.join("\n");
+            note.description = newDescription;
+            notesDB.updateNote(note);
+
+            File(p.join(path, imageName)).deleteSync();
+
+            setState(() {});
+          },
+          child: Row(
+            children: [
+              Icon(Icons.delete_outline, color: Colors.red[600]),
+              const SizedBox(width: 10),
+              const Text("Delete"),
+            ],
+          ),
+        ),
+      ],
+      child: Container(
+        padding: const EdgeInsets.all(8.0),
+        child: Image.file(
+          File(p.join(path, imageName)),
 
           errorBuilder: (context, error, stackTrace) {
             // Error icon inside square with rounded edges
@@ -275,13 +342,19 @@ class _NoteEditorState extends State<NoteEditor> {
         endsInNonText = true;
       } else if (imgIndex == 0) {
         // Get link for image
-        String link = line.substring(6);
-        link = link.substring(0, link.length - 1);
+
+        String image = line.substring(6);
+        image = image.substring(0, image.length - 1);
 
         // Add image to lists
         descriptionList.add(line);
         textControllers.add(TextEditingController(text: line));
-        renderedText.add(_image(link, (descriptionList.length - 1)));
+        if (image.startsWith("assets/")){
+          image = image.substring(7, image.length);
+          renderedText.add(_localImage(image, (descriptionList.length - 1)));
+        } else {
+          renderedText.add(_networkImage(image, (descriptionList.length - 1)));
+        }
         endsInNonText = true;
       } else {
         // If not, add line to buffer
@@ -375,10 +448,33 @@ class _NoteEditorState extends State<NoteEditor> {
     setState(() {});
   }
 
+  Future<String> pickImage() async {
+    File imageFile;
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (image == null) {
+      print('No image selected');
+      return "";
+    }
+
+    // Convert XFile to file
+    imageFile = File(image.path);
+
+    // Copy image to new path
+    List split = p.split(image.path);
+    String imageName = split[split.length - 1];
+
+    await imageFile.copy("$path/$imageName");
+    print('image selected!');
+    return imageName;
+  }
+
 
 
   @override
   Widget build(BuildContext context) {
+    if (path == ""){return loadingNoteEditorScreen(context);}
+
     // Retrieve arguements from previous page
     Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
     // Set attributes
@@ -521,6 +617,20 @@ class _NoteEditorState extends State<NoteEditor> {
                 );
               },
               icon: const Icon(Icons.add_photo_alternate_outlined),
+              color: Theme.of(context).colorScheme.onBackground,
+            ),
+            IconButton(
+              onPressed: () async {
+                String imageName = await pickImage();
+
+                Map<String, int> currentPos = getCurrentTextPos();
+                int descIndex = currentPos["descIndex"] as int;
+                int offset = currentPos["offset"] as int;
+
+                String link = "[img](assets/$imageName)";
+                addNonText(link, descIndex, offset);
+              },
+              icon: const Icon(Icons.add_photo_alternate, size: 28),
               color: Theme.of(context).colorScheme.onBackground,
             ),
           ],
