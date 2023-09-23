@@ -67,22 +67,6 @@ class _NoteEditorState extends State<NoteEditor> {
     setState(() {});
   }
 
-  void updateDescFormField(String value, int index){
-    int cbIndex = descriptionList[index].indexOf(checkboxStr);
-    int cbTickedIndex = descriptionList[index].indexOf(checkboxTickedStr);
-
-    if (cbIndex == 0) {
-      value = "$checkboxStr$value";
-    } else if (cbTickedIndex == 0){
-      value = "$checkboxTickedStr$value";
-    }
-    descriptionList[index] = value;
-    String newDescription = descriptionList.join("\n");
-
-    note.description = newDescription;
-    notesDB.updateNote(note);
-  }
-
   void removeDescCheckBox(int index){
     // Remove checkbox
     descriptionList.removeAt(index);
@@ -137,7 +121,7 @@ class _NoteEditorState extends State<NoteEditor> {
       descriptionList.add(description);
       textControllers.add(TextEditingController(text: description));
       return Expanded(
-        child: DescFormField(textControllers: textControllers, checkboxStr: checkboxStr, checkboxTickedStr: checkboxTickedStr, descriptionList: descriptionList, note: note, notesDB: notesDB, index: (descriptionList.length - 1), initValue: description, hasMultiLines: true, updateDescFormField: updateDescFormField),
+        child: DescFormField(textControllers: textControllers, checkboxStr: checkboxStr, checkboxTickedStr: checkboxTickedStr, descriptionList: descriptionList, note: note, notesDB: notesDB, index: (descriptionList.length - 1), initValue: description, hasMultiLines: true),
       );
     }
 
@@ -162,7 +146,7 @@ class _NoteEditorState extends State<NoteEditor> {
           // Add textblock to lists
           descriptionList.add(join);
           textControllers.add(TextEditingController(text: join));
-          renderedText.add(DescFormField(textControllers: textControllers, checkboxStr: checkboxStr, checkboxTickedStr: checkboxTickedStr, descriptionList: descriptionList, note: note, notesDB: notesDB, index: (descriptionList.length - 1), initValue: join, hasMultiLines: true, updateDescFormField: updateDescFormField));
+          renderedText.add(DescFormField(textControllers: textControllers, checkboxStr: checkboxStr, checkboxTickedStr: checkboxTickedStr, descriptionList: descriptionList, note: note, notesDB: notesDB, index: (descriptionList.length - 1), initValue: join, hasMultiLines: true));
           textBuffer = []; // Reset buffer
         }
       }
@@ -178,7 +162,7 @@ class _NoteEditorState extends State<NoteEditor> {
         // Add checkbox to lists
         descriptionList.add(line);
         textControllers.add(TextEditingController(text: line.substring(2)));
-        renderedText.add(DescCheckBox(textControllers: textControllers, checkboxStr: checkboxStr, checkboxTickedStr: checkboxTickedStr, descriptionList: descriptionList, note: note, notesDB: notesDB, isTicked: isTicked, index: (descriptionList.length - 1), initValue: line.substring(2), hasMultiLines: false, selectDescCheckBox: selectDescCheckBox, removeDescCheckBox: removeDescCheckBox, updateDescFormField: updateDescFormField));
+        renderedText.add(DescCheckBox(textControllers: textControllers, checkboxStr: checkboxStr, checkboxTickedStr: checkboxTickedStr, descriptionList: descriptionList, note: note, notesDB: notesDB, isTicked: isTicked, index: (descriptionList.length - 1), initValue: line.substring(2), hasMultiLines: false, selectDescCheckBox: selectDescCheckBox, removeDescCheckBox: removeDescCheckBox,));
         endsInNonText = true;
       } else if (imgIndex == 0) {
         // Get link for image
@@ -217,7 +201,7 @@ class _NoteEditorState extends State<NoteEditor> {
       textControllers.add(TextEditingController(text: value));
       renderedText.add(
         Expanded(
-          child: DescFormField(textControllers: textControllers, checkboxStr: checkboxStr, checkboxTickedStr: checkboxTickedStr, descriptionList: descriptionList, note: note, notesDB: notesDB, index: (descriptionList.length - 1), initValue: value, hasMultiLines: true, updateDescFormField: updateDescFormField)
+          child: DescFormField(textControllers: textControllers, checkboxStr: checkboxStr, checkboxTickedStr: checkboxTickedStr, descriptionList: descriptionList, note: note, notesDB: notesDB, index: (descriptionList.length - 1), initValue: value, hasMultiLines: true)
         ),
       );
     }
