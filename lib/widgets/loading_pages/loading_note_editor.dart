@@ -10,38 +10,11 @@ class LoadingNoteEditor extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          PopupMenuButton(
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                child: Row(
-                  children: [
-                    Icon(Icons.copy),
-                    SizedBox(width: 10),
-                    Text("Copy"),
-                  ],
-                )
-              ),
-              const PopupMenuItem(
-                child: Row(
-                  children: [
-                    Icon(Icons.edit_note),
-                    SizedBox(width: 10),
-                    Text("View raw"),
-                  ],
-                )
-              ),
-              PopupMenuItem(
-                child: Row(
-                  children: [
-                    Icon(Icons.delete_outline, color: Colors.red[600]),
-                    const SizedBox(width: 10),
-                    const Text("Delete"),
-                  ],
-                )
-              ),
-            ]
-          ),
-        ],
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.more_vert)
+          )
+        ]
       ),
 
 
@@ -50,7 +23,6 @@ class LoadingNoteEditor extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Display note
             SizedBox(height: 35),
             Divider(),
           ],
@@ -73,11 +45,6 @@ class LoadingNoteEditor extends StatelessWidget {
             IconButton(
               onPressed: () {},
               icon: const Icon(Icons.add_photo_alternate_outlined),
-              color: Theme.of(context).colorScheme.onBackground,
-            ),
-            IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.add_photo_alternate, size: 28),
               color: Theme.of(context).colorScheme.onBackground,
             ),
           ],

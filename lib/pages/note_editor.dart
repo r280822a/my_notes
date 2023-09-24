@@ -423,6 +423,7 @@ class _NoteEditorState extends State<NoteEditor> {
           children: [
             Container(
               padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+              // Adds checkbox
               child: IconButton(
                 onPressed: () {
                   Map<String, int> currentPos = getCurrentTextPos();
@@ -434,6 +435,7 @@ class _NoteEditorState extends State<NoteEditor> {
                 color: Theme.of(context).colorScheme.onBackground,
               ),
             ),
+            // Adds image
             IconButton(
               onPressed: () {
                 showModalBottomSheet(
