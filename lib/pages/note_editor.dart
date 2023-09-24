@@ -356,7 +356,8 @@ class _NoteEditorState extends State<NoteEditor> {
             note: note,
             notesDB: notesDB,
             displayRaw: displayRaw,
-            mounted: mounted
+            mounted: mounted,
+            toggleRawRendered: toggleRawRendered,
           ),
         ],
       ),

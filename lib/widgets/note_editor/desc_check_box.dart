@@ -31,7 +31,7 @@ class DescCheckBox extends StatelessWidget {
         Checkbox(
           value: isTicked,
           onChanged: (bool? value) {
-            selectDescCheckBox(isTicked, index);
+            selectDescCheckBox(index, isTicked);
           },
         ),
         Flexible(

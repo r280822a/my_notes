@@ -9,12 +9,14 @@ class OptionsMenu extends StatelessWidget {
     required this.displayRaw,
     required this.notesDB,
     required this.mounted,
+    required this.toggleRawRendered,
   });
 
   final Note note;
   final bool displayRaw;
   final NotesDatabase notesDB;
   final bool mounted;
+  final Function toggleRawRendered;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +45,7 @@ class OptionsMenu extends StatelessWidget {
         PopupMenuItem(
           onTap: () {
             // Displays raw/rendered descripiton
-            // toggleRawRendered();
+            toggleRawRendered();
           },
           child: Row(
             children: [
