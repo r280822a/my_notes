@@ -258,7 +258,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
     return Expanded(
       child: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
         slivers: [
           SliverFillRemaining(
             hasScrollBody: false,

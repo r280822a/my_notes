@@ -244,7 +244,7 @@ class _HomeState extends State<Home> {
 
 
       body: ReorderableGridView.builder(
-        physics: const BouncingScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
         onReorder: (oldIndex, newIndex) async {
           final Note noteToReorder = notesDB.list[oldIndex];
           await notesDB.deleteNote(noteToReorder);
