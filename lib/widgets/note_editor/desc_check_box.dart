@@ -9,10 +9,10 @@ class DescCheckBox extends StatelessWidget {
     required this.descriptionList,
     required this.note,
     required this.notesDB,
-    required this.isTicked,
     required this.index,
     required this.initValue,
     required this.hasMultiLines,
+    required this.isTicked,
     required this.selectDescCheckBox,
     required this.removeDescCheckBox,
   });

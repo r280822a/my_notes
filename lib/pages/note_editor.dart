@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
-
 import 'package:my_notes/notes_db.dart';
 import 'package:my_notes/widgets/note_editor/all.dart';
 import 'package:my_notes/widgets/loading_pages/loading_note_editor.dart';
-
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+
 
 // Checkbox symbols
 const String checkboxStr = "☐ ";
@@ -26,7 +24,7 @@ class _NoteEditorState extends State<NoteEditor> {
   late Note note;
   late NotesDatabase notesDB;
 
-  // For each _textFormField
+  // For each DescFormField
   List<String> descriptionList = []; // Seperate item for each textblock and checkbox
   List<TextEditingController> textControllers = [];
 
@@ -104,6 +102,12 @@ class _NoteEditorState extends State<NoteEditor> {
 
 
   // ===== Renderer =====
+  void toggleRawRendered(){
+    // Toggles raw/rendered descripiton
+    displayRaw = !displayRaw;
+    setState(() {});
+  }
+
   Widget renderer() {
     // Renders any checkboxes
 
@@ -141,10 +145,10 @@ class _NoteEditorState extends State<NoteEditor> {
           descriptionList.add(join);
           textControllers.add(TextEditingController(text: join));
           renderedText.add(DescFormField(
-            textControllers: textControllers,
-            descriptionList: descriptionList,
             note: note,
             notesDB: notesDB,
+            descriptionList: descriptionList,
+            textControllers: textControllers,
             index: (descriptionList.length - 1),
             initValue: join,
             hasMultiLines: true
@@ -165,10 +169,10 @@ class _NoteEditorState extends State<NoteEditor> {
         descriptionList.add(line);
         textControllers.add(TextEditingController(text: line.substring(2)));
         renderedText.add(DescCheckBox(
-          textControllers: textControllers,
-          descriptionList: descriptionList,
           note: note,
           notesDB: notesDB,
+          descriptionList: descriptionList,
+          textControllers: textControllers,
           isTicked: isTicked,
           index: (descriptionList.length - 1),
           initValue: line.substring(2),
@@ -224,10 +228,10 @@ class _NoteEditorState extends State<NoteEditor> {
       renderedText.add(
         Expanded(
           child: DescFormField(
-            textControllers: textControllers,
-            descriptionList: descriptionList,
             note: note,
             notesDB: notesDB,
+            descriptionList: descriptionList,
+            textControllers: textControllers,
             index: (descriptionList.length - 1),
             initValue: value,
             hasMultiLines: true
@@ -338,63 +342,14 @@ class _NoteEditorState extends State<NoteEditor> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          PopupMenuButton(
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                onTap: () {
-                  // Copies note to clipboard
-                  String copiedText = "${note.title}\n\n${note.description}";
-                  Clipboard.setData(ClipboardData(text: copiedText));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Copied to clipboard"),
-                      behavior: SnackBarBehavior.floating
-                    ),
-                  );
-                },
-                child: const Row(
-                  children: [
-                    Icon(Icons.copy),
-                    SizedBox(width: 10),
-                    Text("Copy"),
-                  ],
-                )
-              ),
-              PopupMenuItem(
-                onTap: () {
-                  // Displays raw/rendered descripiton
-                  displayRaw = !displayRaw;
-                  setState(() {});
-                },
-                child: Row(
-                  children: [
-                    const Icon(Icons.edit_note),
-                    const SizedBox(width: 10),
-                    Text(displayRaw ? "View rendered" : "View raw"),
-                  ],
-                )
-              ),
-              PopupMenuItem(
-                onTap: () async {
-                  // Deletes note
-                  await notesDB.deleteNote(note);
-                  if (mounted){
-                    Navigator.pop(context);
-                  }
-                },
-                child: Row(
-                  children: [
-                    Icon(Icons.delete_outline, color: Colors.red[600]),
-                    const SizedBox(width: 10),
-                    const Text("Delete"),
-                  ],
-                )
-              ),
-            ]
+          OptionsMenu(
+            note: note,
+            notesDB: notesDB,
+            displayRaw: displayRaw,
+            mounted: mounted
           ),
         ],
       ),
-
 
       body: Padding(
         padding: const EdgeInsets.all(20),
@@ -416,121 +371,11 @@ class _NoteEditorState extends State<NoteEditor> {
         ),
       ),
 
-
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: Material(
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-              // Adds checkbox
-              child: IconButton(
-                onPressed: () {
-                  Map<String, int> currentPos = getCurrentTextPos();
-                  int descIndex = currentPos["descIndex"] as int;
-                  int offset = currentPos["offset"] as int;
-                  addNonText(checkboxStr, descIndex, offset);
-                },
-                icon: const Icon(Icons.add_box_outlined),
-                color: Theme.of(context).colorScheme.onBackground,
-              ),
-            ),
-            // Adds image
-            IconButton(
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return SizedBox(
-                      height: 120,
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 20),
-                          // Local image button
-                          TextButton(
-                            onPressed: () async {
-                              // Adds local image
-                              Navigator.pop(context);
-                              String imageName = await pickImage();
-
-                              if (imageName != ""){
-                                Map<String, int> currentPos = getCurrentTextPos();
-                                int descIndex = currentPos["descIndex"] as int;
-                                int offset = currentPos["offset"] as int;
-
-                                String link = "[img](assets/$imageName)";
-                                addNonText(link, descIndex, offset);
-                              }
-                            },
-                            style: TextButton.styleFrom(
-                              foregroundColor: Theme.of(context).colorScheme.onBackground,
-                            ),
-                            child: const Row(
-                              children: [
-                                Icon(Icons.photo_library_outlined),
-                                SizedBox(width: 10),
-                                Text("Add Local Image")
-                              ],
-                            ),
-                          ),
-                          // Network image button
-                          TextButton(
-                            onPressed: () {
-                              // Adds network image
-                              Navigator.pop(context);
-                              Map<String, int> currentPos = getCurrentTextPos();
-                              int descIndex = currentPos["descIndex"] as int;
-                              int offset = currentPos["offset"] as int;
-
-                              TextEditingController linkController = TextEditingController();
-                              showDialog(
-                                context: context,
-                                builder: (context) => AlertDialog(
-                                  title: const Text("Enter image link below"),
-                                  content: TextField(
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      label: Text("Link"),
-                                    ),
-                                    controller: linkController,
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () {
-                                        if (linkController.text != ""){
-                                          String link = "[img](${linkController.text})";
-                                          addNonText(link, descIndex, offset);
-                                        }
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text("Ok")
-                                    )
-                                  ],
-                                ),
-                              );
-                            },
-                            style: TextButton.styleFrom(
-                              foregroundColor: Theme.of(context).colorScheme.onBackground,
-                            ),
-                            child: const Row(
-                              children: [
-                                Icon(Icons.insert_link_outlined),
-                                SizedBox(width: 10),
-                                Text("Add Network Image")
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              },
-              icon: const Icon(Icons.add_photo_alternate_outlined),
-              color: Theme.of(context).colorScheme.onBackground,
-            ),
-          ],
-        ),
+      floatingActionButton: DockedActionBar(
+        getCurrentTextPos: getCurrentTextPos,
+        addNonText: addNonText,
+        pickImage: pickImage
       ),
     );
   }

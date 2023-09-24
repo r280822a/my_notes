@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'package:my_notes/notes_db.dart';
 import 'package:my_notes/widgets/loading_pages/loading_home.dart';
-
 // import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 
