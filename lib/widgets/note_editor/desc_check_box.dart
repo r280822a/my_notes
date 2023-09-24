@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/notes_db.dart';
 import 'package:my_notes/widgets/note_editor/desc_form_field.dart';
 
 class DescCheckBox extends StatelessWidget {
