@@ -258,6 +258,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
     return Expanded(
       child: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
         slivers: [
           SliverFillRemaining(
             hasScrollBody: false,
@@ -377,7 +378,7 @@ class _NoteEditorState extends State<NoteEditor> {
             const SizedBox(height: 10),
 
             displayRaw ? Expanded(child: RawDescFormField(note: note, notesDB: notesDB)) : renderer(),
-            displayRaw ? const SizedBox(height: 40) : const SizedBox(height: 0),
+            displayRaw ? const SizedBox(height: 60) : const SizedBox(height: 0),
           ],
         ),
       ),

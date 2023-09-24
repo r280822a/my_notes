@@ -49,6 +49,7 @@ class _LocalImagesState extends State<LocalImages> {
       ),
 
       body: ListView.builder(
+        physics: const BouncingScrollPhysics(),
         itemCount: images.length,
         itemBuilder: (context, index) {
           List<String> imagePathList = images[index].path.split("/");
