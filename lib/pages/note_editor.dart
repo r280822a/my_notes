@@ -48,7 +48,23 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
   // ===== Methods used in imported widgets =====
-  void selectDescCheckBox(bool isTicked, int index){
+  void updateDescFormField(int index, String value){
+    int cbIndex = descriptionList[index].indexOf(checkboxStr);
+    int cbTickedIndex = descriptionList[index].indexOf(checkboxTickedStr);
+
+    if (cbIndex == 0) {
+      value = "$checkboxStr$value";
+    } else if (cbTickedIndex == 0){
+      value = "$checkboxTickedStr$value";
+    }
+    descriptionList[index] = value;
+    String newDescription = descriptionList.join("\n");
+
+    note.description = newDescription;
+    notesDB.updateNote(note);
+  }
+
+  void selectDescCheckBox(int index, bool isTicked){
     // Select checkbox
 
     // Symbol to put at start
@@ -145,13 +161,11 @@ class _NoteEditorState extends State<NoteEditor> {
           descriptionList.add(join);
           textControllers.add(TextEditingController(text: join));
           renderedText.add(DescFormField(
-            note: note,
-            notesDB: notesDB,
-            descriptionList: descriptionList,
             textControllers: textControllers,
             index: (descriptionList.length - 1),
             initValue: join,
-            hasMultiLines: true
+            hasMultiLines: true,
+            updateDescFormField: updateDescFormField
           ));
           textBuffer = []; // Reset buffer
         }
@@ -169,14 +183,12 @@ class _NoteEditorState extends State<NoteEditor> {
         descriptionList.add(line);
         textControllers.add(TextEditingController(text: line.substring(2)));
         renderedText.add(DescCheckBox(
-          note: note,
-          notesDB: notesDB,
-          descriptionList: descriptionList,
           textControllers: textControllers,
-          isTicked: isTicked,
           index: (descriptionList.length - 1),
           initValue: line.substring(2),
           hasMultiLines: false,
+          updateDescFormField: updateDescFormField,
+          isTicked: isTicked,
           selectDescCheckBox: selectDescCheckBox,
           removeDescCheckBox: removeDescCheckBox
         ));
@@ -228,13 +240,11 @@ class _NoteEditorState extends State<NoteEditor> {
       renderedText.add(
         Expanded(
           child: DescFormField(
-            note: note,
-            notesDB: notesDB,
-            descriptionList: descriptionList,
             textControllers: textControllers,
             index: (descriptionList.length - 1),
             initValue: value,
-            hasMultiLines: true
+            hasMultiLines: true,
+            updateDescFormField: updateDescFormField
           )
         ),
       );
