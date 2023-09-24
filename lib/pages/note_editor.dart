@@ -316,7 +316,7 @@ class _NoteEditorState extends State<NoteEditor> {
     List split = p.split(image.path);
     String imageName = split[split.length - 1];
 
-    await imageFile.copy("$path/$imageName");
+    imageFile.copySync("$path/$imageName");
     return imageName;
   }
 
@@ -451,12 +451,14 @@ class _NoteEditorState extends State<NoteEditor> {
                               Navigator.pop(context);
                               String imageName = await pickImage();
 
-                              Map<String, int> currentPos = getCurrentTextPos();
-                              int descIndex = currentPos["descIndex"] as int;
-                              int offset = currentPos["offset"] as int;
+                              if (imageName != ""){
+                                Map<String, int> currentPos = getCurrentTextPos();
+                                int descIndex = currentPos["descIndex"] as int;
+                                int offset = currentPos["offset"] as int;
 
-                              String link = "[img](assets/$imageName)";
-                              addNonText(link, descIndex, offset);
+                                String link = "[img](assets/$imageName)";
+                                addNonText(link, descIndex, offset);
+                              }
                             },
                             style: TextButton.styleFrom(
                               foregroundColor: Theme.of(context).colorScheme.onBackground,

@@ -228,7 +228,17 @@ class _HomeState extends State<Home> {
             icon: const Icon(Icons.delete_outline),
             color: Colors.red[600],
           )
-        ] : [],
+        ] : [
+          IconButton(
+            onPressed: () async {
+              await Navigator.pushNamed(
+                context,
+                "/local_image_attachments",
+              );
+            },
+            icon: const Icon(Icons.photo_library_outlined)
+          )
+        ],
       ),
 
 
