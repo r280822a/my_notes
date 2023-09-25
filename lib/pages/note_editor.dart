@@ -111,7 +111,10 @@ class _NoteEditorState extends State<NoteEditor> {
     note.description = newDescription;
     notesDB.updateNote(note);
 
-    File(p.join(path, imageName)).deleteSync();
+    File imageFile = File(p.join(path, imageName));
+    if (imageFile.existsSync()){
+      imageFile.deleteSync();
+    }
 
     setState(() {});
   }
