@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:my_notes/pages/home.dart';
 import 'package:my_notes/pages/note_editor.dart';
 import 'package:my_notes/pages/local_images.dart';
@@ -16,6 +17,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return DynamicColorBuilder(
       builder:(ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        // Transparent system navbar (WIP)
+        SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+        SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+          systemNavigationBarColor: Colors.transparent,
+        ));
+
         return MaterialApp(
           // Uses dynamic colors, follows system theme
           themeMode: ThemeMode.system,
