@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:ui';
 import 'package:my_notes/widgets/loading_pages/loading_local_images.dart';
+import 'package:my_notes/widgets/delete_alert_dialog.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -90,37 +91,14 @@ class _LocalImagesState extends State<LocalImages> {
                     onPressed: () {
                       showDialog(
                         context: context, 
-                        builder: (context) => AlertDialog(
-                          title: const Text(
-                            "Are you sure?",
-                            style: TextStyle(fontWeight: FontWeight.bold)
-                          ),
-                          content: const Text(
-                            "Are you sure you want to delete this image? This cannot be undone",
-                            style: TextStyle(fontSize: 16)
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                File(images[index].path).deleteSync();
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                "Yes",
-                                style: TextStyle(color: Colors.red[600])
-                              )
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: const Text("No")
-                            )
-                          ],
+                        builder:(context) => DeleteAlertDialog(
+                          item: "image",
+                          deleteFunction: File(images[index].path).deleteSync
                         ),
                       );
                     },
                     icon: const Icon(Icons.delete_outline),
+                    color: Colors.red[600],
                   ),
                 ],
               ),

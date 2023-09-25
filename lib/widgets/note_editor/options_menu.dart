@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_notes/notes_db.dart';
+import 'package:my_notes/widgets/delete_alert_dialog.dart';
 
 class OptionsMenu extends StatelessWidget {
   const OptionsMenu({
@@ -56,12 +57,20 @@ class OptionsMenu extends StatelessWidget {
           )
         ),
         PopupMenuItem(
-          onTap: () async {
+          onTap: () {
             // Deletes note
-            await notesDB.deleteNote(note);
-            if (mounted){
-              Navigator.pop(context);
-            }
+            showDialog(
+              context: context,
+              builder: (context) => DeleteAlertDialog(
+                item: "note",
+                deleteFunction: () async {
+                  await notesDB.deleteNote(note);
+                  if (mounted){
+                    Navigator.pop(context);
+                  }
+                }
+              )
+            );
           },
           child: Row(
             children: [

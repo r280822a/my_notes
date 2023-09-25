@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'package:my_notes/notes_db.dart';
 import 'package:my_notes/widgets/loading_pages/loading_home.dart';
+import 'package:my_notes/widgets/delete_alert_dialog.dart';
 // import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 
@@ -216,21 +217,29 @@ class _HomeState extends State<Home> {
             icon: const Icon(Icons.swap_horiz_outlined)
           ),
           IconButton(
-            onPressed: () async {
-              // Find notes to delete
-              List<Note> notesToDelete = [];
-              for (int i = 0; i < isSelected.length; i++){
-                if (isSelected[i]){
-                  notesToDelete.add(notesDB.list[i]);
-                }
-              }
-              // Delete all selected notes
-              for (int i = 0; i < notesToDelete.length; i++){
-                await notesDB.deleteNote(notesToDelete[i]);
-              }
-              isSelected = List.filled(notesDB.list.length, false, growable: true);
-              selectModeEnabled = false;
-              setState(() {});
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (context) => DeleteAlertDialog(
+                  item: "note(s)",
+                  deleteFunction: () async {
+                    // Find notes to delete
+                    List<Note> notesToDelete = [];
+                    for (int i = 0; i < isSelected.length; i++){
+                      if (isSelected[i]){
+                        notesToDelete.add(notesDB.list[i]);
+                      }
+                    }
+                    // Delete all selected notes
+                    for (int i = 0; i < notesToDelete.length; i++){
+                      await notesDB.deleteNote(notesToDelete[i]);
+                    }
+                    isSelected = List.filled(notesDB.list.length, false, growable: true);
+                    selectModeEnabled = false;
+                    setState(() {});
+                  }
+                )
+              );
             }, 
             icon: const Icon(Icons.delete_outline),
             color: Colors.red[600],
