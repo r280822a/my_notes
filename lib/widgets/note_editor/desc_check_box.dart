@@ -7,7 +7,6 @@ class DescCheckBox extends StatelessWidget {
     required this.textControllers,
     required this.index,
     required this.initValue,
-    required this.hasMultiLines,
     required this.updateDescFormField,
     required this.isTicked,
     required this.selectDescCheckBox,
@@ -17,7 +16,6 @@ class DescCheckBox extends StatelessWidget {
   final List<TextEditingController> textControllers;
   final int index;
   final String initValue;
-  final bool hasMultiLines;
   final Function updateDescFormField;
   final bool isTicked;
   final Function selectDescCheckBox;
@@ -40,7 +38,6 @@ class DescCheckBox extends StatelessWidget {
             updateDescFormField: updateDescFormField,
             index: index,
             initValue: initValue,
-            hasMultiLines: false
           )
         ),
         IconButton(

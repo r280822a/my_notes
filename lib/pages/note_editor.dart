@@ -164,7 +164,6 @@ class _NoteEditorState extends State<NoteEditor> {
             textControllers: textControllers,
             index: (descriptionList.length - 1),
             initValue: join,
-            hasMultiLines: true,
             updateDescFormField: updateDescFormField
           ));
           textBuffer = []; // Reset buffer
@@ -186,7 +185,6 @@ class _NoteEditorState extends State<NoteEditor> {
           textControllers: textControllers,
           index: (descriptionList.length - 1),
           initValue: line.substring(2),
-          hasMultiLines: false,
           updateDescFormField: updateDescFormField,
           isTicked: isTicked,
           selectDescCheckBox: selectDescCheckBox,
@@ -243,7 +241,6 @@ class _NoteEditorState extends State<NoteEditor> {
             textControllers: textControllers,
             index: (descriptionList.length - 1),
             initValue: value,
-            hasMultiLines: true,
             updateDescFormField: updateDescFormField
           )
         ),
