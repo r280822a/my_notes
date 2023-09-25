@@ -94,7 +94,10 @@ class _LocalImagesState extends State<LocalImages> {
                         builder:(context) => DeleteAlertDialog(
                           item: "image",
                           deleteFunction: () {
-                            File(images[index].path).deleteSync();
+                            File imageFile = File(images[index].path);
+                            if (imageFile.existsSync()){
+                              imageFile.deleteSync();
+                            }
                             getImages();
                           }
                         ),
