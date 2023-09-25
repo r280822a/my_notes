@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:ui';
 import 'package:my_notes/notes_db.dart';
 import 'package:my_notes/widgets/loading_pages/loading_home.dart';
 // import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -93,7 +94,7 @@ class _HomeState extends State<Home> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-
+    
             Text(
               note.description,
               overflow: TextOverflow.ellipsis,
@@ -114,8 +115,16 @@ class _HomeState extends State<Home> {
     if (loading) {return const LoadingHome();}
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary.withAlpha(190),
+        scrolledUnderElevation: 0,
+        flexibleSpace: ClipRRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(color: Colors.transparent),
+          ),
+        ),
 
         // Display cancel button for select mode, else display search
         leading: selectModeEnabled ? IconButton(
@@ -146,18 +155,18 @@ class _HomeState extends State<Home> {
                 mainAxisSpacing: 4,
                 crossAxisSpacing: 4,
               ),
-
+      
               children: iterable.toList(),
             );
           },
-
+      
           suggestionsBuilder: 
           (BuildContext context, SearchController controller) {
             // Builds search results
             if (controller.text.isEmpty){return [];}
-
+      
             List<Widget> cardList = [];
-
+      
             for (int i = 0; i < notesDB.list.length; i++){
               if (notesDB.list[i].title.toLowerCase().contains(controller.text.toLowerCase())){
                 // If note title typed in text field, add card
@@ -182,7 +191,7 @@ class _HomeState extends State<Home> {
             return cardList;
           }
         ),
-
+      
         // Display buttons for select mode, else nothing
         actions: selectModeEnabled ? [
           IconButton(
@@ -243,65 +252,68 @@ class _HomeState extends State<Home> {
       backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
 
 
-      body: ReorderableGridView.builder(
-        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-        onReorder: (oldIndex, newIndex) async {
-          final Note noteToReorder = notesDB.list[oldIndex];
-          await notesDB.deleteNote(noteToReorder);
-          await notesDB.insertNote(noteToReorder, newIndex);
-          // final element = notesDB.list.removeAt(oldIndex);
-          // notesDB.list.insert(newIndex, element);
-
-          isSelected.removeAt(oldIndex);
-          isSelected.insert(newIndex, false);
-          selectCard(newIndex);
-          setState(() {});
-        },
-        dragStartDelay: const Duration(milliseconds: 250),
-        onDragStart: (dragIndex) {
-          if (!selectModeEnabled){
-            HapticFeedback.selectionClick();
-            selectCard(dragIndex);
-          }
-          setState(() {});
-        },
-        dragWidgetBuilderV2: DragWidgetBuilderV2(builder: (int index, Widget child, ImageProvider? screenshot) {
-          return buildCard(index, true);
-        }),
-
-        padding: const EdgeInsets.all(8),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisExtent: 155,
-          mainAxisSpacing: 4,
-          crossAxisSpacing: 4,
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: ReorderableGridView.builder(
+          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          onReorder: (oldIndex, newIndex) async {
+            final Note noteToReorder = notesDB.list[oldIndex];
+            await notesDB.deleteNote(noteToReorder);
+            await notesDB.insertNote(noteToReorder, newIndex);
+            // final element = notesDB.list.removeAt(oldIndex);
+            // notesDB.list.insert(newIndex, element);
+      
+            isSelected.removeAt(oldIndex);
+            isSelected.insert(newIndex, false);
+            selectCard(newIndex);
+            setState(() {});
+          },
+          dragStartDelay: const Duration(milliseconds: 250),
+          onDragStart: (dragIndex) {
+            if (!selectModeEnabled){
+              HapticFeedback.selectionClick();
+              selectCard(dragIndex);
+            }
+            setState(() {});
+          },
+          dragWidgetBuilderV2: DragWidgetBuilderV2(builder: (int index, Widget child, ImageProvider? screenshot) {
+            return buildCard(index, true);
+          }),
+      
+          // padding: const EdgeInsets.all(8),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisExtent: 155,
+            mainAxisSpacing: 4,
+            crossAxisSpacing: 4,
+          ),
+      
+      
+          itemCount: notesDB.list.length,
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              key: Key(notesDB.list.elementAt(index).id.toString()),
+              onTap: () async {
+                // If select mode is enabled, select card
+                // Else, open note editor
+                if (selectModeEnabled){
+                  selectCard(index);
+                } else{
+                  await Navigator.pushNamed(
+                    context,
+                    "/note_editor",
+                    arguments: {"notesDB":notesDB, "note":notesDB.list[index]},
+                  );
+                  // Update in case note deleted
+                  isSelected = List.filled(notesDB.list.length, false, growable: true);
+                }
+                setState(() {});
+              },
+      
+              child: buildCard(index, false),
+            );
+          },
         ),
-
-
-        itemCount: notesDB.list.length,
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            key: Key(notesDB.list.elementAt(index).id.toString()),
-            onTap: () async {
-              // If select mode is enabled, select card
-              // Else, open note editor
-              if (selectModeEnabled){
-                selectCard(index);
-              } else{
-                await Navigator.pushNamed(
-                  context,
-                  "/note_editor",
-                  arguments: {"notesDB":notesDB, "note":notesDB.list[index]},
-                );
-                // Update in case note deleted
-                isSelected = List.filled(notesDB.list.length, false, growable: true);
-              }
-              setState(() {});
-            },
-
-            child: buildCard(index, false),
-          );
-        },
       ),
 
 

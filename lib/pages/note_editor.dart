@@ -352,6 +352,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0,
         actions: [
           OptionsMenu(
             note: note,
