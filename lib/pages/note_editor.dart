@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
-import 'dart:ui';
 import 'package:my_notes/notes_db.dart';
 import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/widgets/note_editor/all.dart';
+import 'package:my_notes/widgets/frosted.dart';
 import 'package:my_notes/widgets/loading_pages/loading_note_editor.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -212,12 +212,7 @@ class _NoteEditorState extends State<NoteEditor> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.background.withAlpha(190),
         scrolledUnderElevation: 0,
-        flexibleSpace: ClipRRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: Container(color: Colors.transparent),
-          ),
-        ),
+        flexibleSpace: Frosted(child: Container(color: Colors.transparent)),
 
         actions: [
           OptionsMenu(

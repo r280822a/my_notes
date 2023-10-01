@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'package:my_notes/pages/note_editor.dart';
+import 'package:my_notes/widgets/frosted.dart';
 
 class DockedActionBar extends StatelessWidget {
   const DockedActionBar({
@@ -16,44 +16,41 @@ class DockedActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ClipRect(
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-        child: Container(
-          color: Theme.of(context).colorScheme.background.withAlpha(190),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                // Adds checkbox
-                child: IconButton(
-                  onPressed: () {
-                    Map<String, int> currentPos = getCurrentTextPos();
-                    int descIndex = currentPos["descIndex"] as int;
-                    int offset = currentPos["offset"] as int;
-                    addNonText(checkboxStr, descIndex, offset);
-                  },
-                  icon: const Icon(Icons.add_box_outlined),
-                  color: Theme.of(context).colorScheme.onBackground,
-                ),
-              ),
-              // Adds image
-              IconButton(
+    return Frosted(
+      child: Container(
+        color: Theme.of(context).colorScheme.background.withAlpha(190),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+              // Adds checkbox
+              child: IconButton(
                 onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (BuildContext context) => AddImageBottomSheet(
-                      pickImage: pickImage,
-                      getCurrentTextPos: getCurrentTextPos,
-                      addNonText: addNonText
-                    ),
-                  );
+                  Map<String, int> currentPos = getCurrentTextPos();
+                  int descIndex = currentPos["descIndex"] as int;
+                  int offset = currentPos["offset"] as int;
+                  addNonText(checkboxStr, descIndex, offset);
                 },
-                icon: const Icon(Icons.add_photo_alternate_outlined),
+                icon: const Icon(Icons.add_box_outlined),
                 color: Theme.of(context).colorScheme.onBackground,
               ),
-            ],
-          ),
+            ),
+            // Adds image
+            IconButton(
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) => AddImageBottomSheet(
+                    pickImage: pickImage,
+                    getCurrentTextPos: getCurrentTextPos,
+                    addNonText: addNonText
+                  ),
+                );
+              },
+              icon: const Icon(Icons.add_photo_alternate_outlined),
+              color: Theme.of(context).colorScheme.onBackground,
+            ),
+          ],
         ),
       ),
     );

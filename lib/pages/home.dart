@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:ui';
 import 'package:my_notes/notes_db.dart';
 import 'package:my_notes/widgets/loading_pages/loading_home.dart';
 import 'package:my_notes/widgets/delete_alert_dialog.dart';
+import 'package:my_notes/widgets/frosted.dart';
 import 'package:my_notes/widgets/home/note_card.dart';
 // import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
@@ -62,12 +62,7 @@ class _HomeState extends State<Home> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary.withAlpha(190),
         scrolledUnderElevation: 0,
-        flexibleSpace: ClipRRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
-            child: Container(color: Colors.transparent),
-          ),
-        ),
+        flexibleSpace: Frosted(child: Container(color: Colors.transparent)),
 
         // Display cancel button for select mode, else display search
         leading: selectModeEnabled ? IconButton(
