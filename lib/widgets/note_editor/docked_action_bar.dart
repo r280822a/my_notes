@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/pages/note_editor.dart';
+import 'package:my_notes/consts.dart';
 import 'package:my_notes/widgets/frosted.dart';
 
 class DockedActionBar extends StatelessWidget {
@@ -29,7 +29,7 @@ class DockedActionBar extends StatelessWidget {
                   Map<String, int> currentPos = getCurrentTextPos();
                   int descIndex = currentPos["descIndex"] as int;
                   int offset = currentPos["offset"] as int;
-                  addNonText(checkboxStr, descIndex, offset);
+                  addNonText(Consts.checkboxStr, descIndex, offset);
                 },
                 icon: const Icon(Icons.add_box_outlined),
                 color: Theme.of(context).colorScheme.onBackground,
@@ -90,7 +90,7 @@ class AddImageBottomSheet extends StatelessWidget {
                     int descIndex = currentPos["descIndex"] as int;
                     int offset = currentPos["offset"] as int;
                     
-                    String link = "[img](assets/$imageName)";
+                    String link = "![](assets/$imageName)";
                     addNonText(link, descIndex, offset);
                   }
                 },
@@ -133,7 +133,7 @@ class AddImageBottomSheet extends StatelessWidget {
                         TextButton(
                           onPressed: () {
                             if (linkController.text != ""){
-                              String link = "[img](${linkController.text})";
+                              String link = "![](${linkController.text})";
                               addNonText(link, descIndex, offset);
                             }
                             Navigator.pop(context);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/notes_db.dart';
+import 'package:my_notes/consts.dart';
 
 class DescSplitter{
   // Holds seperate item for each textblock, checkbox, and image
@@ -28,9 +29,7 @@ class DescSplitter{
       // Split line by line
       int cbIndex = line.indexOf(checkboxStr);
       int cbTickedIndex = line.indexOf(checkboxTickedStr);
-
-      // Matches any string matching "[img](...)" with '...' being anything
-      int imgIndex = line.indexOf(RegExp(r'^\[img\]\(([^]*)\)$'));
+      int imgIndex = line.indexOf(Consts.imageRegex);
 
       if ((cbIndex == 0) || (cbTickedIndex == 0) || (imgIndex == 0)){
         // If about to add a non-text item

@@ -3,17 +3,13 @@ import 'package:intl/intl.dart';
 import 'dart:io';
 import 'package:my_notes/notes_db.dart';
 import 'package:my_notes/desc_splitter.dart';
+import 'package:my_notes/consts.dart';
 import 'package:my_notes/widgets/note_editor/all.dart';
 import 'package:my_notes/widgets/frosted.dart';
 import 'package:my_notes/widgets/loading_pages/loading_note_editor.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
-
-
-// Checkbox symbols
-const String checkboxStr = "☐ ";
-const String checkboxTickedStr = "☑ ";
 
 class NoteEditor extends StatefulWidget {
   const NoteEditor({super.key});
@@ -47,13 +43,13 @@ class _NoteEditorState extends State<NoteEditor> {
 
   // ===== Methods used in imported widgets =====
   void updateDescFormField(int index, String value){
-    int cbIndex = descSplitter.list[index].indexOf(checkboxStr);
-    int cbTickedIndex = descSplitter.list[index].indexOf(checkboxTickedStr);
+    int cbIndex = descSplitter.list[index].indexOf(Consts.checkboxStr);
+    int cbTickedIndex = descSplitter.list[index].indexOf(Consts.checkboxTickedStr);
 
     if (cbIndex == 0) {
-      value = "$checkboxStr$value";
+      value = "${Consts.checkboxStr}$value";
     } else if (cbTickedIndex == 0){
-      value = "$checkboxTickedStr$value";
+      value = "${Consts.checkboxTickedStr}$value";
     }
     descSplitter.list[index] = value;
     String newDescription = descSplitter.list.join("\n");
@@ -66,9 +62,9 @@ class _NoteEditorState extends State<NoteEditor> {
     // Select checkbox
 
     // Symbol to put at start
-    String str = checkboxTickedStr;
+    String str = Consts.checkboxTickedStr;
     if (isTicked){
-      str = checkboxStr;
+      str = Consts.checkboxStr;
     }
 
     // Change checkbox symbol
@@ -249,12 +245,10 @@ class _NoteEditorState extends State<NoteEditor> {
             String text = descSplitter.list[index];
             Widget widget;
 
-            int cbIndex = text.indexOf(checkboxStr);
-            int cbTickedIndex = text.indexOf(checkboxTickedStr);
+            int cbIndex = text.indexOf(Consts.checkboxStr);
+            int cbTickedIndex = text.indexOf(Consts.checkboxTickedStr);
+            int imgIndex = text.indexOf(Consts.imageRegex);
             bool isTicked = false;
-
-            // Matches any string matching "[img](...)" with '...' being anything
-            int imgIndex = text.indexOf(RegExp(r'^\[img\]\(([^]*)\)$'));
 
             if ((cbIndex == 0) || (cbTickedIndex == 0)){
               // If line is a checkbox
@@ -275,7 +269,7 @@ class _NoteEditorState extends State<NoteEditor> {
             } else if (imgIndex == 0) {
               // Get link for image
 
-              String image = text.substring(6);
+              String image = text.substring(4);
               image = image.substring(0, image.length - 1);
 
               // Add image
