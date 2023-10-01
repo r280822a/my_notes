@@ -222,7 +222,7 @@ class _NoteEditorState extends State<NoteEditor> {
       ),
 
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: displayRaw ? ListView(
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           children: [
@@ -236,7 +236,7 @@ class _NoteEditorState extends State<NoteEditor> {
             const SizedBox(height: 10),
 
             RawDescFormField(note: note, notesDB: notesDB),
-            const SizedBox(height: 60)
+            const SizedBox(height: 80)
           ],
         ) : ListView.builder(
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
@@ -322,7 +322,7 @@ class _NoteEditorState extends State<NoteEditor> {
               return Column(
                 children: [
                   widget,
-                  const SizedBox(height: 60)
+                  const SizedBox(height: 80)
                 ],
               );
             }
