@@ -8,12 +8,14 @@ class DescLocalImage extends StatelessWidget {
     super.key,
     required this.path,
     required this.imageName,
+    required this.altText,
     required this.index,
     required this.deleteDescLocalImage,
   });
 
   final String path;
   final String imageName;
+  final String altText;
   final int index;
   final Function deleteDescLocalImage;
 
@@ -23,6 +25,7 @@ class DescLocalImage extends StatelessWidget {
 
     return PopupMenuButton(
       position: PopupMenuPosition.under,
+      tooltip: altText,
       onOpened: () {
         FocusManager.instance.primaryFocus?.unfocus();
       },
@@ -32,11 +35,11 @@ class DescLocalImage extends StatelessWidget {
           onTap: () {
             deleteDescLocalImage(index, imageName);
           },
-          child: Row(
+          child: const Row(
             children: [
-              Icon(Icons.delete_outline, color: Colors.red[600]),
-              const SizedBox(width: 10),
-              const Text("Delete"),
+              Icon(Icons.delete_outline),
+              SizedBox(width: 10),
+              Text("Delete"),
             ],
           ),
         ),

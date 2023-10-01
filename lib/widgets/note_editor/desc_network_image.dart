@@ -5,11 +5,13 @@ class DescNetworkImage extends StatelessWidget {
   const DescNetworkImage({
     super.key,
     required this.link,
+    required this.altText,
     required this.index,
     required this.removeDescNetworkImage,
   });
 
   final String link;
+  final String altText;
   final int index;
   final Function removeDescNetworkImage;
 
@@ -19,6 +21,7 @@ class DescNetworkImage extends StatelessWidget {
 
     return PopupMenuButton(
       position: PopupMenuPosition.under,
+      tooltip: altText,
       onOpened: () {
         FocusManager.instance.primaryFocus?.unfocus();
       },
@@ -28,11 +31,11 @@ class DescNetworkImage extends StatelessWidget {
           onTap: () {
             removeDescNetworkImage(index);
           },
-          child: Row(
+          child: const Row(
             children: [
-              Icon(Icons.delete_outline, color: Colors.red[600]),
-              const SizedBox(width: 10),
-              const Text("Delete"),
+              Icon(Icons.delete_outline),
+              SizedBox(width: 10),
+              Text("Delete"),
             ],
           ),
         ),

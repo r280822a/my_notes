@@ -269,8 +269,13 @@ class _NoteEditorState extends State<NoteEditor> {
             } else if (imgIndex == 0) {
               // Get link for image
 
-              String image = text.substring(4);
-              image = image.substring(0, image.length - 1);
+              // Removes '![]', and everything inside them
+              String image = text.replaceAll(RegExp(r'!\[.*?\]'), "");
+              image = image.substring(1, image.length - 1);
+
+              // Removes '()', and everything inside them
+              String altText = text.replaceAll(RegExp(r'\(.*?\)'), "");
+              altText = altText.substring(2, altText.length - 1);
 
               // Add image
               if (image.startsWith("assets/")){
@@ -278,12 +283,14 @@ class _NoteEditorState extends State<NoteEditor> {
                 widget = DescLocalImage(
                   path: path,
                   imageName: image,
+                  altText: altText,
                   index: index,
                   deleteDescLocalImage: deleteDescLocalImage
                 );
               } else {
                 widget = DescNetworkImage(
                   link: image,
+                  altText: altText,
                   index: index,
                   removeDescNetworkImage: removeDescNetworkImage
                 );

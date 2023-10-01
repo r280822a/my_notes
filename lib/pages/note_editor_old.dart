@@ -208,12 +208,14 @@ class _NoteEditorState extends State<NoteEditor> {
           renderedText.add(DescLocalImage(
             path: path,
             imageName: image,
+            altText: image,
             index: (descriptionList.length - 1),
             deleteDescLocalImage: deleteDescLocalImage
           ));
         } else {
           renderedText.add(DescNetworkImage(
             link: image,
+            altText: image,
             index: (descriptionList.length - 1),
             removeDescNetworkImage: removeDescNetworkImage
           ));
