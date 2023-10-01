@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/pages/home.dart';
 import 'package:my_notes/pages/note_editor.dart';
+// import 'package:my_notes/pages/note_editor_old.dart';
 import 'package:my_notes/pages/local_images.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 

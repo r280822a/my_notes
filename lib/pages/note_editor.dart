@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
+import 'dart:ui';
 import 'package:my_notes/notes_db.dart';
+import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/widgets/note_editor/all.dart';
 import 'package:my_notes/widgets/loading_pages/loading_note_editor.dart';
 import 'package:image_picker/image_picker.dart';
@@ -24,13 +26,9 @@ class _NoteEditorState extends State<NoteEditor> {
   late Note note;
   late NotesDatabase notesDB;
 
-  // For each DescFormField
-  List<String> descriptionList = []; // Seperate item for each textblock and checkbox
-  List<TextEditingController> textControllers = [];
-
-  bool displayRaw = false;
-
+  late DescSplitter descSplitter;
   String path = "";
+  bool displayRaw = false;
 
   @override
   void initState() {
@@ -49,16 +47,16 @@ class _NoteEditorState extends State<NoteEditor> {
 
   // ===== Methods used in imported widgets =====
   void updateDescFormField(int index, String value){
-    int cbIndex = descriptionList[index].indexOf(checkboxStr);
-    int cbTickedIndex = descriptionList[index].indexOf(checkboxTickedStr);
+    int cbIndex = descSplitter.list[index].indexOf(checkboxStr);
+    int cbTickedIndex = descSplitter.list[index].indexOf(checkboxTickedStr);
 
     if (cbIndex == 0) {
       value = "$checkboxStr$value";
     } else if (cbTickedIndex == 0){
       value = "$checkboxTickedStr$value";
     }
-    descriptionList[index] = value;
-    String newDescription = descriptionList.join("\n");
+    descSplitter.list[index] = value;
+    String newDescription = descSplitter.list.join("\n");
 
     note.description = newDescription;
     notesDB.updateNote(note);
@@ -74,10 +72,10 @@ class _NoteEditorState extends State<NoteEditor> {
     }
 
     // Change checkbox symbol
-    descriptionList[index] = str + descriptionList[index].substring(2);
+    descSplitter.list[index] = str + descSplitter.list[index].substring(2);
 
     // Update note
-    String newDescription = descriptionList.join("\n");
+    String newDescription = descSplitter.list.join("\n");
     note.description = newDescription;
     notesDB.updateNote(note);
 
@@ -86,8 +84,8 @@ class _NoteEditorState extends State<NoteEditor> {
 
   void removeDescCheckBox(int index){
     // Remove checkbox
-    descriptionList.removeAt(index);
-    String newDescription = descriptionList.join("\n");
+    descSplitter.list.removeAt(index);
+    String newDescription = descSplitter.list.join("\n");
     note.description = newDescription;
     notesDB.updateNote(note);
 
@@ -96,8 +94,8 @@ class _NoteEditorState extends State<NoteEditor> {
 
   void removeDescNetworkImage(int index){
     // Remove image
-    descriptionList.removeAt(index);
-    String newDescription = descriptionList.join("\n");
+    descSplitter.list.removeAt(index);
+    String newDescription = descSplitter.list.join("\n");
     note.description = newDescription;
     notesDB.updateNote(note);
 
@@ -106,8 +104,8 @@ class _NoteEditorState extends State<NoteEditor> {
 
   void deleteDescLocalImage(int index, String imageName){
     // Deletes image
-    descriptionList.removeAt(index);
-    String newDescription = descriptionList.join("\n");
+    descSplitter.list.removeAt(index);
+    String newDescription = descSplitter.list.join("\n");
     note.description = newDescription;
     notesDB.updateNote(note);
 
@@ -127,163 +125,19 @@ class _NoteEditorState extends State<NoteEditor> {
     setState(() {});
   }
 
-  Widget renderer() {
-    // Renders any checkboxes
-
-    // Clear before rendering
-    descriptionList.clear();
-    textControllers.clear();
-
-    // List of textformfields and checkboxes for description
-    List<Widget> renderedText = [];
-    String description = note.description;
-
-    // List<String> lineSplitText = const LineSplitter().convert(description);
-    List<String> lineSplitText = description.split("\n");
-
-    List<String> textBuffer = [];
-    bool endsInNonText = false;
-    bool isTicked = false;
-
-    for (String line in lineSplitText){
-      // Render line by line
-      int cbIndex = line.indexOf(checkboxStr);
-      int cbTickedIndex = line.indexOf(checkboxTickedStr);
-
-      // Matches any string matching "[img](...)" with '...' being anything
-      int imgIndex = line.indexOf(RegExp(r'^\[img\]\(([^]*)\)$'));
-
-      if ((cbIndex == 0) || (cbTickedIndex == 0) || (imgIndex == 0)){
-        // If about to add a non-text widget
-        if (textBuffer.isNotEmpty && !((textBuffer.length == 1) && (textBuffer[0] == ""))){
-          // If any text in text buffer (ignore single line gaps)
-          // Join together to form 1 textblock
-          String join = textBuffer.join("\n");
-
-          // Add textblock to lists
-          descriptionList.add(join);
-          textControllers.add(TextEditingController(text: join));
-          renderedText.add(DescFormField(
-            textControllers: textControllers,
-            index: (descriptionList.length - 1),
-            initValue: join,
-            updateDescFormField: updateDescFormField
-          ));
-          textBuffer = []; // Reset buffer
-        }
-      }
-
-      if ((cbIndex == 0) || (cbTickedIndex == 0)){
-        // If line is a checkbox
-
-        isTicked = false;
-        if (cbTickedIndex == 0){
-          isTicked = true;
-        }
-
-        // Add checkbox to lists
-        descriptionList.add(line);
-        textControllers.add(TextEditingController(text: line.substring(2)));
-        renderedText.add(DescCheckBox(
-          textControllers: textControllers,
-          index: (descriptionList.length - 1),
-          initValue: line.substring(2),
-          updateDescFormField: updateDescFormField,
-          isTicked: isTicked,
-          selectDescCheckBox: selectDescCheckBox,
-          removeDescCheckBox: removeDescCheckBox
-        ));
-        endsInNonText = true;
-      } else if (imgIndex == 0) {
-        // Get link for image
-
-        String image = line.substring(6);
-        image = image.substring(0, image.length - 1);
-
-        // Add image to lists
-        descriptionList.add(line);
-        textControllers.add(TextEditingController(text: line));
-        if (image.startsWith("assets/")){
-          image = image.substring(7, image.length);
-          renderedText.add(DescLocalImage(
-            path: path,
-            imageName: image,
-            index: (descriptionList.length - 1),
-            deleteDescLocalImage: deleteDescLocalImage
-          ));
-        } else {
-          renderedText.add(DescNetworkImage(
-            link: image,
-            index: (descriptionList.length - 1),
-            removeDescNetworkImage: removeDescNetworkImage
-          ));
-        }
-        endsInNonText = true;
-      } else {
-        // If not, add line to buffer
-        textBuffer.add(line);
-        endsInNonText = false;
-      }
-    }
-
-
-    if ((textBuffer.isNotEmpty) || (endsInNonText)){
-      String value = ""; // Blank line if ends in checkbox
-      if (textBuffer.isNotEmpty){
-        // If any text in text buffer
-        // Join together to form 1 textblock
-        value = textBuffer.join("\n");
-      }
-
-      // Add textblock to lists
-      descriptionList.add(value);
-      textControllers.add(TextEditingController(text: value));
-      renderedText.add(
-        Expanded(
-          child: DescFormField(
-            textControllers: textControllers,
-            index: (descriptionList.length - 1),
-            initValue: value,
-            updateDescFormField: updateDescFormField
-          )
-        ),
-      );
-    }
-
-
-    // To give space for floatingactionbutton
-    renderedText.add(
-      const SizedBox(height: 60),
-    );
-
-    return Expanded(
-      child: CustomScrollView(
-        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-        slivers: [
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Column(
-              children: renderedText,
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
 
   // ===== Methods used in build function =====
   Map<String, int> getCurrentTextPos(){
     // Gets current position of the cursor
 
     // Default offset and index are at end
-    int descIndex = (descriptionList.length - 1);
-    int offset = descriptionList[descIndex].length;
+    int descIndex = (descSplitter.list.length - 1);
+    int offset = descSplitter.list[descIndex].length;
 
     // Find currently selected text controller
     // Store its index and offset
-    for (int i = 0; i < textControllers.length; i++){
-      final int baseOffset = textControllers[i].selection.baseOffset;
+    for (int i = 0; i < descSplitter.textControllers.length; i++){
+      final int baseOffset = descSplitter.textControllers[i].selection.baseOffset;
       if (baseOffset != -1){
         descIndex = i;
         offset = baseOffset;
@@ -302,16 +156,16 @@ class _NoteEditorState extends State<NoteEditor> {
 
     // Split text from start till index 
     // To find which line to add string (at substringSplit.length)
-    String substring = descriptionList[descIndex].substring(0, offset);
+    String substring = descSplitter.list[descIndex].substring(0, offset);
     List<String> substringSplit = substring.split("\n");
 
     // Add string
-    List<String> textSplit = descriptionList[descIndex].split("\n");
+    List<String> textSplit = descSplitter.list[descIndex].split("\n");
     textSplit.insert(substringSplit.length, strToAdd);
-    descriptionList[descIndex] = textSplit.join("\n");
+    descSplitter.list[descIndex] = textSplit.join("\n");
 
     // Update note
-    String newDescription = descriptionList.join("\n");
+    String newDescription = descSplitter.list.join("\n");
     note.description = newDescription;
     notesDB.updateNote(note);
 
@@ -347,12 +201,24 @@ class _NoteEditorState extends State<NoteEditor> {
     note = arguments["note"];
     notesDB = arguments["notesDB"];
 
+    descSplitter = DescSplitter(note: note);
+    descSplitter.splitDescription();
+
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(note.time);
     String time = DateFormat('dd MMMM yyyy - hh:mm').format(dateTime);
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.background.withAlpha(190),
         scrolledUnderElevation: 0,
+        flexibleSpace: ClipRRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(color: Colors.transparent),
+          ),
+        ),
+
         actions: [
           OptionsMenu(
             note: note,
@@ -366,21 +232,107 @@ class _NoteEditorState extends State<NoteEditor> {
 
       body: Padding(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: displayRaw ? ListView(
+          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           children: [
-            // Display note
             TitleFormField(note: note, notesDB: notesDB),
             const Divider(),
             Text(
               time,
+              textAlign: TextAlign.center,
               style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
             ),
             const SizedBox(height: 10),
 
-            displayRaw ? Expanded(child: RawDescFormField(note: note, notesDB: notesDB)) : renderer(),
-            displayRaw ? const SizedBox(height: 60) : const SizedBox(height: 0),
+            RawDescFormField(note: note, notesDB: notesDB),
+            const SizedBox(height: 60)
           ],
+        ) : ListView.builder(
+          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+          itemCount: descSplitter.list.length,
+          itemBuilder: (context, index) {
+            String text = descSplitter.list[index];
+            Widget widget;
+
+            int cbIndex = text.indexOf(checkboxStr);
+            int cbTickedIndex = text.indexOf(checkboxTickedStr);
+            bool isTicked = false;
+
+            // Matches any string matching "[img](...)" with '...' being anything
+            int imgIndex = text.indexOf(RegExp(r'^\[img\]\(([^]*)\)$'));
+
+            if ((cbIndex == 0) || (cbTickedIndex == 0)){
+              // If line is a checkbox
+
+              isTicked = false;
+              if (cbTickedIndex == 0){isTicked = true;}
+
+              // Add checkbox
+              widget = DescCheckBox(
+                textControllers: descSplitter.textControllers,
+                index: index,
+                initValue: text.substring(2),
+                updateDescFormField: updateDescFormField,
+                isTicked: isTicked,
+                selectDescCheckBox: selectDescCheckBox,
+                removeDescCheckBox: removeDescCheckBox
+              );
+            } else if (imgIndex == 0) {
+              // Get link for image
+
+              String image = text.substring(6);
+              image = image.substring(0, image.length - 1);
+
+              // Add image
+              if (image.startsWith("assets/")){
+                image = image.substring(7, image.length);
+                widget = DescLocalImage(
+                  path: path,
+                  imageName: image,
+                  index: index,
+                  deleteDescLocalImage: deleteDescLocalImage
+                );
+              } else {
+                widget = DescNetworkImage(
+                  link: image,
+                  index: index,
+                  removeDescNetworkImage: removeDescNetworkImage
+                );
+              }
+            } else {
+              // Add textblock
+              widget = DescFormField(
+                textControllers: descSplitter.textControllers,
+                index: index,
+                initValue: text,
+                updateDescFormField: updateDescFormField
+              );
+            }
+
+            if (index == 0){
+              return Column(
+                children: [
+                  TitleFormField(note: note, notesDB: notesDB),
+                  const Divider(),
+                  Text(
+                    time,
+                    style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
+                  ),
+                  const SizedBox(height: 10),
+                  widget
+                ],
+              );
+            } else if (index == (descSplitter.list.length - 1)){
+              return Column(
+                children: [
+                  widget,
+                  const SizedBox(height: 60)
+                ],
+              );
+            }
+
+            return widget;
+          }
         ),
       ),
 
