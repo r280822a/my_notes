@@ -5,6 +5,7 @@ import 'package:my_notes/widgets/loading_pages/loading_home.dart';
 import 'package:my_notes/widgets/delete_alert_dialog.dart';
 import 'package:my_notes/widgets/frosted.dart';
 import 'package:my_notes/widgets/home/note_card.dart';
+import 'package:my_notes/widgets/home/notes_search_anchor.dart';
 // import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 
@@ -74,65 +75,14 @@ class _HomeState extends State<Home> {
             setState(() {});
           },
           icon: const Icon(Icons.close)
-        ) : SearchAnchor(
-          // Allows you to search for a note, based on title
-          searchController: controller,
-          builder: (BuildContext context, SearchController controller) {
-            return IconButton(
-              tooltip: "Search notes",
-              icon: const Icon(Icons.search),
-              onPressed: () {controller.openView();},
-            );
-          },
-          viewBuilder: (Iterable<Widget> iterable) {
-            // Builds general layout
-            return GridView(
-              // Same layout as body
-              padding: const EdgeInsets.all(8),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisExtent: 155,
-                mainAxisSpacing: 4,
-                crossAxisSpacing: 4,
-              ),
-      
-              children: iterable.toList(),
-            );
-          },
-      
-          suggestionsBuilder: 
-          (BuildContext context, SearchController controller) {
-            // Builds search results
-            if (controller.text.isEmpty){return [];}
-      
-            List<Widget> cardList = [];
-      
-            for (int i = 0; i < notesDB.list.length; i++){
-              if (notesDB.list[i].title.toLowerCase().contains(controller.text.toLowerCase())){
-                // If note title typed in text field, add card
-                cardList.add(
-                  GestureDetector(
-                    onTap: () async {
-                      // Open note editor
-                      await Navigator.pushNamed(
-                        context,
-                        "/note_editor",
-                        arguments: {"notesDB":notesDB, "note":notesDB.list[i]},
-                      );
-                      // Update in case note deleted
-                      isSelected = List.filled(notesDB.list.length, false, growable: true);
-                      setState(() {});
-                    },
-                    child: NoteCard(
-                      notesDB: notesDB,
-                      isSelected: isSelected,
-                      index: i,
-                    ),
-                  )
-                );
-              }
-            }
-            return cardList;
+        ) : NotesSearchAnchor(
+          notesDB: notesDB,
+          controller: controller,
+          isSelected: isSelected,
+          update: () {
+            // Update in case note deleted
+            isSelected = List.filled(notesDB.list.length, false, growable: true);
+            setState(() {});
           }
         ),
       
