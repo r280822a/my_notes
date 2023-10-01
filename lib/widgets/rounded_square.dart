@@ -12,8 +12,8 @@ class RoundedSquare extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Square with rounded edges
     return SizedBox(
-      // Progress indicator inside square with rounded edges
       height: size,
       width: size,
       child: Stack(

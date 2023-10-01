@@ -28,6 +28,7 @@ class DescNetworkImage extends StatelessWidget {
 
       itemBuilder: (context) => [
         PopupMenuItem(
+          // Popup menu to delete image
           onTap: () {
             removeDescNetworkImage(index);
           },
@@ -48,7 +49,7 @@ class DescNetworkImage extends StatelessWidget {
             if (loadingProgress == null) return child;
 
             return RoundedSquare(
-              // Progress indicator inside square with rounded edges
+              // Progress indicator
               size: size, 
               child: CircularProgressIndicator(
                 value: loadingProgress.expectedTotalBytes != null ? 
@@ -59,7 +60,7 @@ class DescNetworkImage extends StatelessWidget {
           },
 
           errorBuilder: (context, error, stackTrace) {
-            // Error icon inside square with rounded edges
+            // Error icon
             return RoundedSquare(size: size, child: const Icon(Icons.error));
           },
         ),

@@ -13,8 +13,7 @@ class RawDescFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Builds TextFormField for unrendered description (mainly for testing)
-    // Only affects checkboxes
+    // TextFormField for unrendered description (mainly for testing)
     return TextFormField(
       decoration: const InputDecoration(
         border: InputBorder.none,

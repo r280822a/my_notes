@@ -7,15 +7,15 @@ class OptionsMenu extends StatelessWidget {
   const OptionsMenu({
     super.key,
     required this.note,
-    required this.displayRaw,
     required this.notesDB,
+    required this.displayRaw,
     required this.mounted,
     required this.toggleRawRendered,
   });
 
   final Note note;
-  final bool displayRaw;
   final NotesDatabase notesDB;
+  final bool displayRaw;
   final bool mounted;
   final Function toggleRawRendered;
 
@@ -25,7 +25,7 @@ class OptionsMenu extends StatelessWidget {
       itemBuilder: (context) => [
         PopupMenuItem(
           onTap: () {
-            // Copies note to clipboard
+            // Copy note to clipboard
             String copiedText = "${note.title}\n\n${note.description}";
             Clipboard.setData(ClipboardData(text: copiedText));
             ScaffoldMessenger.of(context).showSnackBar(
@@ -45,7 +45,7 @@ class OptionsMenu extends StatelessWidget {
         ),
         PopupMenuItem(
           onTap: () {
-            // Displays raw/rendered descripiton
+            // Display raw/rendered description
             toggleRawRendered();
           },
           child: Row(
@@ -58,7 +58,7 @@ class OptionsMenu extends StatelessWidget {
         ),
         PopupMenuItem(
           onTap: () {
-            // Deletes note
+            // Delete note
             showDialog(
               context: context,
               builder: (context) => DeleteAlertDialog(

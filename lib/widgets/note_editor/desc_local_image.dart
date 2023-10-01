@@ -32,6 +32,7 @@ class DescLocalImage extends StatelessWidget {
 
       itemBuilder: (context) => [
         PopupMenuItem(
+          // Popup menu to delete image
           onTap: () {
             deleteDescLocalImage(index, imageName);
           },

@@ -24,7 +24,7 @@ class _LocalImagesState extends State<LocalImages> {
   }
 
   void getImages() async {
-    // Gets a list of image files
+    // Get a list of image files
 
     // Gets path to images
     Directory docDir = await getApplicationDocumentsDirectory();
@@ -47,6 +47,7 @@ class _LocalImagesState extends State<LocalImages> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        // For frosted look
         backgroundColor: Theme.of(context).colorScheme.inversePrimary.withAlpha(190),
         scrolledUnderElevation: 0,
         flexibleSpace: Frosted(child: Container(color: Colors.transparent)),
@@ -73,7 +74,7 @@ class _LocalImagesState extends State<LocalImages> {
                     fit: BoxFit.cover
                   ),
                   const SizedBox(width: 10),
-                  // Image name
+                  // Image file name
                   Expanded(
                     child: Text(
                       imageName,
@@ -81,7 +82,7 @@ class _LocalImagesState extends State<LocalImages> {
                       style: const TextStyle(fontSize: 16),
                     ),
                   ),
-                  // Button to delete images
+                  // Button to delete image
                   IconButton(
                     tooltip: "Delete image",
                     onPressed: () {

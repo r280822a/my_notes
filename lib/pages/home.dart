@@ -33,7 +33,7 @@ class _HomeState extends State<Home> {
   }
 
   void getDatabase() async {
-    // Opens database, turns database to list
+    // Open database, turns database to list
     notesDB = NotesDatabase();
 
     await notesDB.open();
@@ -45,7 +45,7 @@ class _HomeState extends State<Home> {
   }
 
   void selectCard(index){
-    // Selects card at given index
+    // Select card at given index
     isSelected[index] = !isSelected[index];
     if (isSelected.every((element) => element == false)) {
       selectModeEnabled = false;
@@ -60,7 +60,10 @@ class _HomeState extends State<Home> {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
+      backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+
       appBar: AppBar(
+        // For frosted look
         backgroundColor: Theme.of(context).colorScheme.inversePrimary.withAlpha(190),
         scrolledUnderElevation: 0,
         flexibleSpace: Frosted(child: Container(color: Colors.transparent)),
@@ -154,14 +157,12 @@ class _HomeState extends State<Home> {
       ),
 
 
-      backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-
-
       body: Padding(
         padding: const EdgeInsets.fromLTRB(8.0, 8.0, 8.0, 0),
         child: ReorderableGridView.builder(
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           onReorder: (oldIndex, newIndex) async {
+            // Reorder notes, after dragging
             final Note noteToReorder = notesDB.list[oldIndex];
             await notesDB.deleteNote(noteToReorder);
             await notesDB.insertNote(noteToReorder, newIndex);
@@ -175,6 +176,7 @@ class _HomeState extends State<Home> {
           },
           dragStartDelay: const Duration(milliseconds: 250),
           onDragStart: (dragIndex) {
+            // Select note, if not in select mode
             if (!selectModeEnabled){
               HapticFeedback.selectionClick();
               selectCard(dragIndex);
@@ -186,7 +188,7 @@ class _HomeState extends State<Home> {
               notesDB: notesDB,
               isSelected: isSelected,
               index: index,
-              autoSelect: false
+              border: false
             );
           }),
 
@@ -220,6 +222,7 @@ class _HomeState extends State<Home> {
               },
 
               child: NoteCard(
+                // Preview of note
                 notesDB: notesDB,
                 isSelected: isSelected,
                 index: index,

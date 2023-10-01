@@ -165,7 +165,7 @@ class _NoteEditorState extends State<NoteEditor> {
           descriptionList.add(join);
           textControllers.add(TextEditingController(text: join));
           renderedText.add(DescFormField(
-            textControllers: textControllers,
+            textController: textControllers[(descriptionList.length - 1)],
             index: (descriptionList.length - 1),
             initValue: join,
             updateDescFormField: updateDescFormField
@@ -186,7 +186,7 @@ class _NoteEditorState extends State<NoteEditor> {
         descriptionList.add(line);
         textControllers.add(TextEditingController(text: line.substring(2)));
         renderedText.add(DescCheckBox(
-          textControllers: textControllers,
+          textController: textControllers[(descriptionList.length - 1)],
           index: (descriptionList.length - 1),
           initValue: line.substring(2),
           updateDescFormField: updateDescFormField,
@@ -244,7 +244,7 @@ class _NoteEditorState extends State<NoteEditor> {
       renderedText.add(
         Expanded(
           child: DescFormField(
-            textControllers: textControllers,
+            textController: textControllers[(descriptionList.length - 1)],
             index: (descriptionList.length - 1),
             initValue: value,
             updateDescFormField: updateDescFormField

@@ -13,7 +13,7 @@ class TitleFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Builds TextFormField for title
+    // TextFormField for title
     return TextFormField(
       decoration: const InputDecoration(
         border: InputBorder.none,

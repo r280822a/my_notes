@@ -7,13 +7,13 @@ class NoteCard extends StatelessWidget {
     required this.notesDB,
     required this.isSelected,
     required this.index,
-    this.autoSelect = true,
+    this.border = false,
   });
 
   final NotesDatabase notesDB;
   final List<bool> isSelected;
   final int index;
-  final bool autoSelect;
+  final bool border;
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +25,8 @@ class NoteCard extends StatelessWidget {
       width: isSelected[index] ? 3 : 0,
     );
 
-    if (!autoSelect) {
-      // Always add border, instead of automatically adding it based on isSelected
+    if (border) {
+      // Always add border
       borderSide = BorderSide(
         color: Theme.of(context).colorScheme.outline,
         width: 3,

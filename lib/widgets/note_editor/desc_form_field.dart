@@ -3,20 +3,20 @@ import 'package:flutter/material.dart';
 class DescFormField extends StatelessWidget {
   const DescFormField({
     super.key,
-    required this.textControllers,
+    required this.textController,
     required this.index,
     required this.initValue,
     required this.updateDescFormField,
   });
 
-  final List<TextEditingController> textControllers;
+  final TextEditingController textController;
   final int index;
   final String initValue;
   final Function updateDescFormField;
 
   @override
   Widget build(BuildContext context) {
-    // Builds TextFormField for each textblock and checkbox
+    // TextFormField for textblock (and checkbox)
     return TextFormField(
       decoration: const InputDecoration(
         border: InputBorder.none,
@@ -26,7 +26,7 @@ class DescFormField extends StatelessWidget {
 
       key: Key(initValue.toString() + index.toString()),
       maxLines: null,
-      controller: textControllers[index],
+      controller: textController,
 
       onChanged: (value) {
         updateDescFormField(index, value);

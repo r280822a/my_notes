@@ -3,6 +3,6 @@ class Consts{
   static const String checkboxStr = "☐ ";
   static const String checkboxTickedStr = "☑ ";
 
-  // Matches any string matching "![..](...)" with '...' being anything
+  // Matches any string matching "![...](...)" with '...' being anything
   static RegExp imageRegex = RegExp(r'!\[(.*?)\]\((.*?)\)');
 }

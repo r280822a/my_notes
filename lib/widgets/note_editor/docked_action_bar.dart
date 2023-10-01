@@ -16,6 +16,7 @@ class DockedActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Add non-text widgets to description
     return Frosted(
       child: Container(
         color: Theme.of(context).colorScheme.background.withAlpha(190),
@@ -23,7 +24,7 @@ class DockedActionBar extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-              // Adds checkbox
+              // Add checkbox
               child: IconButton(
                 tooltip: "Add checkbox",
                 onPressed: () {
@@ -36,7 +37,7 @@ class DockedActionBar extends StatelessWidget {
                 color: Theme.of(context).colorScheme.onBackground,
               ),
             ),
-            // Adds image
+            // Add image
             IconButton(
               tooltip: "Add image",
               onPressed: () {
@@ -83,7 +84,7 @@ class AddImageBottomSheet extends StatelessWidget {
               // Local image button
               TextButton(
                 onPressed: () async {
-                  // Adds local image
+                  // Add local image
                   Navigator.pop(context);
                   String imageName = await pickImage();
                     
@@ -113,7 +114,7 @@ class AddImageBottomSheet extends StatelessWidget {
               // Network image button
               TextButton(
                 onPressed: () {
-                  // Adds network image
+                  // Add network image
                   Navigator.pop(context);
                   Map<String, int> currentPos = getCurrentTextPos();
                   int descIndex = currentPos["descIndex"] as int;
@@ -123,6 +124,7 @@ class AddImageBottomSheet extends StatelessWidget {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
+                      // Lets user add link
                       title: const Text("Enter image link below"),
                       content: TextField(
                         decoration: const InputDecoration(

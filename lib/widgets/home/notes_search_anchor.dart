@@ -18,8 +18,8 @@ class NotesSearchAnchor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Allows you to search for a note, based on title
     return SearchAnchor(
-      // Allows you to search for a note, based on title
       searchController: controller,
       builder: (BuildContext context, SearchController controller) {
         return IconButton(
@@ -53,7 +53,7 @@ class NotesSearchAnchor extends StatelessWidget {
   
         for (int i = 0; i < notesDB.list.length; i++){
           if (notesDB.list[i].title.toLowerCase().contains(controller.text.toLowerCase())){
-            // If note title typed in text field, add card
+            // If note title searched, add card
             cardList.add(
               GestureDetector(
                 onTap: () async {

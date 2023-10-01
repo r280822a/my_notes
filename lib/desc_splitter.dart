@@ -10,10 +10,6 @@ class DescSplitter{
 
   DescSplitter({required this.note,});
 
-  // Checkbox symbols
-  final String checkboxStr = "☐ ";
-  final String checkboxTickedStr = "☑ ";
-
   void splitDescription() {
     // Splits description into seperate items 
     // for each textblock, checkbox, and image
@@ -27,8 +23,8 @@ class DescSplitter{
 
     for (String line in lineSplitText){
       // Split line by line
-      int cbIndex = line.indexOf(checkboxStr);
-      int cbTickedIndex = line.indexOf(checkboxTickedStr);
+      int cbIndex = line.indexOf(Consts.checkboxStr);
+      int cbTickedIndex = line.indexOf(Consts.checkboxTickedStr);
       int imgIndex = line.indexOf(Consts.imageRegex);
 
       if ((cbIndex == 0) || (cbTickedIndex == 0) || (imgIndex == 0)){
@@ -46,8 +42,6 @@ class DescSplitter{
       }
 
       if ((cbIndex == 0) || (cbTickedIndex == 0)){
-        // If line is a checkbox
-
         // Add checkbox to lists
         list.add(line);
         textControllers.add(TextEditingController(text: line.substring(2)));
@@ -77,6 +71,5 @@ class DescSplitter{
       list.add(value);
       textControllers.add(TextEditingController(text: value));
     }
-
   }
 }

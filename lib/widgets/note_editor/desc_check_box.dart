@@ -4,7 +4,7 @@ import 'package:my_notes/widgets/note_editor/desc_form_field.dart';
 class DescCheckBox extends StatelessWidget {
   const DescCheckBox({
     super.key,
-    required this.textControllers,
+    required this.textController,
     required this.index,
     required this.initValue,
     required this.updateDescFormField,
@@ -13,7 +13,7 @@ class DescCheckBox extends StatelessWidget {
     required this.removeDescCheckBox,
   });
 
-  final List<TextEditingController> textControllers;
+  final TextEditingController textController;
   final int index;
   final String initValue;
   final Function updateDescFormField;
@@ -23,7 +23,7 @@ class DescCheckBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // To build checkbox
+    // Checkbox with TextFormField and delete button
     return Row(
       children: [
         Checkbox(
@@ -34,7 +34,7 @@ class DescCheckBox extends StatelessWidget {
         ),
         Flexible(
           child: DescFormField(
-            textControllers: textControllers,
+            textController: textController,
             updateDescFormField: updateDescFormField,
             index: index,
             initValue: initValue,

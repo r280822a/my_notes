@@ -33,7 +33,7 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
   void getPath() async {
-    // Stores path for local images
+    // Store path for local images
     Directory docDir = await getApplicationDocumentsDirectory();
     String docPath = docDir.path.toString();
     path = p.join(docPath, "assets");
@@ -43,6 +43,8 @@ class _NoteEditorState extends State<NoteEditor> {
 
   // ===== Methods used in imported widgets =====
   void updateDescFormField(int index, String value){
+    // Update textblock, when changed
+
     int cbIndex = descSplitter.list[index].indexOf(Consts.checkboxStr);
     int cbTickedIndex = descSplitter.list[index].indexOf(Consts.checkboxTickedStr);
 
@@ -99,7 +101,7 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
   void deleteDescLocalImage(int index, String imageName){
-    // Deletes image
+    // Delete image
     descSplitter.list.removeAt(index);
     String newDescription = descSplitter.list.join("\n");
     note.description = newDescription;
@@ -116,7 +118,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
   // ===== Renderer =====
   void toggleRawRendered(){
-    // Toggles raw/rendered descripiton
+    // Toggle raw/rendered description
     displayRaw = !displayRaw;
     setState(() {});
   }
@@ -124,7 +126,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
   // ===== Methods used in build function =====
   Map<String, int> getCurrentTextPos(){
-    // Gets current position of the cursor
+    // Get current position of the cursor
 
     // Default offset and index are at end
     int descIndex = (descSplitter.list.length - 1);
@@ -148,10 +150,10 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
   void addNonText(String strToAdd, int descIndex, int offset) {
-    // Adds non text widget (checkbox or image)
+    // Add non-text widget (checkbox or image)
 
-    // Split text from start till index 
-    // To find which line to add string (at substringSplit.length)
+    // Split text from start till index
+    // To find which line to add string
     String substring = descSplitter.list[descIndex].substring(0, offset);
     List<String> substringSplit = substring.split("\n");
 
@@ -169,19 +171,19 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
   Future<String> pickImage() async {
-    File imageFile;
+    // Let user pick image
     final image = await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (image == null) {return "";}
 
     // Convert XFile to file
-    imageFile = File(image.path);
+    File imageFile = File(image.path);
 
     // Copy image to new path
     List split = p.split(image.path);
     String imageName = split[split.length - 1];
-
     imageFile.copySync("$path/$imageName");
+
     return imageName;
   }
 
@@ -197,15 +199,18 @@ class _NoteEditorState extends State<NoteEditor> {
     note = arguments["note"];
     notesDB = arguments["notesDB"];
 
+    // Split description
     descSplitter = DescSplitter(note: note);
     descSplitter.splitDescription();
 
+    // Set time
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(note.time);
     String time = DateFormat('dd MMMM yyyy - hh:mm').format(dateTime);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        // For frosted look
         backgroundColor: Theme.of(context).colorScheme.background.withAlpha(190),
         scrolledUnderElevation: 0,
         flexibleSpace: Frosted(child: Container(color: Colors.transparent)),
@@ -226,6 +231,7 @@ class _NoteEditorState extends State<NoteEditor> {
         child: displayRaw ? ListView(
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           children: [
+            // Title and time
             TitleFormField(note: note, notesDB: notesDB),
             const Divider(),
             Text(
@@ -235,6 +241,7 @@ class _NoteEditorState extends State<NoteEditor> {
             ),
             const SizedBox(height: 10),
 
+            // Display raw note description
             RawDescFormField(note: note, notesDB: notesDB),
             const SizedBox(height: 80)
           ],
@@ -242,23 +249,27 @@ class _NoteEditorState extends State<NoteEditor> {
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           itemCount: descSplitter.list.length,
           itemBuilder: (context, index) {
+            // Display rendered note description
+
+            // Text to render
             String text = descSplitter.list[index];
             Widget widget;
 
+            // Indexes for non-text widgets
             int cbIndex = text.indexOf(Consts.checkboxStr);
             int cbTickedIndex = text.indexOf(Consts.checkboxTickedStr);
             int imgIndex = text.indexOf(Consts.imageRegex);
             bool isTicked = false;
 
             if ((cbIndex == 0) || (cbTickedIndex == 0)){
-              // If line is a checkbox
+              // If checkbox
 
               isTicked = false;
               if (cbTickedIndex == 0){isTicked = true;}
 
               // Add checkbox
               widget = DescCheckBox(
-                textControllers: descSplitter.textControllers,
+                textController: descSplitter.textControllers[index],
                 index: index,
                 initValue: text.substring(2),
                 updateDescFormField: updateDescFormField,
@@ -267,29 +278,30 @@ class _NoteEditorState extends State<NoteEditor> {
                 removeDescCheckBox: removeDescCheckBox
               );
             } else if (imgIndex == 0) {
-              // Get link for image
+              // If image
 
               // Removes '![]', and everything inside them
-              String image = text.replaceAll(RegExp(r'!\[.*?\]'), "");
-              image = image.substring(1, image.length - 1);
+              String imageName = text.replaceAll(RegExp(r'!\[.*?\]'), "");
+              imageName = imageName.substring(1, imageName.length - 1);
 
               // Removes '()', and everything inside them
               String altText = text.replaceAll(RegExp(r'\(.*?\)'), "");
               altText = altText.substring(2, altText.length - 1);
 
               // Add image
-              if (image.startsWith("assets/")){
-                image = image.substring(7, image.length);
+              if (imageName.startsWith("assets/")){
+                // Remove "assets/" at beginning if local image
+                imageName = imageName.substring(7, imageName.length);
                 widget = DescLocalImage(
                   path: path,
-                  imageName: image,
+                  imageName: imageName,
                   altText: altText,
                   index: index,
                   deleteDescLocalImage: deleteDescLocalImage
                 );
               } else {
                 widget = DescNetworkImage(
-                  link: image,
+                  link: imageName,
                   altText: altText,
                   index: index,
                   removeDescNetworkImage: removeDescNetworkImage
@@ -298,7 +310,7 @@ class _NoteEditorState extends State<NoteEditor> {
             } else {
               // Add textblock
               widget = DescFormField(
-                textControllers: descSplitter.textControllers,
+                textController: descSplitter.textControllers[index],
                 index: index,
                 initValue: text,
                 updateDescFormField: updateDescFormField
@@ -306,6 +318,7 @@ class _NoteEditorState extends State<NoteEditor> {
             }
 
             if (index == 0){
+              // If beginning, add title and time
               return Column(
                 children: [
                   TitleFormField(note: note, notesDB: notesDB),
@@ -319,6 +332,7 @@ class _NoteEditorState extends State<NoteEditor> {
                 ],
               );
             } else if (index == (descSplitter.list.length - 1)){
+              // If end, add some space so you can type
               return Column(
                 children: [
                   widget,

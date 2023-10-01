@@ -11,6 +11,7 @@ class Frosted extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Creates frosted look for widget
     return ClipRRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),

@@ -34,7 +34,7 @@ CREATE TABLE notes (
   Future toList() async {
     // Converts database object to list
     List<Map<String, Object?>> mapList = await database.query("notes");
-    list = mapList.map((json) => Note.fromJson(json)).toList();
+    list = mapList.map((map) => Note.fromMap(map)).toList();
   }
 
 
@@ -48,11 +48,12 @@ CREATE TABLE notes (
 
     database.insert("notes", note);
     List<Map<String, Object?>> lastRow = await database.query("notes", orderBy: "_id DESC",limit: 1);
-    list.add(Note.fromJson(lastRow[0]));
+    list.add(Note.fromMap(lastRow[0]));
     return (list.length - 1);
   }
 
   Future insertNote(Note note, int index) async {
+    // Inserts note into given index
     // Add blank entry
     await addNote("", "");
 
@@ -61,11 +62,11 @@ CREATE TABLE notes (
     Batch batch = database.batch();
     for (int i = (list.length - 1); i > index; i--){
       Note first = list[i - 1];
-      Map<String, Object?> firstJson = first.toJson();
-      firstJson.remove("_id");
+      Map<String, Object?> firstMap = first.toMap();
+      firstMap.remove("_id");
 
       batch.update("notes", 
-        firstJson, 
+        firstMap, 
         where: "_id = ?", 
         whereArgs: [list[i].id]
       );
@@ -76,16 +77,15 @@ CREATE TABLE notes (
     await batch.commit(noResult: true);
 
     // Add note to index
-    Map<String, Object?> noteJson = note.toJson();
-    noteJson.remove("_id");
+    Map<String, Object?> noteMap = note.toMap();
+    noteMap.remove("_id");
     await database.update("notes", 
-      noteJson, 
+      noteMap, 
       where: "_id = ?", 
       whereArgs: [list[index].id]
     );
 
     // Update list
-    // await toList();
     list[index].title = note.title;
     list[index].description = note.description;
     list[index].time = note.time;
@@ -93,7 +93,7 @@ CREATE TABLE notes (
 
   Future updateNote(Note note) async {
     // Updates the note in database
-    await database.update("notes", note.toJson(), where: "_id = ?", whereArgs: [note.id]);
+    await database.update("notes", note.toMap(), where: "_id = ?", whereArgs: [note.id]);
   }
 
   Future deleteNote(Note note) async {
@@ -106,15 +106,15 @@ CREATE TABLE notes (
     // Swaps 2 notes in database and list
     Note tempNote1 = note1;
 
-    // Convert notes to json, remove id
-    Map<String, Object?> note1Json = note1.toJson();
-    note1Json.remove("_id");
-    Map<String, Object?> note2Json = note2.toJson();
-    note2Json.remove("_id");
+    // Convert notes to map, remove id
+    Map<String, Object?> note1Map = note1.toMap();
+    note1Map.remove("_id");
+    Map<String, Object?> note2Map = note2.toMap();
+    note2Map.remove("_id");
 
     // Swap notes in database
-    await database.update("notes", note2Json, where: "_id = ?", whereArgs: [note1.id]);
-    await database.update("notes", note1Json, where: "_id = ?", whereArgs: [note2.id]);
+    await database.update("notes", note2Map, where: "_id = ?", whereArgs: [note1.id]);
+    await database.update("notes", note1Map, where: "_id = ?", whereArgs: [note2.id]);
 
     // Swap notes in list
     int note1Index = list.indexOf(note1);
@@ -132,16 +132,16 @@ class Note{
 
   Note(this.id, this.title, this.description, this.time);
 
-  static Note fromJson(Map<String, Object?> json){
+  static Note fromMap(Map<String, Object?> map){
     return Note(
-      json["_id"] as int,
-      json["title"] as String,
-      json["description"] as String,
-      json["time"] as int,
+      map["_id"] as int,
+      map["title"] as String,
+      map["description"] as String,
+      map["time"] as int,
     );
   }
 
-  Map<String, Object?> toJson(){
+  Map<String, Object?> toMap(){
     return {
       "_id": id,
       "title": title,
