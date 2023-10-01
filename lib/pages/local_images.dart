@@ -83,6 +83,7 @@ class _LocalImagesState extends State<LocalImages> {
                   ),
                   // Button to delete images
                   IconButton(
+                    tooltip: "Delete image",
                     onPressed: () {
                       showDialog(
                         context: context, 

@@ -111,7 +111,7 @@ class _HomeState extends State<Home> {
             icon: const Icon(Icons.swap_horiz_outlined)
           ),
           IconButton(
-            tooltip: "Delete notes",
+            tooltip: "Delete note(s)",
             onPressed: () {
               showDialog(
                 context: context,
@@ -189,16 +189,15 @@ class _HomeState extends State<Home> {
               autoSelect: false
             );
           }),
-      
-          // padding: const EdgeInsets.all(8),
+
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             mainAxisExtent: 155,
             mainAxisSpacing: 4,
             crossAxisSpacing: 4,
           ),
-      
-      
+
+
           itemCount: notesDB.list.length,
           itemBuilder: (context, index) {
             return GestureDetector(
