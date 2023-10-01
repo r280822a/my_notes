@@ -66,6 +66,7 @@ class _HomeState extends State<Home> {
 
         // Display cancel button for select mode, else display search
         leading: selectModeEnabled ? IconButton(
+          tooltip: "Cancel selection",
           onPressed: () {
             // Close select mode, set all items in isSelected to false
             isSelected = List.filled(isSelected.length, false, growable: true);
@@ -78,6 +79,7 @@ class _HomeState extends State<Home> {
           searchController: controller,
           builder: (BuildContext context, SearchController controller) {
             return IconButton(
+              tooltip: "Search notes",
               icon: const Icon(Icons.search),
               onPressed: () {controller.openView();},
             );
@@ -137,6 +139,7 @@ class _HomeState extends State<Home> {
         // Display buttons for select mode, else nothing
         actions: selectModeEnabled ? [
           IconButton(
+            tooltip: "Swap notes",
             onPressed: () async {
               // Find notes to swap
               List<Note> notesToSwap = [];
@@ -158,6 +161,7 @@ class _HomeState extends State<Home> {
             icon: const Icon(Icons.swap_horiz_outlined)
           ),
           IconButton(
+            tooltip: "Delete notes",
             onPressed: () {
               showDialog(
                 context: context,
@@ -187,6 +191,7 @@ class _HomeState extends State<Home> {
           )
         ] : [
           IconButton(
+            tooltip: "View local image attachments",
             onPressed: () async {
               await Navigator.pushNamed(
                 context,

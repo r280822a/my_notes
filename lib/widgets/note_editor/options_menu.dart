@@ -76,7 +76,7 @@ class OptionsMenu extends StatelessWidget {
             children: [
               Icon(Icons.delete_outline, color: Colors.red[600]),
               const SizedBox(width: 10),
-              const Text("Delete"),
+              const Text("Delete note"),
             ],
           )
         ),

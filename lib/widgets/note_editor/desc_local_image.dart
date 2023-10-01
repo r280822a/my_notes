@@ -39,7 +39,7 @@ class DescLocalImage extends StatelessWidget {
             children: [
               Icon(Icons.delete_outline),
               SizedBox(width: 10),
-              Text("Delete"),
+              Text("Delete image"),
             ],
           ),
         ),

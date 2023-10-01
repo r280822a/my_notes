@@ -25,6 +25,7 @@ class DockedActionBar extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
               // Adds checkbox
               child: IconButton(
+                tooltip: "Add checkbox",
                 onPressed: () {
                   Map<String, int> currentPos = getCurrentTextPos();
                   int descIndex = currentPos["descIndex"] as int;
@@ -37,6 +38,7 @@ class DockedActionBar extends StatelessWidget {
             ),
             // Adds image
             IconButton(
+              tooltip: "Add image",
               onPressed: () {
                 showModalBottomSheet(
                   context: context,
