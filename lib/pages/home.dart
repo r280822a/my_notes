@@ -4,9 +4,9 @@ import 'dart:ui';
 import 'package:my_notes/notes_db.dart';
 import 'package:my_notes/widgets/loading_pages/loading_home.dart';
 import 'package:my_notes/widgets/delete_alert_dialog.dart';
+import 'package:my_notes/widgets/home/note_card.dart';
 // import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
-
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -51,64 +51,6 @@ class _HomeState extends State<Home> {
     } else {
       selectModeEnabled = true;
     }
-  }
-
-
-  Card buildCard(int index, bool isDragBuilder){
-    // Builds card for a given note
-    final Note note = notesDB.list[index];
-
-    BorderSide borderSide = BorderSide(
-      // If selected, add border
-      color: isSelected[index] ? Theme.of(context).colorScheme.outline : Theme.of(context).colorScheme.surface,
-      width: isSelected[index] ? 3 : 0,
-    );
-
-    if (isDragBuilder) {
-      // Always add border if called from drag widget builder
-      borderSide = BorderSide(
-        color: Theme.of(context).colorScheme.outline,
-        width: 3,
-      );
-    }
-
-    return Card(
-      elevation: 0,
-      color: Theme.of(context).colorScheme.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-        side: borderSide,
-      ),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Preview of note
-            Text(
-              note.title,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                color: Theme.of(context).textSelectionTheme.selectionColor,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-    
-            Text(
-              note.description,
-              overflow: TextOverflow.ellipsis,
-              maxLines: 4,
-              style: TextStyle(
-                color: Theme.of(context).unselectedWidgetColor,
-                fontSize: 16,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   @override
@@ -184,7 +126,11 @@ class _HomeState extends State<Home> {
                       isSelected = List.filled(notesDB.list.length, false, growable: true);
                       setState(() {});
                     },
-                    child: buildCard(i, false)
+                    child: NoteCard(
+                      notesDB: notesDB,
+                      isSelected: isSelected,
+                      index: i,
+                    ),
                   )
                 );
               }
@@ -286,7 +232,12 @@ class _HomeState extends State<Home> {
             setState(() {});
           },
           dragWidgetBuilderV2: DragWidgetBuilderV2(builder: (int index, Widget child, ImageProvider? screenshot) {
-            return buildCard(index, true);
+            return NoteCard(
+              notesDB: notesDB,
+              isSelected: isSelected,
+              index: index,
+              autoSelect: false
+            );
           }),
       
           // padding: const EdgeInsets.all(8),
@@ -318,8 +269,12 @@ class _HomeState extends State<Home> {
                 }
                 setState(() {});
               },
-      
-              child: buildCard(index, false),
+
+              child: NoteCard(
+                notesDB: notesDB,
+                isSelected: isSelected,
+                index: index,
+              ),
             );
           },
         ),
