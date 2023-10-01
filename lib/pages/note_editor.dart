@@ -116,15 +116,13 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
 
-  // ===== Renderer =====
+  // ===== Methods used in build function =====
   void toggleRawRendered(){
     // Toggle raw/rendered description
     displayRaw = !displayRaw;
     setState(() {});
   }
 
-
-  // ===== Methods used in build function =====
   Map<String, int> getCurrentTextPos(){
     // Get current position of the cursor
 
