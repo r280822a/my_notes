@@ -1,25 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/widgets/rounded_square.dart';
 import 'dart:io';
+import 'package:my_notes/notes_db.dart';
+import 'package:my_notes/desc_splitter.dart';
+import 'package:my_notes/widgets/rounded_square.dart';
 import 'package:path/path.dart' as p;
 
 class DescLocalImage extends StatelessWidget {
   const DescLocalImage({
     super.key,
+    required this.note,
+    required this.notesDB,
+    required this.descSplitter,
     required this.path,
     required this.imageName,
     required this.altText,
     required this.index,
-    required this.deleteDescLocalImage,
-    required this.removeDescLocalImage,
+    required this.setState,
   });
 
+  final Note note;
+  final NotesDatabase notesDB;
+  final DescSplitter descSplitter;
+  final int index;
   final String path;
   final String imageName;
   final String altText;
-  final int index;
-  final Function deleteDescLocalImage;
-  final Function removeDescLocalImage;
+  final Function setState;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +42,13 @@ class DescLocalImage extends StatelessWidget {
         PopupMenuItem(
           // Popup menu to remove image
           onTap: () {
-            removeDescLocalImage(index, imageName);
+            // Remove image
+            descSplitter.list.removeAt(index);
+            String newDescription = descSplitter.list.join("\n");
+            note.description = newDescription;
+            notesDB.updateNote(note);
+
+            setState();
           },
           child: const Row(
             children: [
@@ -49,7 +61,18 @@ class DescLocalImage extends StatelessWidget {
         PopupMenuItem(
           // Popup menu to delete image
           onTap: () {
-            deleteDescLocalImage(index, imageName);
+            // Delete image
+            descSplitter.list.removeAt(index);
+            String newDescription = descSplitter.list.join("\n");
+            note.description = newDescription;
+            notesDB.updateNote(note);
+
+            File imageFile = File(p.join(path, imageName));
+            if (imageFile.existsSync()){
+              imageFile.deleteSync();
+            }
+
+            setState();
           },
           child: Row(
             children: [

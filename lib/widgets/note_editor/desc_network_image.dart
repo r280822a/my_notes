@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:my_notes/notes_db.dart';
+import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/widgets/rounded_square.dart';
 
 class DescNetworkImage extends StatelessWidget {
   const DescNetworkImage({
     super.key,
+    required this.note,
+    required this.notesDB,
+    required this.descSplitter,
+    required this.index,
     required this.link,
     required this.altText,
-    required this.index,
-    required this.removeDescNetworkImage,
+    required this.setState,
   });
 
+  final Note note;
+  final NotesDatabase notesDB;
+  final DescSplitter descSplitter;
+  final int index;
   final String link;
   final String altText;
-  final int index;
-  final Function removeDescNetworkImage;
+  final Function setState;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +38,13 @@ class DescNetworkImage extends StatelessWidget {
         PopupMenuItem(
           // Popup menu to remove image
           onTap: () {
-            removeDescNetworkImage(index);
+            // Remove image
+            descSplitter.list.removeAt(index);
+            String newDescription = descSplitter.list.join("\n");
+            note.description = newDescription;
+            notesDB.updateNote(note);
+
+            setState();
           },
           child: const Row(
             children: [

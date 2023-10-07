@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:my_notes/notes_db.dart';
+import 'package:my_notes/desc_splitter.dart';
+import 'package:my_notes/consts.dart';
 import 'package:my_notes/widgets/note_editor/desc_form_field.dart';
 
 class DescCheckBox extends StatelessWidget {
   const DescCheckBox({
     super.key,
+    required this.note,
+    required this.notesDB,
+    required this.descSplitter,
     required this.textController,
     required this.focusNode,
     required this.index,
-    required this.initValue,
-    required this.updateDescFormField,
     required this.isTicked,
-    required this.selectDescCheckBox,
-    required this.removeDescCheckBox,
+    required this.setState,
   });
 
+  final Note note;
+  final NotesDatabase notesDB;
+  final DescSplitter descSplitter;
   final TextEditingController textController;
   final FocusNode focusNode;
   final int index;
-  final String initValue;
-  final Function updateDescFormField;
   final bool isTicked;
-  final Function selectDescCheckBox;
-  final Function removeDescCheckBox;
+  final Function setState;
 
   @override
   Widget build(BuildContext context) {
@@ -31,22 +34,43 @@ class DescCheckBox extends StatelessWidget {
         Checkbox(
           value: isTicked,
           onChanged: (bool? value) {
-            selectDescCheckBox(index, isTicked);
+            // Ticks/Unticks checkbox
+
+            // Symbol to put at start
+            String str = Consts.checkboxTickedStr;
+            if (isTicked){
+              str = Consts.checkboxStr;
+            }
+
+            // Change checkbox symbol
+            descSplitter.list[index] = str + descSplitter.list[index].substring(2);
+
+            // Update note
+            String newDescription = descSplitter.list.join("\n");
+            note.description = newDescription;
+            notesDB.updateNote(note);
+            setState();
           },
         ),
         Flexible(
           child: DescFormField(
+            note: note,
+            notesDB: notesDB,
+            descSplitter: descSplitter,
             textController: textController,
             focusNode: focusNode,
-            updateDescFormField: updateDescFormField,
             index: index,
-            initValue: initValue,
           )
         ),
         IconButton(
           tooltip: "Remove checkbox",
           onPressed: () {
-            removeDescCheckBox(index);
+            // Remove checkbox
+            descSplitter.list.removeAt(index);
+            String newDescription = descSplitter.list.join("\n");
+            note.description = newDescription;
+            notesDB.updateNote(note);
+            setState();
           }, 
           icon: const Icon(Icons.delete_outline)
         )

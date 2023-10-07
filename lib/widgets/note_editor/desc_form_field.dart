@@ -1,20 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:my_notes/notes_db.dart';
+import 'package:my_notes/desc_splitter.dart';
+import 'package:my_notes/consts.dart';
 
 class DescFormField extends StatelessWidget {
   const DescFormField({
     super.key,
+    required this.note,
+    required this.notesDB,
+    required this.descSplitter,
+    required this.index,
     required this.textController,
     required this.focusNode,
-    required this.index,
-    required this.initValue,
-    required this.updateDescFormField,
   });
 
+  final Note note;
+  final NotesDatabase notesDB;
+  final DescSplitter descSplitter;
+  final int index;
   final TextEditingController textController;
   final FocusNode focusNode;
-  final int index;
-  final String initValue;
-  final Function updateDescFormField;
 
   @override
   Widget build(BuildContext context) {
@@ -26,13 +31,27 @@ class DescFormField extends StatelessWidget {
         contentPadding: EdgeInsets.zero,
       ),
 
-      key: Key(initValue.toString() + index.toString()),
+      key: Key(textController.text.toString() + index.toString()),
       maxLines: null,
       controller: textController,
       focusNode: focusNode,
 
       onChanged: (value) {
-        updateDescFormField(index, value);
+        // Update textblock, when changed
+
+        int cbIndex = descSplitter.list[index].indexOf(Consts.checkboxStr);
+        int cbTickedIndex = descSplitter.list[index].indexOf(Consts.checkboxTickedStr);
+
+        if (cbIndex == 0) {
+          value = "${Consts.checkboxStr}$value";
+        } else if (cbTickedIndex == 0){
+          value = "${Consts.checkboxTickedStr}$value";
+        }
+        descSplitter.list[index] = value;
+        String newDescription = descSplitter.list.join("\n");
+
+        note.description = newDescription;
+        notesDB.updateNote(note);
       },
     );
   }

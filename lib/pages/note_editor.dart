@@ -7,7 +7,6 @@ import 'package:my_notes/consts.dart';
 import 'package:my_notes/widgets/note_editor/all.dart';
 import 'package:my_notes/widgets/frosted.dart';
 import 'package:my_notes/widgets/loading_pages/loading_note_editor.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -45,174 +44,10 @@ class _NoteEditorState extends State<NoteEditor> {
     setState(() {});
   }
 
-  // ===== Methods used in imported widgets =====
-  void updateDescFormField(int index, String value){
-    // Update textblock, when changed
-
-    int cbIndex = descSplitter.list[index].indexOf(Consts.checkboxStr);
-    int cbTickedIndex = descSplitter.list[index].indexOf(Consts.checkboxTickedStr);
-
-    if (cbIndex == 0) {
-      value = "${Consts.checkboxStr}$value";
-    } else if (cbTickedIndex == 0){
-      value = "${Consts.checkboxTickedStr}$value";
-    }
-    descSplitter.list[index] = value;
-    String newDescription = descSplitter.list.join("\n");
-
-    note.description = newDescription;
-    notesDB.updateNote(note);
-  }
-
-  void selectDescCheckBox(int index, bool isTicked){
-    // Select checkbox
-
-    // Symbol to put at start
-    String str = Consts.checkboxTickedStr;
-    if (isTicked){
-      str = Consts.checkboxStr;
-    }
-
-    // Change checkbox symbol
-    descSplitter.list[index] = str + descSplitter.list[index].substring(2);
-
-    // Update note
-    String newDescription = descSplitter.list.join("\n");
-    note.description = newDescription;
-    notesDB.updateNote(note);
-
-    setState(() {});
-  }
-
-  void removeDescCheckBox(int index){
-    // Remove checkbox
-    descSplitter.list.removeAt(index);
-    String newDescription = descSplitter.list.join("\n");
-    note.description = newDescription;
-    notesDB.updateNote(note);
-
-    setState(() {});
-  }
-
-  void removeDescNetworkImage(int index){
-    // Remove image
-    descSplitter.list.removeAt(index);
-    String newDescription = descSplitter.list.join("\n");
-    note.description = newDescription;
-    notesDB.updateNote(note);
-
-    setState(() {});
-  }
-
-  void deleteDescLocalImage(int index, String imageName){
-    // Delete image
-    descSplitter.list.removeAt(index);
-    String newDescription = descSplitter.list.join("\n");
-    note.description = newDescription;
-    notesDB.updateNote(note);
-
-    File imageFile = File(p.join(path, imageName));
-    if (imageFile.existsSync()){
-      imageFile.deleteSync();
-    }
-
-    setState(() {});
-  }
-
-  void removeDescLocalImage(int index, String imageName){
-    // Remove image
-    descSplitter.list.removeAt(index);
-    String newDescription = descSplitter.list.join("\n");
-    note.description = newDescription;
-    notesDB.updateNote(note);
-
-    setState(() {});
-  }
-
-
-  // ===== Methods used in build function =====
   void toggleRawRendered(){
     // Toggle raw/rendered description
     displayRaw = !displayRaw;
     setState(() {});
-  }
-
-  Map<String, int> getCurrentTextPos(){
-    // Get current position of the cursor
-
-    // Default offset and index are at end
-    int descIndex = (descSplitter.list.length - 1);
-    int offset = descSplitter.list[descIndex].length;
-
-    if (displayRaw == true){
-      offset = rawTextController.selection.baseOffset;
-      return {
-        "descIndex": -1,
-        "offset": offset
-      };
-    }
-
-    // Find currently selected text controller
-    // Store its index and offset
-    for (int i = 0; i < descSplitter.textControllers.length; i++){
-      final int baseOffset = descSplitter.textControllers[i].selection.baseOffset;
-      if (baseOffset != -1){
-        descIndex = i;
-        offset = baseOffset;
-      }
-    }
-
-    Map<String, int> result = {
-      "descIndex": descIndex,
-      "offset": offset
-    };
-    return result;
-  }
-
-  void addNonText(String strToAdd, int descIndex, int offset) {
-    // Add non-text widget (checkbox or image)
-
-    String desc = note.description;
-    if (descIndex != -1) {desc = descSplitter.list[descIndex];}
-
-    // Split text from start till index
-    // To find which line to add string
-    String substring = desc.substring(0, offset);
-    List<String> substringSplit = substring.split("\n");
-
-    // Add string
-    List<String> textSplit = desc.split("\n");
-    textSplit.insert(substringSplit.length, strToAdd);
-    desc = textSplit.join("\n");
-
-    // Update note
-    if (descIndex != -1) {
-      descSplitter.list[descIndex] = desc;
-      String newDescription = descSplitter.list.join("\n");
-      note.description = newDescription;
-    } else {
-      note.description = desc;
-    }
-    notesDB.updateNote(note);
-
-    setState(() {});
-  }
-
-  Future<String> pickImage() async {
-    // Let user pick image
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-
-    if (image == null) {return "";}
-
-    // Convert XFile to file
-    File imageFile = File(image.path);
-
-    // Copy image to new path
-    List split = p.split(image.path);
-    String imageName = split[split.length - 1];
-    imageFile.copySync("$path/$imageName");
-
-    return imageName;
   }
 
 
@@ -313,14 +148,14 @@ class _NoteEditorState extends State<NoteEditor> {
         
                 // Add checkbox
                 widget = DescCheckBox(
+                  note: note,
+                  notesDB: notesDB,
+                  descSplitter: descSplitter,
                   textController: descSplitter.textControllers[index],
                   focusNode: descSplitter.focusNodes[index],
                   index: index,
-                  initValue: text.substring(2),
-                  updateDescFormField: updateDescFormField,
                   isTicked: isTicked,
-                  selectDescCheckBox: selectDescCheckBox,
-                  removeDescCheckBox: removeDescCheckBox
+                  setState: () {setState(() {});},
                 );
               } else if (imgIndex == 0) {
                 // If image
@@ -338,29 +173,35 @@ class _NoteEditorState extends State<NoteEditor> {
                   // Remove "assets/" at beginning if local image
                   imageName = imageName.substring(7, imageName.length);
                   widget = DescLocalImage(
+                    note: note,
+                    notesDB: notesDB,
+                    descSplitter: descSplitter,
+                    index: index,
                     path: path,
                     imageName: imageName,
                     altText: altText,
-                    index: index,
-                    deleteDescLocalImage: deleteDescLocalImage,
-                    removeDescLocalImage: removeDescLocalImage
+                    setState: () {setState(() {});},
                   );
                 } else {
                   widget = DescNetworkImage(
+                    note: note,
+                    notesDB: notesDB,
+                    descSplitter: descSplitter,
+                    index: index,
                     link: imageName,
                     altText: altText,
-                    index: index,
-                    removeDescNetworkImage: removeDescNetworkImage
+                    setState: () {setState(() {});}
                   );
                 }
               } else {
                 // Add textblock
                 widget = DescFormField(
+                  note: note,
+                  notesDB: notesDB,
+                  descSplitter: descSplitter,
                   textController: descSplitter.textControllers[index],
                   focusNode: descSplitter.focusNodes[index],
                   index: index,
-                  initValue: text,
-                  updateDescFormField: updateDescFormField
                 );
               }
         
@@ -396,9 +237,13 @@ class _NoteEditorState extends State<NoteEditor> {
 
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: DockedActionBar(
-        getCurrentTextPos: getCurrentTextPos,
-        addNonText: addNonText,
-        pickImage: pickImage
+        note: note,
+        notesDB: notesDB,
+        descSplitter: descSplitter,
+        displayRaw: displayRaw,
+        path: path,
+        rawTextController: rawTextController,
+        setState: () {setState(() {});},
       ),
     );
   }

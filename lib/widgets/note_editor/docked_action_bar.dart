@@ -1,18 +1,109 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:my_notes/notes_db.dart';
+import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/consts.dart';
 import 'package:my_notes/widgets/frosted.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
 
 class DockedActionBar extends StatelessWidget {
   const DockedActionBar({
     super.key,
-    required this.getCurrentTextPos,
-    required this.addNonText,
-    required this.pickImage,
+    required this.note,
+    required this.notesDB,
+    required this.descSplitter,
+    required this.displayRaw,
+    required this.path,
+    required this.rawTextController,
+    required this.setState
   });
 
-  final Function getCurrentTextPos;
-  final Function addNonText;
-  final Function pickImage;
+  final Note note;
+  final NotesDatabase notesDB;
+  final DescSplitter descSplitter;
+  final bool displayRaw;
+  final String path;
+  final TextEditingController rawTextController;
+  final Function setState;
+
+  Map<String, int> getCurrentTextPos(){
+    // Get current position of the cursor
+
+    // Default offset and index are at end
+    int descIndex = (descSplitter.list.length - 1);
+    int offset = descSplitter.list[descIndex].length;
+
+    if (displayRaw == true){
+      offset = rawTextController.selection.baseOffset;
+      return {
+        "descIndex": -1,
+        "offset": offset
+      };
+    }
+
+    // Find currently selected text controller
+    // Store its index and offset
+    for (int i = 0; i < descSplitter.textControllers.length; i++){
+      final int baseOffset = descSplitter.textControllers[i].selection.baseOffset;
+      if (baseOffset != -1){
+        descIndex = i;
+        offset = baseOffset;
+      }
+    }
+
+    Map<String, int> result = {
+      "descIndex": descIndex,
+      "offset": offset
+    };
+    return result;
+  }
+
+  void addNonText(String strToAdd, int descIndex, int offset) {
+    // Add non-text widget (checkbox or image)
+
+    String desc = note.description;
+    if (descIndex != -1) {desc = descSplitter.list[descIndex];}
+
+    // Split text from start till index
+    // To find which line to add string
+    String substring = desc.substring(0, offset);
+    List<String> substringSplit = substring.split("\n");
+
+    // Add string
+    List<String> textSplit = desc.split("\n");
+    textSplit.insert(substringSplit.length, strToAdd);
+    desc = textSplit.join("\n");
+
+    // Update note
+    if (descIndex != -1) {
+      descSplitter.list[descIndex] = desc;
+      String newDescription = descSplitter.list.join("\n");
+      note.description = newDescription;
+    } else {
+      note.description = desc;
+    }
+    notesDB.updateNote(note);
+
+    setState();
+  }
+
+  Future<String> pickImage() async {
+    // Let user pick image
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (image == null) {return "";}
+
+    // Convert XFile to file
+    File imageFile = File(image.path);
+
+    // Copy image to new path
+    List split = p.split(image.path);
+    String imageName = split[split.length - 1];
+    imageFile.copySync("$path/$imageName");
+
+    return imageName;
+  }
 
   @override
   Widget build(BuildContext context) {
