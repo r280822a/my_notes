@@ -67,11 +67,25 @@ class _LocalImagesState extends State<LocalImages> {
               Row(
                 children: [
                   // Image
-                  Image.file(
-                    File(images[index].path),
-                    height: 100,
-                    width: 100,
-                    fit: BoxFit.cover
+                  GestureDetector(
+                    onTap: () {
+                      // Displays full image when tapped
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          contentPadding: const EdgeInsets.all(0),
+                          content: Image.file(
+                            File(images[index].path),
+                          ),
+                        ),
+                      );
+                    },
+                    child: Image.file(
+                      File(images[index].path),
+                      height: 100,
+                      width: 100,
+                      fit: BoxFit.cover
+                    ),
                   ),
                   const SizedBox(width: 10),
                   // Image file name
