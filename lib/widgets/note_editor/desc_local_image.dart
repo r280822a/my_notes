@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/widgets/rounded_square.dart';
+import 'package:my_notes/widgets/delete_alert_dialog.dart';
 import 'package:path/path.dart' as p;
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -65,20 +66,28 @@ class DescLocalImage extends StatelessWidget {
         PopupMenuItem(
           // Popup item to delete image
           onTap: () {
-            // Remove image from description
-            descSplitter.list.removeAt(index);
-            String newDescription = descSplitter.list.join("\n");
-            note.description = newDescription;
-            notesDB.updateNote(note);
-
             // Delete image
-            File imageFile = File(p.join(path, imageName));
-            if (imageFile.existsSync()){
-              imageFile.deleteSync();
-            }
+            showDialog(
+              context: context,
+              builder: (context) => DeleteAlertDialog(
+                item: "image",
+                deleteFunction: () {
+                  // Remove image from description
+                  descSplitter.list.removeAt(index);
+                  String newDescription = descSplitter.list.join("\n");
+                  note.description = newDescription;
+                  notesDB.updateNote(note);
 
-            Fluttertoast.showToast(msg: "Deleted image");
-            setState();
+                  // Delete image file
+                  File imageFile = File(p.join(path, imageName));
+                  if (imageFile.existsSync()){
+                    imageFile.deleteSync();
+                  }
+
+                  setState();
+                }
+              ),
+            );
           },
           child: Row(
             children: [
