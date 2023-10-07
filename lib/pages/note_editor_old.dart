@@ -120,6 +120,16 @@ class _NoteEditorState extends State<NoteEditor> {
     setState(() {});
   }
 
+  void removeDescLocalImage(int index, String imageName){
+    // Remove image
+    descriptionList.removeAt(index);
+    String newDescription = descriptionList.join("\n");
+    note.description = newDescription;
+    notesDB.updateNote(note);
+
+    setState(() {});
+  }
+
 
   // ===== Renderer =====
   void toggleRawRendered(){
@@ -211,7 +221,8 @@ class _NoteEditorState extends State<NoteEditor> {
             imageName: image,
             altText: image,
             index: (descriptionList.length - 1),
-            deleteDescLocalImage: deleteDescLocalImage
+            deleteDescLocalImage: deleteDescLocalImage,
+            removeDescLocalImage: removeDescLocalImage
           ));
         } else {
           renderedText.add(DescNetworkImage(

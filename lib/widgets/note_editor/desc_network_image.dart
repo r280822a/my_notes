@@ -28,7 +28,7 @@ class DescNetworkImage extends StatelessWidget {
 
       itemBuilder: (context) => [
         PopupMenuItem(
-          // Popup menu to delete image
+          // Popup menu to remove image
           onTap: () {
             removeDescNetworkImage(index);
           },
@@ -36,7 +36,7 @@ class DescNetworkImage extends StatelessWidget {
             children: [
               Icon(Icons.delete_outline),
               SizedBox(width: 10),
-              Text("Delete image"),
+              Text("Remove image"),
             ],
           ),
         ),

@@ -11,6 +11,7 @@ class DescLocalImage extends StatelessWidget {
     required this.altText,
     required this.index,
     required this.deleteDescLocalImage,
+    required this.removeDescLocalImage,
   });
 
   final String path;
@@ -18,6 +19,7 @@ class DescLocalImage extends StatelessWidget {
   final String altText;
   final int index;
   final Function deleteDescLocalImage;
+  final Function removeDescLocalImage;
 
   @override
   Widget build(BuildContext context) {
@@ -32,15 +34,28 @@ class DescLocalImage extends StatelessWidget {
 
       itemBuilder: (context) => [
         PopupMenuItem(
-          // Popup menu to delete image
+          // Popup menu to remove image
           onTap: () {
-            deleteDescLocalImage(index, imageName);
+            removeDescLocalImage(index, imageName);
           },
           child: const Row(
             children: [
               Icon(Icons.delete_outline),
               SizedBox(width: 10),
-              Text("Delete image"),
+              Text("Remove image"),
+            ],
+          ),
+        ),
+        PopupMenuItem(
+          // Popup menu to delete image
+          onTap: () {
+            deleteDescLocalImage(index, imageName);
+          },
+          child: Row(
+            children: [
+              Icon(Icons.delete_outline, color: Colors.red[600]),
+              const SizedBox(width: 10),
+              const Text("Delete image"),
             ],
           ),
         ),

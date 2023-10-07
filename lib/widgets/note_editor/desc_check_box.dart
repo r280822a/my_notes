@@ -41,7 +41,7 @@ class DescCheckBox extends StatelessWidget {
           )
         ),
         IconButton(
-          tooltip: "Delete checkbox",
+          tooltip: "Remove checkbox",
           onPressed: () {
             removeDescCheckBox(index);
           }, 

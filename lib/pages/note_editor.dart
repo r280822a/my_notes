@@ -115,6 +115,16 @@ class _NoteEditorState extends State<NoteEditor> {
     setState(() {});
   }
 
+  void removeDescLocalImage(int index, String imageName){
+    // Remove image
+    descSplitter.list.removeAt(index);
+    String newDescription = descSplitter.list.join("\n");
+    note.description = newDescription;
+    notesDB.updateNote(note);
+
+    setState(() {});
+  }
+
 
   // ===== Methods used in build function =====
   void toggleRawRendered(){
@@ -295,7 +305,8 @@ class _NoteEditorState extends State<NoteEditor> {
                   imageName: imageName,
                   altText: altText,
                   index: index,
-                  deleteDescLocalImage: deleteDescLocalImage
+                  deleteDescLocalImage: deleteDescLocalImage,
+                  removeDescLocalImage: removeDescLocalImage
                 );
               } else {
                 widget = DescNetworkImage(
