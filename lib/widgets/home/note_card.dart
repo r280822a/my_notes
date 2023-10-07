@@ -22,7 +22,7 @@ class NoteCard extends StatelessWidget {
     BorderSide borderSide = BorderSide(
       // If selected, add border
       color: isSelected[index] ? Theme.of(context).colorScheme.outline : Theme.of(context).colorScheme.surface,
-      width: isSelected[index] ? 3 : 0,
+      width: 3,
     );
 
     if (border) {
@@ -40,6 +40,7 @@ class NoteCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
         side: borderSide,
       ),
+
       child: Container(
         padding: const EdgeInsets.all(12),
         child: Column(

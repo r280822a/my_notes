@@ -93,7 +93,6 @@ class _HomeState extends State<Home> {
           isSelected: isSelected,
           controller: controller,
           update: () {
-            // Update in case note deleted
             isSelected = List.filled(notesDB.list.length, false, growable: true);
             setState(() {});
           }

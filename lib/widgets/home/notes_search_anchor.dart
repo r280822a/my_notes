@@ -53,7 +53,7 @@ class NotesSearchAnchor extends StatelessWidget {
   
         for (int i = 0; i < notesDB.list.length; i++){
           if (notesDB.list[i].title.toLowerCase().contains(controller.text.toLowerCase())){
-            // If note title searched, add card
+            // If note title searched for, add card
             cardList.add(
               GestureDetector(
                 onTap: () async {
