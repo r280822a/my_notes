@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_notes/widgets/home/note_card.dart';
 import 'package:my_notes/notes_database.dart';
 
+// SearchAnchor to search for notes, based on title
 class NotesSearchAnchor extends StatelessWidget {
   const NotesSearchAnchor({
     super.key,
@@ -18,7 +19,6 @@ class NotesSearchAnchor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Allows you to search for a note, based on title
     return SearchAnchor(
       searchController: controller,
       builder: (BuildContext context, SearchController controller) {
@@ -53,7 +53,7 @@ class NotesSearchAnchor extends StatelessWidget {
   
         for (int i = 0; i < notesDB.list.length; i++){
           if (notesDB.list[i].title.toLowerCase().contains(controller.text.toLowerCase())){
-            // If note title searched for, add card
+            // If note title searched for, add NoteCard
             cardList.add(
               GestureDetector(
                 onTap: () async {
