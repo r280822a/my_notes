@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// SizedBox square with rounded edges
 class RoundedSquare extends StatelessWidget {
   const RoundedSquare({
     super.key,
@@ -12,7 +13,6 @@ class RoundedSquare extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Square with rounded edges
     return SizedBox(
       height: size,
       width: size,

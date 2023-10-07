@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
+// Frosted look for given widget
 class Frosted extends StatelessWidget {
   const Frosted({
     super.key,
@@ -11,7 +12,6 @@ class Frosted extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Creates frosted look for widget
     return ClipRRect(
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
