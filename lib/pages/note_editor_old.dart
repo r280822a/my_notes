@@ -176,6 +176,7 @@ class _NoteEditorState extends State<NoteEditor> {
           textControllers.add(TextEditingController(text: join));
           renderedText.add(DescFormField(
             textController: textControllers[(descriptionList.length - 1)],
+            focusNode: FocusNode(),
             index: (descriptionList.length - 1),
             initValue: join,
             updateDescFormField: updateDescFormField
@@ -256,6 +257,7 @@ class _NoteEditorState extends State<NoteEditor> {
         Expanded(
           child: DescFormField(
             textController: textControllers[(descriptionList.length - 1)],
+            focusNode: FocusNode(),
             index: (descriptionList.length - 1),
             initValue: value,
             updateDescFormField: updateDescFormField
@@ -392,7 +394,7 @@ class _NoteEditorState extends State<NoteEditor> {
             ),
             const SizedBox(height: 10),
 
-            displayRaw ? Expanded(child: RawDescFormField(note: note, notesDB: notesDB)) : renderer(),
+            displayRaw ? Expanded(child: RawDescFormField(note: note, notesDB: notesDB, textController: TextEditingController(),)) : renderer(),
             displayRaw ? const SizedBox(height: 60) : const SizedBox(height: 0),
           ],
         ),

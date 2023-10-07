@@ -4,12 +4,14 @@ class DescFormField extends StatelessWidget {
   const DescFormField({
     super.key,
     required this.textController,
+    required this.focusNode,
     required this.index,
     required this.initValue,
     required this.updateDescFormField,
   });
 
   final TextEditingController textController;
+  final FocusNode focusNode;
   final int index;
   final String initValue;
   final Function updateDescFormField;
@@ -27,6 +29,7 @@ class DescFormField extends StatelessWidget {
       key: Key(initValue.toString() + index.toString()),
       maxLines: null,
       controller: textController,
+      focusNode: focusNode,
 
       onChanged: (value) {
         updateDescFormField(index, value);

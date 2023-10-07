@@ -5,6 +5,7 @@ class DescCheckBox extends StatelessWidget {
   const DescCheckBox({
     super.key,
     required this.textController,
+    required this.focusNode,
     required this.index,
     required this.initValue,
     required this.updateDescFormField,
@@ -14,6 +15,7 @@ class DescCheckBox extends StatelessWidget {
   });
 
   final TextEditingController textController;
+  final FocusNode focusNode;
   final int index;
   final String initValue;
   final Function updateDescFormField;
@@ -35,6 +37,7 @@ class DescCheckBox extends StatelessWidget {
         Flexible(
           child: DescFormField(
             textController: textController,
+            focusNode: focusNode,
             updateDescFormField: updateDescFormField,
             index: index,
             initValue: initValue,

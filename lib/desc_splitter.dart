@@ -6,6 +6,7 @@ class DescSplitter{
   // Holds seperate item for each textblock, checkbox, and image
   List<String> list = [];
   List<TextEditingController> textControllers = [];
+  List<FocusNode> focusNodes = [];
   Note note;
 
   DescSplitter({required this.note,});
@@ -15,6 +16,7 @@ class DescSplitter{
     // for each textblock, checkbox, and image
     list.clear();
     textControllers.clear();
+    focusNodes.clear();
 
     String description = note.description;
     List<String> lineSplitText = description.split("\n");
@@ -37,6 +39,7 @@ class DescSplitter{
           // Add textblock to lists
           list.add(join);
           textControllers.add(TextEditingController(text: join));
+          focusNodes.add(FocusNode());
           textBuffer = []; // Reset buffer
         }
       }
@@ -45,11 +48,13 @@ class DescSplitter{
         // Add checkbox to lists
         list.add(line);
         textControllers.add(TextEditingController(text: line.substring(2)));
+        focusNodes.add(FocusNode());
         endsInNonText = true;
       } else if (imgIndex == 0) {
         // Add image to lists
         list.add(line);
         textControllers.add(TextEditingController(text: line));
+        focusNodes.add(FocusNode());
         endsInNonText = true;
       } else {
         // If not, add line to buffer
@@ -70,6 +75,7 @@ class DescSplitter{
       // Add textblock to lists
       list.add(value);
       textControllers.add(TextEditingController(text: value));
+      focusNodes.add(FocusNode());
     }
   }
 }

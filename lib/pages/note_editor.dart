@@ -24,6 +24,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
   late DescSplitter descSplitter;
   TextEditingController rawTextController = TextEditingController();
+  FocusNode rawFocusNode = FocusNode();
   late String time;
 
   String path = "";
@@ -257,126 +258,139 @@ class _NoteEditorState extends State<NoteEditor> {
 
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: displayRaw ? ListView(
-          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-          children: [
-            // Title and time
-            TitleFormField(note: note, notesDB: notesDB),
-            const Divider(),
-            Text(
-              time,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
-            ),
-            const SizedBox(height: 10),
+        child: GestureDetector(
+          onTap: () {
+            // Focuses on bottom-most TextFormField
+            if (displayRaw){
+              rawFocusNode.requestFocus();
+            } else {
+              descSplitter.focusNodes[descSplitter.focusNodes.length - 1].requestFocus();
+            }
+          },
+          child: displayRaw ? ListView(
+            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+            children: [
+              // Title and time
+              TitleFormField(note: note, notesDB: notesDB),
+              const Divider(),
+              Text(
+                time,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
+              ),
+              const SizedBox(height: 10),
 
-            // Display raw note description
-            RawDescFormField(
-              note: note, 
-              notesDB: notesDB,
-              textController: rawTextController
-            ),
-            const SizedBox(height: 80)
-          ],
-        ) : ListView.builder(
-          physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
-          itemCount: descSplitter.list.length,
-          itemBuilder: (context, index) {
-            // Display rendered note description
-
-            // Text to render
-            String text = descSplitter.list[index];
-            Widget widget;
-
-            // Indexes for non-text widgets
-            int cbIndex = text.indexOf(Consts.checkboxStr);
-            int cbTickedIndex = text.indexOf(Consts.checkboxTickedStr);
-            int imgIndex = text.indexOf(Consts.imageRegex);
-            bool isTicked = false;
-
-            if ((cbIndex == 0) || (cbTickedIndex == 0)){
-              // If checkbox
-
-              isTicked = false;
-              if (cbTickedIndex == 0){isTicked = true;}
-
-              // Add checkbox
-              widget = DescCheckBox(
-                textController: descSplitter.textControllers[index],
-                index: index,
-                initValue: text.substring(2),
-                updateDescFormField: updateDescFormField,
-                isTicked: isTicked,
-                selectDescCheckBox: selectDescCheckBox,
-                removeDescCheckBox: removeDescCheckBox
-              );
-            } else if (imgIndex == 0) {
-              // If image
-
-              // Removes '![]', and everything inside them
-              String imageName = text.replaceAll(RegExp(r'!\[.*?\]'), "");
-              imageName = imageName.substring(1, imageName.length - 1);
-
-              // Removes '()', and everything inside them
-              String altText = text.replaceAll(RegExp(r'\(.*?\)'), "");
-              altText = altText.substring(2, altText.length - 1);
-
-              // Add image
-              if (imageName.startsWith("assets/")){
-                // Remove "assets/" at beginning if local image
-                imageName = imageName.substring(7, imageName.length);
-                widget = DescLocalImage(
-                  path: path,
-                  imageName: imageName,
-                  altText: altText,
+              // Display raw note description
+              RawDescFormField(
+                note: note, 
+                notesDB: notesDB,
+                textController: rawTextController,
+                focusNode: rawFocusNode
+              ),
+              const SizedBox(height: 80)
+            ],
+          ) : ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+            itemCount: descSplitter.list.length,
+            itemBuilder: (context, index) {
+              // Display rendered note description
+        
+              // Text to render
+              String text = descSplitter.list[index];
+              Widget widget;
+        
+              // Indexes for non-text widgets
+              int cbIndex = text.indexOf(Consts.checkboxStr);
+              int cbTickedIndex = text.indexOf(Consts.checkboxTickedStr);
+              int imgIndex = text.indexOf(Consts.imageRegex);
+              bool isTicked = false;
+        
+              if ((cbIndex == 0) || (cbTickedIndex == 0)){
+                // If checkbox
+        
+                isTicked = false;
+                if (cbTickedIndex == 0){isTicked = true;}
+        
+                // Add checkbox
+                widget = DescCheckBox(
+                  textController: descSplitter.textControllers[index],
+                  focusNode: descSplitter.focusNodes[index],
                   index: index,
-                  deleteDescLocalImage: deleteDescLocalImage,
-                  removeDescLocalImage: removeDescLocalImage
+                  initValue: text.substring(2),
+                  updateDescFormField: updateDescFormField,
+                  isTicked: isTicked,
+                  selectDescCheckBox: selectDescCheckBox,
+                  removeDescCheckBox: removeDescCheckBox
                 );
+              } else if (imgIndex == 0) {
+                // If image
+        
+                // Removes '![]', and everything inside them
+                String imageName = text.replaceAll(RegExp(r'!\[.*?\]'), "");
+                imageName = imageName.substring(1, imageName.length - 1);
+        
+                // Removes '()', and everything inside them
+                String altText = text.replaceAll(RegExp(r'\(.*?\)'), "");
+                altText = altText.substring(2, altText.length - 1);
+        
+                // Add image
+                if (imageName.startsWith("assets/")){
+                  // Remove "assets/" at beginning if local image
+                  imageName = imageName.substring(7, imageName.length);
+                  widget = DescLocalImage(
+                    path: path,
+                    imageName: imageName,
+                    altText: altText,
+                    index: index,
+                    deleteDescLocalImage: deleteDescLocalImage,
+                    removeDescLocalImage: removeDescLocalImage
+                  );
+                } else {
+                  widget = DescNetworkImage(
+                    link: imageName,
+                    altText: altText,
+                    index: index,
+                    removeDescNetworkImage: removeDescNetworkImage
+                  );
+                }
               } else {
-                widget = DescNetworkImage(
-                  link: imageName,
-                  altText: altText,
+                // Add textblock
+                widget = DescFormField(
+                  textController: descSplitter.textControllers[index],
+                  focusNode: descSplitter.focusNodes[index],
                   index: index,
-                  removeDescNetworkImage: removeDescNetworkImage
+                  initValue: text,
+                  updateDescFormField: updateDescFormField
                 );
               }
-            } else {
-              // Add textblock
-              widget = DescFormField(
-                textController: descSplitter.textControllers[index],
-                index: index,
-                initValue: text,
-                updateDescFormField: updateDescFormField
-              );
+        
+              if (index == 0){
+                // If beginning, add title and time
+                return Column(
+                  children: [
+                    TitleFormField(note: note, notesDB: notesDB),
+                    const Divider(),
+                    Text(
+                      time,
+                      style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
+                    ),
+                    const SizedBox(height: 10),
+                    widget
+                  ],
+                );
+              } else if (index == (descSplitter.list.length - 1)){
+                // If end, add some space so you can type
+                return Column(
+                  children: [
+                    widget,
+                    const SizedBox(height: 80)
+                  ],
+                );
+              }
+        
+              return widget;
             }
-
-            if (index == 0){
-              // If beginning, add title and time
-              return Column(
-                children: [
-                  TitleFormField(note: note, notesDB: notesDB),
-                  const Divider(),
-                  Text(
-                    time,
-                    style: TextStyle(color: Theme.of(context).unselectedWidgetColor),
-                  ),
-                  const SizedBox(height: 10),
-                  widget
-                ],
-              );
-            } else if (index == (descSplitter.list.length - 1)){
-              // If end, add some space so you can type
-              return Column(
-                children: [
-                  widget,
-                  const SizedBox(height: 80)
-                ],
-              );
-            }
-
-            return widget;
-          }
+          ),
         ),
       ),
 
