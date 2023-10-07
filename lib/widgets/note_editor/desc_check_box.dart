@@ -3,6 +3,7 @@ import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/consts.dart';
 import 'package:my_notes/widgets/note_editor/desc_form_field.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 // DescFormField with a checkbox and button to delete itself
 class DescCheckBox extends StatelessWidget {
@@ -70,6 +71,8 @@ class DescCheckBox extends StatelessWidget {
             String newDescription = descSplitter.list.join("\n");
             note.description = newDescription;
             notesDB.updateNote(note);
+
+            Fluttertoast.showToast(msg: "Removed checkbox");
             setState();
           }, 
           icon: const Icon(Icons.delete_outline)

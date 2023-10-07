@@ -30,9 +30,7 @@ class OptionsMenu extends StatelessWidget {
             // Copy note to clipboard
             String copiedText = "${note.title}\n\n${note.description}";
             Clipboard.setData(ClipboardData(text: copiedText));
-            Fluttertoast.showToast(
-              msg: "Copied to clipboard"
-            );
+            Fluttertoast.showToast(msg: "Copied to clipboard");
           },
           child: const Row(
             children: [

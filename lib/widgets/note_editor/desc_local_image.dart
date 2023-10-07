@@ -4,6 +4,7 @@ import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/widgets/rounded_square.dart';
 import 'package:path/path.dart' as p;
+import 'package:fluttertoast/fluttertoast.dart';
 
 // File image for description with remove & delete buttons
 class DescLocalImage extends StatelessWidget {
@@ -50,6 +51,7 @@ class DescLocalImage extends StatelessWidget {
             note.description = newDescription;
             notesDB.updateNote(note);
 
+            Fluttertoast.showToast(msg: "Removed image");
             setState();
           },
           child: const Row(
@@ -75,6 +77,7 @@ class DescLocalImage extends StatelessWidget {
               imageFile.deleteSync();
             }
 
+            Fluttertoast.showToast(msg: "Deleted image");
             setState();
           },
           child: Row(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/widgets/rounded_square.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 // Network image for description with remove button
 class DescNetworkImage extends StatelessWidget {
@@ -44,7 +45,8 @@ class DescNetworkImage extends StatelessWidget {
             String newDescription = descSplitter.list.join("\n");
             note.description = newDescription;
             notesDB.updateNote(note);
-
+            
+            Fluttertoast.showToast(msg: "Removed image");
             setState();
           },
           child: const Row(
