@@ -6,14 +6,14 @@ class NotesSearchAnchor extends StatelessWidget {
   const NotesSearchAnchor({
     super.key,
     required this.notesDB,
-    required this.controller,
     required this.isSelected,
+    required this.controller,
     required this.update,
   });
 
   final NotesDatabase notesDB;
-  final SearchController controller;
   final List<bool> isSelected;
+  final SearchController controller;
   final Function update;
 
   @override

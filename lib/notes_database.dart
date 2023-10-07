@@ -116,8 +116,10 @@ CREATE TABLE notes (
     await database.update("notes", note1Map, where: "_id = ?", whereArgs: [note2.id]);
 
     // Swap notes in list
-    list[list.indexOf(note1)] = note2;
-    list[list.indexOf(note2)] = tempNote1;
+    int note1Index = list.indexOf(note1);
+    int note2Index = list.indexOf(note2);
+    list[note1Index] = note2;
+    list[note2Index] = tempNote1;
   }
 }
 

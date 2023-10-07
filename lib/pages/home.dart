@@ -20,8 +20,7 @@ class _HomeState extends State<Home> {
   late NotesDatabase notesDB;
   bool loading = true;
 
-  // List to see if note is selected for given index
-  List<bool> isSelected = [];
+  List<bool> isSelected = []; // Check if note is selected for given index
   bool selectModeEnabled = false;
 
   final SearchController controller = SearchController();
@@ -44,7 +43,7 @@ class _HomeState extends State<Home> {
     setState(() {});
   }
 
-  void selectCard(index){
+  void selectCard(index) {
     // Select card at given index
     isSelected[index] = !isSelected[index];
     if (isSelected.every((element) => element == false)) {
@@ -52,6 +51,17 @@ class _HomeState extends State<Home> {
     } else {
       selectModeEnabled = true;
     }
+  }
+
+  List<Note> getSelectedNotes() {
+    List<Note> selectedNotes = [];
+    for (int i = 0; i < isSelected.length; i++){
+      if (isSelected[i]){
+        selectedNotes.add(notesDB.list[i]);
+      }
+    }
+
+    return selectedNotes;
   }
 
   @override
@@ -80,8 +90,8 @@ class _HomeState extends State<Home> {
           icon: const Icon(Icons.close)
         ) : NotesSearchAnchor(
           notesDB: notesDB,
-          controller: controller,
           isSelected: isSelected,
+          controller: controller,
           update: () {
             // Update in case note deleted
             isSelected = List.filled(notesDB.list.length, false, growable: true);
@@ -94,13 +104,7 @@ class _HomeState extends State<Home> {
           IconButton(
             tooltip: "Swap notes",
             onPressed: () async {
-              // Find notes to swap
-              List<Note> notesToSwap = [];
-              for (int i = 0; i < isSelected.length; i++){
-                if (isSelected[i]){
-                  notesToSwap.add(notesDB.list[i]);
-                }
-              }
+              List<Note> notesToSwap = getSelectedNotes();
               // Only swap if exactly 2 selected
               if (notesToSwap.length != 2){
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
@@ -121,13 +125,7 @@ class _HomeState extends State<Home> {
                 builder: (context) => DeleteAlertDialog(
                   item: "note(s)",
                   deleteFunction: () async {
-                    // Find notes to delete
-                    List<Note> notesToDelete = [];
-                    for (int i = 0; i < isSelected.length; i++){
-                      if (isSelected[i]){
-                        notesToDelete.add(notesDB.list[i]);
-                      }
-                    }
+                    List<Note> notesToDelete = getSelectedNotes();
                     // Delete all selected notes
                     for (int i = 0; i < notesToDelete.length; i++){
                       await notesDB.deleteNote(notesToDelete[i]);
@@ -168,7 +166,7 @@ class _HomeState extends State<Home> {
             await notesDB.insertNote(noteToReorder, newIndex);
             // final element = notesDB.list.removeAt(oldIndex);
             // notesDB.list.insert(newIndex, element);
-      
+
             isSelected.removeAt(oldIndex);
             isSelected.insert(newIndex, false);
             selectCard(newIndex);
@@ -176,12 +174,13 @@ class _HomeState extends State<Home> {
           },
           dragStartDelay: const Duration(milliseconds: 250),
           onDragStart: (dragIndex) {
+            // Essentially activates when long pressing
             // Select note, if not in select mode
             if (!selectModeEnabled){
               HapticFeedback.selectionClick();
               selectCard(dragIndex);
+              setState(() {});
             }
-            setState(() {});
           },
           dragWidgetBuilderV2: DragWidgetBuilderV2(builder: (int index, Widget child, ImageProvider? screenshot) {
             return NoteCard(
@@ -221,8 +220,8 @@ class _HomeState extends State<Home> {
                 setState(() {});
               },
 
+              // Preview of note
               child: NoteCard(
-                // Preview of note
                 notesDB: notesDB,
                 isSelected: isSelected,
                 index: index,
