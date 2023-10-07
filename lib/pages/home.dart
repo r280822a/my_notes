@@ -97,8 +97,8 @@ class _HomeState extends State<Home> {
             setState(() {});
           }
         ),
-      
-        // Display buttons for select mode, else nothing
+
+        // Display buttons for select mode, else local images page button
         actions: selectModeEnabled ? [
           IconButton(
             tooltip: "Swap notes",
@@ -204,7 +204,7 @@ class _HomeState extends State<Home> {
               key: Key(notesDB.list.elementAt(index).id.toString()),
               onTap: () async {
                 // If select mode is enabled, select card
-                // Else, open note editor
+                // Else, open note editor page
                 if (selectModeEnabled){
                   selectCard(index);
                 } else{
@@ -236,7 +236,7 @@ class _HomeState extends State<Home> {
           // Add empty note
           int index = await notesDB.addNote("", "");
 
-          // Open note editor
+          // Open note editor page
           if (mounted) {
             await Navigator.pushNamed(
               context,

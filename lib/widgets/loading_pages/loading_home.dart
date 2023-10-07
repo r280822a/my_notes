@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Scaffold used as loading screen for Home page
 class LoadingHome extends StatelessWidget {
   const LoadingHome({
     super.key,
@@ -14,6 +15,12 @@ class LoadingHome extends StatelessWidget {
           icon: const Icon(Icons.search),
           onPressed: () {},
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.photo_library_outlined),
+            onPressed: () {},
+          )
+        ],
       ),
 
       backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
@@ -23,9 +30,9 @@ class LoadingHome extends StatelessWidget {
         itemCount: 10,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
+          mainAxisExtent: 155,
           mainAxisSpacing: 4,
           crossAxisSpacing: 4,
-          mainAxisExtent: 150,
         ),
         itemBuilder: (context, index) {
           return Card(
