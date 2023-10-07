@@ -23,6 +23,9 @@ class _NoteEditorState extends State<NoteEditor> {
   late NotesDatabase notesDB;
 
   late DescSplitter descSplitter;
+  TextEditingController rawTextController = TextEditingController();
+  late String time;
+
   String path = "";
   bool displayRaw = false;
 
@@ -140,6 +143,14 @@ class _NoteEditorState extends State<NoteEditor> {
     int descIndex = (descSplitter.list.length - 1);
     int offset = descSplitter.list[descIndex].length;
 
+    if (displayRaw == true){
+      offset = rawTextController.selection.baseOffset;
+      return {
+        "descIndex": -1,
+        "offset": offset
+      };
+    }
+
     // Find currently selected text controller
     // Store its index and offset
     for (int i = 0; i < descSplitter.textControllers.length; i++){
@@ -160,19 +171,27 @@ class _NoteEditorState extends State<NoteEditor> {
   void addNonText(String strToAdd, int descIndex, int offset) {
     // Add non-text widget (checkbox or image)
 
+    String desc = note.description;
+    if (descIndex != -1) {desc = descSplitter.list[descIndex];}
+
     // Split text from start till index
     // To find which line to add string
-    String substring = descSplitter.list[descIndex].substring(0, offset);
+    String substring = desc.substring(0, offset);
     List<String> substringSplit = substring.split("\n");
 
     // Add string
-    List<String> textSplit = descSplitter.list[descIndex].split("\n");
+    List<String> textSplit = desc.split("\n");
     textSplit.insert(substringSplit.length, strToAdd);
-    descSplitter.list[descIndex] = textSplit.join("\n");
+    desc = textSplit.join("\n");
 
     // Update note
-    String newDescription = descSplitter.list.join("\n");
-    note.description = newDescription;
+    if (descIndex != -1) {
+      descSplitter.list[descIndex] = desc;
+      String newDescription = descSplitter.list.join("\n");
+      note.description = newDescription;
+    } else {
+      note.description = desc;
+    }
     notesDB.updateNote(note);
 
     setState(() {});
@@ -211,9 +230,11 @@ class _NoteEditorState extends State<NoteEditor> {
     descSplitter = DescSplitter(note: note);
     descSplitter.splitDescription();
 
+    rawTextController.text = note.description;
+
     // Set time
     DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(note.time);
-    String time = DateFormat('dd MMMM yyyy - hh:mm').format(dateTime);
+    time = DateFormat('dd MMMM yyyy - hh:mm').format(dateTime);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -250,7 +271,11 @@ class _NoteEditorState extends State<NoteEditor> {
             const SizedBox(height: 10),
 
             // Display raw note description
-            RawDescFormField(note: note, notesDB: notesDB),
+            RawDescFormField(
+              note: note, 
+              notesDB: notesDB,
+              textController: rawTextController
+            ),
             const SizedBox(height: 80)
           ],
         ) : ListView.builder(

@@ -6,10 +6,12 @@ class RawDescFormField extends StatelessWidget {
     super.key,
     required this.note,
     required this.notesDB,
+    required this.textController,
   });
 
   final Note note;
   final NotesDatabase notesDB;
+  final TextEditingController textController;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,8 @@ class RawDescFormField extends StatelessWidget {
         fontSize: 16,
       ),
       maxLines: null,
-      initialValue: note.description,
+      controller: textController,
+
       onChanged: (value) {
         note.description = value;
         notesDB.updateNote(note);
