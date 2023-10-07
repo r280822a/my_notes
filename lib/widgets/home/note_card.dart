@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/notes_database.dart';
 
+// Card to display preview of note
 class NoteCard extends StatelessWidget {
   const NoteCard({
     super.key,
