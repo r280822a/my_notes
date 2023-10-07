@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/consts.dart';
 
+// Splits description into textblocks and non-text sections
+// To be used in NoteEditor
 class DescSplitter{
-  // Holds seperate item for each textblock, checkbox, and image
-  List<String> list = [];
+  List<String> list = []; // Holds split up description
   List<TextEditingController> textControllers = [];
   List<FocusNode> focusNodes = [];
   Note note;
@@ -12,7 +13,7 @@ class DescSplitter{
   DescSplitter({required this.note,});
 
   void splitDescription() {
-    // Splits description into seperate items 
+    // Splits description into seperate items
     // for each textblock, checkbox, and image
     list.clear();
     textControllers.clear();
@@ -25,6 +26,8 @@ class DescSplitter{
 
     for (String line in lineSplitText){
       // Split line by line
+
+      // Indexes for non-text sections
       int cbIndex = line.indexOf(Consts.checkboxStr);
       int cbTickedIndex = line.indexOf(Consts.checkboxTickedStr);
       int imgIndex = line.indexOf(Consts.imageRegex);
