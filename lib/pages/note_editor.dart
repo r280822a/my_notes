@@ -55,6 +55,8 @@ class _NoteEditorState extends State<NoteEditor> {
   Widget build(BuildContext context) {
     if (path == ""){return const LoadingNoteEditor();}
 
+    FocusManager.instance.primaryFocus?.unfocus();
+
     // Retrieve arguements from previous page
     Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
     // Set note attributes
