@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Scaffold used as loading screen for NoteEditor page
 class LoadingNoteEditor extends StatelessWidget {
   const LoadingNoteEditor({
     super.key,
@@ -23,7 +24,7 @@ class LoadingNoteEditor extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 35),
+            SizedBox(height: 15),
             Divider(),
           ],
         ),
