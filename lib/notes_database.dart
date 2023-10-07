@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
+// Stores/edits list and database of all notes
 class NotesDatabase {
   late Database database; // Database to save notes to
   late List<Note> list; // List to help display notes
@@ -9,7 +10,7 @@ class NotesDatabase {
     // Opens the database
     String path = join(await getDatabasesPath(), "notes.db");
 
-    // await deleteDatabase(path); // For testing
+    // await deleteDatabase(path); // Deletes database - FOR TESTING ONLY
     database = await openDatabase(path, version: 1, onCreate: _createDB);
   }
 
