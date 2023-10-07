@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/widgets/home/note_card.dart';
-import 'package:my_notes/notes_db.dart';
+import 'package:my_notes/notes_database.dart';
 
 class NotesSearchAnchor extends StatelessWidget {
   const NotesSearchAnchor({

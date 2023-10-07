@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:my_notes/notes_db.dart';
+import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/widgets/rounded_square.dart';
 import 'package:path/path.dart' as p;

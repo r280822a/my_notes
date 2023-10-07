@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:my_notes/notes_db.dart';
+import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/widgets/delete_alert_dialog.dart';
 
 class OptionsMenu extends StatelessWidget {

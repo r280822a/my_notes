@@ -2,10 +2,8 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class NotesDatabase {
-  // Database to save notes to
-  late Database database;
-  // List to help display notes
-  late List<Note> list;
+  late Database database; // Database to save notes to
+  late List<Note> list; // List to help display notes
 
   Future open() async {
     // Opens the database
@@ -54,6 +52,7 @@ CREATE TABLE notes (
 
   Future insertNote(Note note, int index) async {
     // Inserts note into given index
+
     // Add blank entry
     await addNote("", "");
 
@@ -92,7 +91,7 @@ CREATE TABLE notes (
   }
 
   Future updateNote(Note note) async {
-    // Updates the note in database
+    // Updates the note in database (list should already have been updated)
     await database.update("notes", note.toMap(), where: "_id = ?", whereArgs: [note.id]);
   }
 
@@ -117,10 +116,8 @@ CREATE TABLE notes (
     await database.update("notes", note1Map, where: "_id = ?", whereArgs: [note2.id]);
 
     // Swap notes in list
-    int note1Index = list.indexOf(note1);
-    int note2Index = list.indexOf(note2);
-    list[note1Index] = note2;
-    list[note2Index] = tempNote1;
+    list[list.indexOf(note1)] = note2;
+    list[list.indexOf(note2)] = tempNote1;
   }
 }
 

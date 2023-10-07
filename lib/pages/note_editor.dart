@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'dart:io';
-import 'package:my_notes/notes_db.dart';
+import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/consts.dart';
 import 'package:my_notes/widgets/note_editor/all.dart';
