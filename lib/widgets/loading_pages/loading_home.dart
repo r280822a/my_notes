@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 // Scaffold used as loading screen for Home page
+// No buttons work
 class LoadingHome extends StatelessWidget {
   const LoadingHome({
     super.key,

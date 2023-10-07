@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 // Scaffold used as loading screen for LocalImages page
 // Also used if no local images stored
+// No buttons work
 class LoadingLocalImages extends StatelessWidget {
   const LoadingLocalImages({super.key});
 

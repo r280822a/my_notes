@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 // Scaffold used as loading screen for NoteEditor page
+// No buttons work
 class LoadingNoteEditor extends StatelessWidget {
   const LoadingNoteEditor({
     super.key,
