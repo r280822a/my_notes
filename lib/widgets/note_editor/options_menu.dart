@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/widgets/delete_alert_dialog.dart';
 
+// PopupMenuButton for options to interact with note
 class OptionsMenu extends StatelessWidget {
   const OptionsMenu({
     super.key,

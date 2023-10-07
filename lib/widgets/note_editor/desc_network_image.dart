@@ -3,6 +3,7 @@ import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/widgets/rounded_square.dart';
 
+// Network image for description with remove button
 class DescNetworkImage extends StatelessWidget {
   const DescNetworkImage({
     super.key,
@@ -36,9 +37,9 @@ class DescNetworkImage extends StatelessWidget {
 
       itemBuilder: (context) => [
         PopupMenuItem(
-          // Popup menu to remove image
+          // Popup item to remove image
           onTap: () {
-            // Remove image
+            // Remove image from description
             descSplitter.list.removeAt(index);
             String newDescription = descSplitter.list.join("\n");
             note.description = newDescription;
@@ -62,8 +63,8 @@ class DescNetworkImage extends StatelessWidget {
           loadingBuilder: (context, child, loadingProgress) {
             if (loadingProgress == null) return child;
 
+            // Progress indicator when loading
             return RoundedSquare(
-              // Progress indicator
               size: size, 
               child: CircularProgressIndicator(
                 value: loadingProgress.expectedTotalBytes != null ? 
@@ -74,7 +75,7 @@ class DescNetworkImage extends StatelessWidget {
           },
 
           errorBuilder: (context, error, stackTrace) {
-            // Error icon
+            // Error icon if not found
             return RoundedSquare(size: size, child: const Icon(Icons.error));
           },
         ),

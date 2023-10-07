@@ -5,6 +5,7 @@ import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/widgets/rounded_square.dart';
 import 'package:path/path.dart' as p;
 
+// File image for description with remove & delete buttons
 class DescLocalImage extends StatelessWidget {
   const DescLocalImage({
     super.key,
@@ -40,9 +41,10 @@ class DescLocalImage extends StatelessWidget {
 
       itemBuilder: (context) => [
         PopupMenuItem(
-          // Popup menu to remove image
+          // Popup item to remove image
           onTap: () {
-            // Remove image
+            // Remove image from description
+            // Doesn't delete file
             descSplitter.list.removeAt(index);
             String newDescription = descSplitter.list.join("\n");
             note.description = newDescription;
@@ -59,14 +61,15 @@ class DescLocalImage extends StatelessWidget {
           ),
         ),
         PopupMenuItem(
-          // Popup menu to delete image
+          // Popup item to delete image
           onTap: () {
-            // Delete image
+            // Remove image from description
             descSplitter.list.removeAt(index);
             String newDescription = descSplitter.list.join("\n");
             note.description = newDescription;
             notesDB.updateNote(note);
 
+            // Delete image
             File imageFile = File(p.join(path, imageName));
             if (imageFile.existsSync()){
               imageFile.deleteSync();
@@ -89,7 +92,7 @@ class DescLocalImage extends StatelessWidget {
           File(p.join(path, imageName)),
 
           errorBuilder: (context, error, stackTrace) {
-            // Error icon inside square with rounded edges
+            // Error icon if not found
             return RoundedSquare(size: size, child: const Icon(Icons.error));
           },
         ),

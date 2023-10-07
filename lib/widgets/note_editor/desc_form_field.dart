@@ -3,6 +3,7 @@ import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/consts.dart';
 
+// TextFormField that displays/edits rendered description
 class DescFormField extends StatelessWidget {
   const DescFormField({
     super.key,
@@ -23,7 +24,6 @@ class DescFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TextFormField for textblock (and checkbox)
     return TextFormField(
       decoration: const InputDecoration(
         border: InputBorder.none,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/notes_database.dart';
 
+// TextFormField for title
 class TitleFormField extends StatelessWidget {
   const TitleFormField({
     super.key,
@@ -13,7 +14,6 @@ class TitleFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TextFormField for title
     return TextFormField(
       decoration: const InputDecoration(
         border: InputBorder.none,

@@ -4,6 +4,7 @@ import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/consts.dart';
 import 'package:my_notes/widgets/note_editor/desc_form_field.dart';
 
+// DescFormField with a checkbox and button to delete itself
 class DescCheckBox extends StatelessWidget {
   const DescCheckBox({
     super.key,
@@ -28,7 +29,6 @@ class DescCheckBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Checkbox with TextFormField and delete button
     return Row(
       children: [
         Checkbox(
@@ -37,13 +37,13 @@ class DescCheckBox extends StatelessWidget {
             // Ticks/Unticks checkbox
 
             // Symbol to put at start
-            String str = Consts.checkboxTickedStr;
+            String symbol = Consts.checkboxTickedStr;
             if (isTicked){
-              str = Consts.checkboxStr;
+              symbol = Consts.checkboxStr;
             }
 
             // Change checkbox symbol
-            descSplitter.list[index] = str + descSplitter.list[index].substring(2);
+            descSplitter.list[index] = symbol + descSplitter.list[index].substring(2);
 
             // Update note
             String newDescription = descSplitter.list.join("\n");

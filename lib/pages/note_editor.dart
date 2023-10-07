@@ -36,7 +36,7 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
   void getPath() async {
-    // Store path for local images
+    // Store path for local images folder
     Directory docDir = await getApplicationDocumentsDirectory();
     String docPath = docDir.path.toString();
     path = p.join(docPath, "assets");

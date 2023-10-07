@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/notes_database.dart';
 
+// TextFormField that displays/edits raw/unrendered description
+// (mainly for testing)
 class RawDescFormField extends StatelessWidget {
   const RawDescFormField({
     super.key,
@@ -17,7 +19,6 @@ class RawDescFormField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TextFormField for unrendered description (mainly for testing)
     return TextFormField(
       decoration: const InputDecoration(
         border: InputBorder.none,

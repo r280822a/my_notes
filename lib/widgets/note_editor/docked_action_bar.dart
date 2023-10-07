@@ -7,6 +7,7 @@ import 'package:my_notes/widgets/frosted.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 
+// Bottom bar to add non-text widgets to description
 class DockedActionBar extends StatelessWidget {
   const DockedActionBar({
     super.key,
@@ -35,11 +36,13 @@ class DockedActionBar extends StatelessWidget {
     int offset = descSplitter.list[descIndex].length;
 
     if (displayRaw == true){
+      // If raw, only send offset
       offset = rawTextController.selection.baseOffset;
-      return {
+      Map<String, int> result = {
         "descIndex": -1,
         "offset": offset
       };
+      return result;
     }
 
     // Find currently selected text controller
@@ -60,28 +63,29 @@ class DockedActionBar extends StatelessWidget {
   }
 
   void addNonText(String strToAdd, int descIndex, int offset) {
-    // Add non-text widget (checkbox or image)
+    // Add non-text widget
 
-    String desc = note.description;
-    if (descIndex != -1) {desc = descSplitter.list[descIndex];}
+    // Full description if raw, else use selected textblock/checkbox
+    String text = note.description;
+    if (descIndex != -1) {text = descSplitter.list[descIndex];}
 
     // Split text from start till index
     // To find which line to add string
-    String substring = desc.substring(0, offset);
+    String substring = text.substring(0, offset);
     List<String> substringSplit = substring.split("\n");
 
     // Add string
-    List<String> textSplit = desc.split("\n");
+    List<String> textSplit = text.split("\n");
     textSplit.insert(substringSplit.length, strToAdd);
-    desc = textSplit.join("\n");
+    text = textSplit.join("\n");
 
     // Update note
     if (descIndex != -1) {
-      descSplitter.list[descIndex] = desc;
+      descSplitter.list[descIndex] = text;
       String newDescription = descSplitter.list.join("\n");
       note.description = newDescription;
     } else {
-      note.description = desc;
+      note.description = text;
     }
     notesDB.updateNote(note);
 
@@ -97,7 +101,7 @@ class DockedActionBar extends StatelessWidget {
     // Convert XFile to file
     File imageFile = File(image.path);
 
-    // Copy image to new path
+    // Copy image to local images folder
     List split = p.split(image.path);
     String imageName = split[split.length - 1];
     imageFile.copySync("$path/$imageName");
@@ -107,7 +111,6 @@ class DockedActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Add non-text widgets to description
     return Frosted(
       child: Container(
         color: Theme.of(context).colorScheme.background.withAlpha(190),
@@ -135,9 +138,9 @@ class DockedActionBar extends StatelessWidget {
                 showModalBottomSheet(
                   context: context,
                   builder: (BuildContext context) => AddImageBottomSheet(
-                    pickImage: pickImage,
                     getCurrentTextPos: getCurrentTextPos,
-                    addNonText: addNonText
+                    addNonText: addNonText,
+                    pickImage: pickImage,
                   ),
                 );
               },
@@ -154,14 +157,14 @@ class DockedActionBar extends StatelessWidget {
 class AddImageBottomSheet extends StatelessWidget {
   const AddImageBottomSheet({
     super.key,
-    required this.pickImage,
     required this.getCurrentTextPos,
     required this.addNonText,
+    required this.pickImage,
   });
 
-  final Function pickImage;
   final Function getCurrentTextPos;
   final Function addNonText;
+  final Function pickImage;
 
   @override
   Widget build(BuildContext context) {
@@ -215,7 +218,7 @@ class AddImageBottomSheet extends StatelessWidget {
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
-                      // Lets user add link
+                      // Let user add link
                       title: const Text("Enter image link below"),
                       content: TextField(
                         decoration: const InputDecoration(
