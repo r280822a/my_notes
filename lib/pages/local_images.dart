@@ -35,8 +35,10 @@ class _LocalImagesState extends State<LocalImages> {
     // Stores list of image files
     images = Directory(path).listSync();
 
-    loading = false;
-    setState(() {});
+    if (images.isNotEmpty){
+      loading = false;
+      setState(() {});
+    }
   }
   
 
