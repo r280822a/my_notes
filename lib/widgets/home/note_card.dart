@@ -58,7 +58,7 @@ class NoteCard extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-    
+
             Text(
               note.description,
               overflow: TextOverflow.ellipsis,

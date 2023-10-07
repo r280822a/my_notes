@@ -132,20 +132,20 @@ class _NoteEditorState extends State<NoteEditor> {
 
               String text = descSplitter.list[index]; // Text to render
               Widget widget;
-        
+
               // Indexes for non-text widgets
               int cbIndex = text.indexOf(Consts.checkboxStr);
               int cbTickedIndex = text.indexOf(Consts.checkboxTickedStr);
               int imgIndex = text.indexOf(Consts.imageRegex);
 
               bool isTicked = false;
-        
+
               if ((cbIndex == 0) || (cbTickedIndex == 0)){
                 // If checkbox
-        
+
                 isTicked = false;
                 if (cbTickedIndex == 0){isTicked = true;}
-        
+
                 // Add checkbox
                 widget = DescCheckBox(
                   note: note,
@@ -159,15 +159,15 @@ class _NoteEditorState extends State<NoteEditor> {
                 );
               } else if (imgIndex == 0) {
                 // If image
-        
+
                 // Removes '![]', and everything inside
                 String imageName = text.replaceAll(RegExp(r'!\[.*?\]'), "");
                 imageName = imageName.substring(1, imageName.length - 1);
-        
+
                 // Removes '()', and everything inside
                 String altText = text.replaceAll(RegExp(r'\(.*?\)'), "");
                 altText = altText.substring(2, altText.length - 1);
-        
+
                 // Add image
                 if (imageName.startsWith("assets/")){
                   // Remove "assets/" at beginning for local image
@@ -204,7 +204,7 @@ class _NoteEditorState extends State<NoteEditor> {
                   index: index,
                 );
               }
-        
+
               if (index == 0){
                 // If beginning, add title and time
                 return Column(
@@ -228,7 +228,7 @@ class _NoteEditorState extends State<NoteEditor> {
                   ],
                 );
               }
-        
+
               return widget;
             }
           ),

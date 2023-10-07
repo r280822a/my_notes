@@ -43,14 +43,14 @@ class NotesSearchAnchor extends StatelessWidget {
           children: iterable.toList(),
         );
       },
-  
+
       suggestionsBuilder: 
       (BuildContext context, SearchController controller) {
         // Builds search results
         if (controller.text.isEmpty){return [];}
-  
+
         List<Widget> cardList = [];
-  
+
         for (int i = 0; i < notesDB.list.length; i++){
           if (notesDB.list[i].title.toLowerCase().contains(controller.text.toLowerCase())){
             // If note title searched for, add NoteCard

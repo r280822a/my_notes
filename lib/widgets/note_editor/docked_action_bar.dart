@@ -181,12 +181,12 @@ class AddImageBottomSheet extends StatelessWidget {
                   // Add local image
                   Navigator.pop(context);
                   String imageName = await pickImage();
-                    
+
                   if (imageName != ""){
                     Map<String, int> currentPos = getCurrentTextPos();
                     int descIndex = currentPos["descIndex"] as int;
                     int offset = currentPos["offset"] as int;
-                    
+
                     String link = "![](assets/$imageName)";
                     addNonText(link, descIndex, offset);
                   }
@@ -213,7 +213,7 @@ class AddImageBottomSheet extends StatelessWidget {
                   Map<String, int> currentPos = getCurrentTextPos();
                   int descIndex = currentPos["descIndex"] as int;
                   int offset = currentPos["offset"] as int;
-                    
+
                   TextEditingController linkController = TextEditingController();
                   showDialog(
                     context: context,
