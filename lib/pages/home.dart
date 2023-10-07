@@ -8,6 +8,7 @@ import 'package:my_notes/widgets/home/note_card.dart';
 import 'package:my_notes/widgets/home/notes_search_anchor.dart';
 // import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -106,9 +107,10 @@ class _HomeState extends State<Home> {
               List<Note> notesToSwap = getSelectedNotes();
               // Only swap if exactly 2 selected
               if (notesToSwap.length != 2){
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text("Swapping only works with 2 notes"),
-                ));
+                Fluttertoast.showToast(
+                  msg: "Swapping only works when exactly 2 notes selected",
+                  toastLength: Toast.LENGTH_LONG
+                );
               } else{
                 await notesDB.swapNote(notesToSwap[0], notesToSwap[1]);
               }

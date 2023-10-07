@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/widgets/delete_alert_dialog.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 // PopupMenuButton for options to interact with note
 class OptionsMenu extends StatelessWidget {
@@ -29,11 +30,8 @@ class OptionsMenu extends StatelessWidget {
             // Copy note to clipboard
             String copiedText = "${note.title}\n\n${note.description}";
             Clipboard.setData(ClipboardData(text: copiedText));
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text("Copied to clipboard"),
-                behavior: SnackBarBehavior.floating
-              ),
+            Fluttertoast.showToast(
+              msg: "Copied to clipboard"
             );
           },
           child: const Row(

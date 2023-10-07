@@ -144,6 +144,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  fluttertoast:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: f4e7b4e1afc8c760eb5bac80f6a2e299906d83ca
+      url: "https://github.com/ponnamkarthik/FlutterToast.git"
+    source: git
+    version: "8.2.2"
   http:
     dependency: transitive
     description:
