@@ -51,14 +51,13 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
 
-  // ===== Build function =====
   @override
   Widget build(BuildContext context) {
     if (path == ""){return const LoadingNoteEditor();}
 
     // Retrieve arguements from previous page
     Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
-    // Set attributes
+    // Set note attributes
     note = arguments["note"];
     notesDB = arguments["notesDB"];
 
@@ -95,13 +94,14 @@ class _NoteEditorState extends State<NoteEditor> {
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: GestureDetector(
           onTap: () {
-            // Focuses on bottom-most TextFormField
+            // Focus on bottom-most TextFormField, when tapping background
             if (displayRaw){
               rawFocusNode.requestFocus();
             } else {
               descSplitter.focusNodes[descSplitter.focusNodes.length - 1].requestFocus();
             }
           },
+
           child: displayRaw ? ListView(
             physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
             children: [
@@ -129,15 +129,15 @@ class _NoteEditorState extends State<NoteEditor> {
             itemCount: descSplitter.list.length,
             itemBuilder: (context, index) {
               // Display rendered note description
-        
-              // Text to render
-              String text = descSplitter.list[index];
+
+              String text = descSplitter.list[index]; // Text to render
               Widget widget;
         
               // Indexes for non-text widgets
               int cbIndex = text.indexOf(Consts.checkboxStr);
               int cbTickedIndex = text.indexOf(Consts.checkboxTickedStr);
               int imgIndex = text.indexOf(Consts.imageRegex);
+
               bool isTicked = false;
         
               if ((cbIndex == 0) || (cbTickedIndex == 0)){
@@ -160,17 +160,17 @@ class _NoteEditorState extends State<NoteEditor> {
               } else if (imgIndex == 0) {
                 // If image
         
-                // Removes '![]', and everything inside them
+                // Removes '![]', and everything inside
                 String imageName = text.replaceAll(RegExp(r'!\[.*?\]'), "");
                 imageName = imageName.substring(1, imageName.length - 1);
         
-                // Removes '()', and everything inside them
+                // Removes '()', and everything inside
                 String altText = text.replaceAll(RegExp(r'\(.*?\)'), "");
                 altText = altText.substring(2, altText.length - 1);
         
                 // Add image
                 if (imageName.startsWith("assets/")){
-                  // Remove "assets/" at beginning if local image
+                  // Remove "assets/" at beginning for local image
                   imageName = imageName.substring(7, imageName.length);
                   widget = DescLocalImage(
                     note: note,
@@ -220,7 +220,7 @@ class _NoteEditorState extends State<NoteEditor> {
                   ],
                 );
               } else if (index == (descSplitter.list.length - 1)){
-                // If end, add some space so you can type
+                // If end, to account for DockedActionBar
                 return Column(
                   children: [
                     widget,
