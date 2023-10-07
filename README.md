@@ -14,3 +14,4 @@ Makes use of a SQFLite to store notes on the device
 - Search notes
 - Copy note
 - Add (internet & local) images
+- Add alt text to images
