@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'dart:io';
 import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/consts.dart';
 import 'package:my_notes/widgets/note_editor/all.dart';
 import 'package:my_notes/widgets/frosted.dart';
 import 'package:my_notes/widgets/loading_pages/loading_note_editor.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 
 class NoteEditor extends StatefulWidget {
   const NoteEditor({super.key});
@@ -37,10 +34,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
   void getPath() async {
     // Store path for local images folder
-    Directory docDir = await getApplicationDocumentsDirectory();
-    String docPath = docDir.path.toString();
-    path = p.join(docPath, "assets");
-    await Directory(path).create(recursive: true);
+    path = await Consts.getLocalImagesPath();
     setState(() {});
   }
 

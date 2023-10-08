@@ -3,8 +3,7 @@ import 'dart:io';
 import 'package:my_notes/widgets/loading_pages/loading_local_images.dart';
 import 'package:my_notes/widgets/delete_alert_dialog.dart';
 import 'package:my_notes/widgets/frosted.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
+import 'package:my_notes/consts.dart';
 
 class LocalImages extends StatefulWidget {
   const LocalImages({super.key});
@@ -27,10 +26,7 @@ class _LocalImagesState extends State<LocalImages> {
     // Get a list of image files
 
     // Gets path to images
-    Directory docDir = await getApplicationDocumentsDirectory();
-    String docPath = docDir.path.toString();
-    String path = p.join(docPath, "assets");
-    await Directory(path).create(recursive: true);
+    String path = await Consts.getLocalImagesPath();
 
     // Stores list of image files
     images = Directory(path).listSync();
