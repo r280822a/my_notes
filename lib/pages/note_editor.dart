@@ -57,6 +57,8 @@ class _NoteEditorState extends State<NoteEditor> {
     if (path == ""){return const LoadingNoteEditor();}
 
     if (loading){
+      // Only load once, on initalisation
+
       // Retrieve arguements from previous page
       Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
       // Set note attributes
@@ -239,18 +241,22 @@ class _NoteEditorState extends State<NoteEditor> {
         ),
       ),
 
+      resizeToAvoidBottomInset: false,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: DockedActionBar(
-        note: note,
-        notesDB: notesDB,
-        descSplitter: descSplitter,
-        displayRaw: displayRaw,
-        path: path,
-        rawTextController: rawTextController,
-        setState: () {setState(() {
-          FocusManager.instance.primaryFocus?.unfocus();
-          updateDescription();
-        });},
+      floatingActionButton: Padding(
+        padding: MediaQuery.of(context).viewInsets,
+        child: DockedActionBar(
+          note: note,
+          notesDB: notesDB,
+          descSplitter: descSplitter,
+          displayRaw: displayRaw,
+          path: path,
+          rawTextController: rawTextController,
+          setState: () {setState(() {
+            FocusManager.instance.primaryFocus?.unfocus();
+            updateDescription();
+          });},
+        ),
       ),
     );
   }
