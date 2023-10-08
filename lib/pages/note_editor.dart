@@ -97,7 +97,7 @@ class _NoteEditorState extends State<NoteEditor> {
       ),
 
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
+        padding: EdgeInsets.fromLTRB(20, 0, 20, MediaQuery.of(context).viewInsets.bottom),
         child: GestureDetector(
           onTap: () {
             // Focus on bottom-most TextFormField, when tapping background
