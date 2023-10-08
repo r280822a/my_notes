@@ -46,6 +46,7 @@ class _NoteEditorState extends State<NoteEditor> {
   }
 
   void updateDescription() {
+    // Split description / set raw text
     descSplitter.splitDescription();
     rawTextController.text = note.description;
   }
@@ -62,10 +63,9 @@ class _NoteEditorState extends State<NoteEditor> {
       note = arguments["note"];
       notesDB = arguments["notesDB"];
 
-      // Split description / set raw text
+      // Set description
       descSplitter = DescSplitter(note: note);
-      descSplitter.splitDescription();
-      rawTextController.text = note.description;
+      updateDescription();
 
       // Set time
       DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(note.time);
