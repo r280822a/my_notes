@@ -6,6 +6,7 @@ Makes use of a SQFLite to store notes locally on the device
 
 ## Features
 - Supports dynamic themes
+- Supports adaptive app icon
 - Uses bouncy scroll physics (like iOS)
 - Uses frosted UI elements (glassmorphism)
 - Supports unicode
