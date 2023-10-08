@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'dart:io';
 import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/consts.dart';
 import 'package:my_notes/widgets/note_editor/all.dart';
 import 'package:my_notes/widgets/frosted.dart';
 import 'package:my_notes/widgets/loading_pages/loading_note_editor.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 
 class NoteEditor extends StatefulWidget {
   const NoteEditor({super.key});
@@ -28,6 +25,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
   String path = "";
   bool displayRaw = false;
+  bool loading = true;
 
   @override
   void initState() {
@@ -37,17 +35,20 @@ class _NoteEditorState extends State<NoteEditor> {
 
   void getPath() async {
     // Store path for local images folder
-    Directory docDir = await getApplicationDocumentsDirectory();
-    String docPath = docDir.path.toString();
-    path = p.join(docPath, "assets");
-    await Directory(path).create(recursive: true);
+    path = await Consts.getLocalImagesPath();
     setState(() {});
   }
 
-  void toggleRawRendered(){
+  void toggleRawRendered() {
     // Toggle raw/rendered description
     displayRaw = !displayRaw;
     setState(() {});
+  }
+
+  void updateDescription() {
+    // Split description / set raw text
+    descSplitter.splitDescription();
+    rawTextController.text = note.description;
   }
 
 
@@ -55,23 +56,26 @@ class _NoteEditorState extends State<NoteEditor> {
   Widget build(BuildContext context) {
     if (path == ""){return const LoadingNoteEditor();}
 
-    FocusManager.instance.primaryFocus?.unfocus();
+    if (loading){
+      // Only load once, on initalisation
 
-    // Retrieve arguements from previous page
-    Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
-    // Set note attributes
-    note = arguments["note"];
-    notesDB = arguments["notesDB"];
+      // Retrieve arguements from previous page
+      Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
+      // Set note attributes
+      note = arguments["note"];
+      notesDB = arguments["notesDB"];
 
-    // Split description
-    descSplitter = DescSplitter(note: note);
-    descSplitter.splitDescription();
+      // Set description
+      descSplitter = DescSplitter(note: note);
+      updateDescription();
 
-    rawTextController.text = note.description;
+      // Set time
+      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(note.time);
+      time = DateFormat('dd MMMM yyyy - hh:mm').format(dateTime);
 
-    // Set time
-    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(note.time);
-    time = DateFormat('dd MMMM yyyy - hh:mm').format(dateTime);
+      loading = false;
+    }
+
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -157,7 +161,7 @@ class _NoteEditorState extends State<NoteEditor> {
                   focusNode: descSplitter.focusNodes[index],
                   index: index,
                   isTicked: isTicked,
-                  setState: () {setState(() {});},
+                  setState: () {setState(() {updateDescription();});},
                 );
               } else if (imgIndex == 0) {
                 // If image
@@ -182,7 +186,7 @@ class _NoteEditorState extends State<NoteEditor> {
                     path: path,
                     imageName: imageName,
                     altText: altText,
-                    setState: () {setState(() {});},
+                    setState: () {setState(() {updateDescription();});},
                   );
                 } else {
                   widget = DescNetworkImage(
@@ -192,7 +196,7 @@ class _NoteEditorState extends State<NoteEditor> {
                     index: index,
                     link: imageName,
                     altText: altText,
-                    setState: () {setState(() {});}
+                    setState: () {setState(() {updateDescription();});}
                   );
                 }
               } else {
@@ -237,15 +241,22 @@ class _NoteEditorState extends State<NoteEditor> {
         ),
       ),
 
+      resizeToAvoidBottomInset: false,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: DockedActionBar(
-        note: note,
-        notesDB: notesDB,
-        descSplitter: descSplitter,
-        displayRaw: displayRaw,
-        path: path,
-        rawTextController: rawTextController,
-        setState: () {setState(() {});},
+      floatingActionButton: Padding(
+        padding: MediaQuery.of(context).viewInsets,
+        child: DockedActionBar(
+          note: note,
+          notesDB: notesDB,
+          descSplitter: descSplitter,
+          displayRaw: displayRaw,
+          path: path,
+          rawTextController: rawTextController,
+          setState: () {setState(() {
+            FocusManager.instance.primaryFocus?.unfocus();
+            updateDescription();
+          });},
+        ),
       ),
     );
   }
