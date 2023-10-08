@@ -25,6 +25,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
   String path = "";
   bool displayRaw = false;
+  bool loading = true;
 
   @override
   void initState() {
@@ -38,10 +39,15 @@ class _NoteEditorState extends State<NoteEditor> {
     setState(() {});
   }
 
-  void toggleRawRendered(){
+  void toggleRawRendered() {
     // Toggle raw/rendered description
     displayRaw = !displayRaw;
     setState(() {});
+  }
+
+  void updateDescription() {
+    descSplitter.splitDescription();
+    rawTextController.text = note.description;
   }
 
 
@@ -49,23 +55,25 @@ class _NoteEditorState extends State<NoteEditor> {
   Widget build(BuildContext context) {
     if (path == ""){return const LoadingNoteEditor();}
 
-    FocusManager.instance.primaryFocus?.unfocus();
+    if (loading){
+      // Retrieve arguements from previous page
+      Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
+      // Set note attributes
+      note = arguments["note"];
+      notesDB = arguments["notesDB"];
 
-    // Retrieve arguements from previous page
-    Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
-    // Set note attributes
-    note = arguments["note"];
-    notesDB = arguments["notesDB"];
+      // Split description / set raw text
+      descSplitter = DescSplitter(note: note);
+      descSplitter.splitDescription();
+      rawTextController.text = note.description;
 
-    // Split description
-    descSplitter = DescSplitter(note: note);
-    descSplitter.splitDescription();
+      // Set time
+      DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(note.time);
+      time = DateFormat('dd MMMM yyyy - hh:mm').format(dateTime);
 
-    rawTextController.text = note.description;
+      loading = false;
+    }
 
-    // Set time
-    DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(note.time);
-    time = DateFormat('dd MMMM yyyy - hh:mm').format(dateTime);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -151,7 +159,7 @@ class _NoteEditorState extends State<NoteEditor> {
                   focusNode: descSplitter.focusNodes[index],
                   index: index,
                   isTicked: isTicked,
-                  setState: () {setState(() {});},
+                  setState: () {setState(() {updateDescription();});},
                 );
               } else if (imgIndex == 0) {
                 // If image
@@ -176,7 +184,7 @@ class _NoteEditorState extends State<NoteEditor> {
                     path: path,
                     imageName: imageName,
                     altText: altText,
-                    setState: () {setState(() {});},
+                    setState: () {setState(() {updateDescription();});},
                   );
                 } else {
                   widget = DescNetworkImage(
@@ -186,7 +194,7 @@ class _NoteEditorState extends State<NoteEditor> {
                     index: index,
                     link: imageName,
                     altText: altText,
-                    setState: () {setState(() {});}
+                    setState: () {setState(() {updateDescription();});}
                   );
                 }
               } else {
@@ -239,7 +247,10 @@ class _NoteEditorState extends State<NoteEditor> {
         displayRaw: displayRaw,
         path: path,
         rawTextController: rawTextController,
-        setState: () {setState(() {});},
+        setState: () {setState(() {
+          FocusManager.instance.primaryFocus?.unfocus();
+          updateDescription();
+        });},
       ),
     );
   }
