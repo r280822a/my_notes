@@ -82,13 +82,11 @@ class DockedActionBar extends StatelessWidget {
     // Update note
     if (descIndex != -1) {
       descSplitter.list[descIndex] = text;
-      String newDescription = descSplitter.list.join("\n");
-      note.description = newDescription;
+      descSplitter.joinDescription();
     } else {
       note.description = text;
+      notesDB.updateNote(note);
     }
-    notesDB.updateNote(note);
-
     setState();
   }
 

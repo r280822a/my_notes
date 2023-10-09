@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/consts.dart';
 
@@ -7,16 +6,12 @@ import 'package:my_notes/consts.dart';
 class DescFormField extends StatelessWidget {
   const DescFormField({
     super.key,
-    required this.note,
-    required this.notesDB,
     required this.descSplitter,
     required this.index,
     required this.textController,
     required this.focusNode,
   });
 
-  final Note note;
-  final NotesDatabase notesDB;
   final DescSplitter descSplitter;
   final int index;
   final TextEditingController textController;
@@ -48,10 +43,7 @@ class DescFormField extends StatelessWidget {
           value = "${Consts.checkboxTickedStr}$value";
         }
         descSplitter.list[index] = value;
-        String newDescription = descSplitter.list.join("\n");
-
-        note.description = newDescription;
-        notesDB.updateNote(note);
+        descSplitter.joinDescription();
       },
     );
   }

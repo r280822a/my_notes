@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/widgets/rounded_square.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -8,8 +7,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 class DescNetworkImage extends StatelessWidget {
   const DescNetworkImage({
     super.key,
-    required this.note,
-    required this.notesDB,
     required this.descSplitter,
     required this.index,
     required this.link,
@@ -17,8 +14,6 @@ class DescNetworkImage extends StatelessWidget {
     required this.setState,
   });
 
-  final Note note;
-  final NotesDatabase notesDB;
   final DescSplitter descSplitter;
   final int index;
   final String link;
@@ -42,10 +37,8 @@ class DescNetworkImage extends StatelessWidget {
           onTap: () {
             // Remove image from description
             descSplitter.list.removeAt(index);
-            String newDescription = descSplitter.list.join("\n");
-            note.description = newDescription;
-            notesDB.updateNote(note);
-            
+            descSplitter.joinDescription();
+
             Fluttertoast.showToast(msg: "Removed image");
             setState();
           },

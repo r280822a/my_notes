@@ -78,7 +78,7 @@ class _NoteEditorState extends State<NoteEditor> {
       notesDB = arguments["notesDB"];
 
       // Set description
-      descSplitter = DescSplitter(note: note);
+      descSplitter = DescSplitter(note: note, notesDB: notesDB);
       updateDescription();
 
       // Set time
@@ -166,8 +166,6 @@ class _NoteEditorState extends State<NoteEditor> {
 
                 // Add checkbox
                 widget = DescCheckBox(
-                  note: note,
-                  notesDB: notesDB,
                   descSplitter: descSplitter,
                   textController: descSplitter.textControllers[index],
                   focusNode: descSplitter.focusNodes[index],
@@ -191,8 +189,6 @@ class _NoteEditorState extends State<NoteEditor> {
                   // Remove "local_images/" at beginning of image name
                   imageName = imageName.replaceAll("local_images/", "");
                   widget = DescLocalImage(
-                    note: note,
-                    notesDB: notesDB,
                     descSplitter: descSplitter,
                     index: index,
                     path: path,
@@ -202,8 +198,6 @@ class _NoteEditorState extends State<NoteEditor> {
                   );
                 } else {
                   widget = DescNetworkImage(
-                    note: note,
-                    notesDB: notesDB,
                     descSplitter: descSplitter,
                     index: index,
                     link: imageName,
@@ -214,8 +208,6 @@ class _NoteEditorState extends State<NoteEditor> {
               } else {
                 // Add textblock
                 widget = DescFormField(
-                  note: note,
-                  notesDB: notesDB,
                   descSplitter: descSplitter,
                   textController: descSplitter.textControllers[index],
                   focusNode: descSplitter.focusNodes[index],

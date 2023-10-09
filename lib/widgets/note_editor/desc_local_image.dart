@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/widgets/rounded_square.dart';
 import 'package:my_notes/widgets/delete_alert_dialog.dart';
@@ -11,8 +10,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 class DescLocalImage extends StatelessWidget {
   const DescLocalImage({
     super.key,
-    required this.note,
-    required this.notesDB,
     required this.descSplitter,
     required this.path,
     required this.imageName,
@@ -21,8 +18,6 @@ class DescLocalImage extends StatelessWidget {
     required this.setState,
   });
 
-  final Note note;
-  final NotesDatabase notesDB;
   final DescSplitter descSplitter;
   final int index;
   final String path;
@@ -48,9 +43,7 @@ class DescLocalImage extends StatelessWidget {
             // Remove image from description
             // Doesn't delete file
             descSplitter.list.removeAt(index);
-            String newDescription = descSplitter.list.join("\n");
-            note.description = newDescription;
-            notesDB.updateNote(note);
+            descSplitter.joinDescription();
 
             Fluttertoast.showToast(msg: "Removed image");
             setState();
@@ -74,9 +67,7 @@ class DescLocalImage extends StatelessWidget {
                 deleteFunction: () {
                   // Remove image from description
                   descSplitter.list.removeAt(index);
-                  String newDescription = descSplitter.list.join("\n");
-                  note.description = newDescription;
-                  notesDB.updateNote(note);
+                  descSplitter.joinDescription();
 
                   // Delete image file
                   File imageFile = File(p.join(path, imageName));
