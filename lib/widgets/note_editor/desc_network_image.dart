@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/desc_splitter.dart';
+import 'package:my_notes/widgets/note_editor/alt_text_alert_dialog.dart';
 import 'package:my_notes/widgets/rounded_square.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -32,6 +33,28 @@ class DescNetworkImage extends StatelessWidget {
       },
 
       itemBuilder: (context) => [
+        PopupMenuItem(
+          // Popup item to add alt text/tooltip
+          onTap: () {
+            TextEditingController altController = TextEditingController();
+            showDialog(
+              context: context,
+              builder: (context) => AltTextAlertDialog(
+                textFieldController: altController,
+                descSplitter: descSplitter,
+                index: index,
+                setState: setState
+              ),
+            );
+          },
+          child: const Row(
+            children: [
+              Icon(Icons.textsms_outlined),
+              SizedBox(width: 10),
+              Text("Add alt text"),
+            ],
+          ),
+        ),
         PopupMenuItem(
           // Popup item to remove image
           onTap: () {

@@ -6,6 +6,8 @@ import 'package:my_notes/widgets/delete_alert_dialog.dart';
 import 'package:path/path.dart' as p;
 import 'package:fluttertoast/fluttertoast.dart';
 
+import 'alt_text_alert_dialog.dart';
+
 // File image for description with remove & delete buttons
 class DescLocalImage extends StatelessWidget {
   const DescLocalImage({
@@ -37,6 +39,28 @@ class DescLocalImage extends StatelessWidget {
       },
 
       itemBuilder: (context) => [
+        PopupMenuItem(
+          // Popup item to add alt text/tooltip
+          onTap: () {
+            TextEditingController altController = TextEditingController();
+            showDialog(
+              context: context,
+              builder: (context) => AltTextAlertDialog(
+                textFieldController: altController,
+                descSplitter: descSplitter,
+                index: index,
+                setState: setState
+              ),
+            );
+          },
+          child: const Row(
+            children: [
+              Icon(Icons.textsms_outlined),
+              SizedBox(width: 10),
+              Text("Add alt text"),
+            ],
+          ),
+        ),
         PopupMenuItem(
           // Popup item to remove image
           onTap: () {
