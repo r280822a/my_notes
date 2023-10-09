@@ -25,7 +25,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
   String path = "";
   bool displayRaw = false;
-  bool loading = true;
+  bool init = false;
 
   @override
   void initState() {
@@ -57,7 +57,7 @@ class _NoteEditorState extends State<NoteEditor> {
   Widget build(BuildContext context) {
     if (path == ""){return const LoadingNoteEditor();}
 
-    if (loading){
+    if (!init){
       // Only run once, on initalisation
 
       // Retrieve arguements from previous page
@@ -74,7 +74,7 @@ class _NoteEditorState extends State<NoteEditor> {
       DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(note.time);
       time = DateFormat('dd MMMM yyyy - hh:mm').format(dateTime);
 
-      loading = false;
+      init = true;
     }
 
 
