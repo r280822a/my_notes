@@ -51,7 +51,7 @@ class _HomeState extends State<Home> {
   }
 
   void selectCard(index) {
-    // Select card at given index
+    // Select card/note at given index
     isSelected[index] = !isSelected[index];
     if (isSelected.every((element) => element == false)) {
       selectModeEnabled = false;
@@ -61,6 +61,7 @@ class _HomeState extends State<Home> {
   }
 
   List<Note> getSelectedNotes() {
+    // Return list of notes that are currently selected
     List<Note> selectedNotes = [];
     for (int i = 0; i < isSelected.length; i++){
       if (isSelected[i]){
@@ -76,7 +77,7 @@ class _HomeState extends State<Home> {
     if (loading) {return const LoadingHome();}
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      extendBodyBehindAppBar: true, // For frosted look
       backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
 
       appBar: AppBar(
@@ -85,7 +86,7 @@ class _HomeState extends State<Home> {
         scrolledUnderElevation: 0,
         flexibleSpace: Frosted(child: Container(color: Colors.transparent)),
 
-        // Display cancel button for select mode, else display search
+        // Display cancel button for select mode, else search button
         leading: selectModeEnabled ? IconButton(
           tooltip: "Cancel selection",
           onPressed: () {
@@ -137,6 +138,7 @@ class _HomeState extends State<Home> {
                     for (int i = 0; i < notesToDelete.length; i++){
                       await notesDB.deleteNote(notesToDelete[i]);
                     }
+                    // Cancel selection
                     isSelected = List.filled(notesDB.list.length, false, growable: true);
                     selectModeEnabled = false;
                     setState(() {});
@@ -151,6 +153,7 @@ class _HomeState extends State<Home> {
           IconButton(
             tooltip: "View local image attachments",
             onPressed: () async {
+              // Open local images page
               await Navigator.pushNamed(
                 context,
                 "/local_image_attachments",
@@ -182,7 +185,7 @@ class _HomeState extends State<Home> {
           dragStartDelay: const Duration(milliseconds: 250),
           onDragStart: (dragIndex) {
             // Essentially activates when long pressing
-            // Select note, if not in select mode
+            // Select note/card, if not in select mode
             if (!selectModeEnabled){
               HapticFeedback.selectionClick();
               selectCard(dragIndex);
@@ -194,7 +197,6 @@ class _HomeState extends State<Home> {
               notesDB: notesDB,
               isSelected: isSelected,
               index: index,
-              border: false
             );
           }),
 
@@ -211,8 +213,8 @@ class _HomeState extends State<Home> {
             return GestureDetector(
               key: Key(notesDB.list.elementAt(index).id.toString()),
               onTap: () async {
-                // If select mode is enabled, select card
-                // Else, open note editor page
+                // If in select mode, select note/card
+                // Else, open note editor page for given note
                 if (selectModeEnabled){
                   selectCard(index);
                 } else{
@@ -244,7 +246,7 @@ class _HomeState extends State<Home> {
           // Add empty note
           int index = await notesDB.addNote("", "");
 
-          // Open note editor page
+          // Open note editor page for empty note
           if (mounted) {
             await Navigator.pushNamed(
               context,
