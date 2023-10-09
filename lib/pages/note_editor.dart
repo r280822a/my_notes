@@ -25,7 +25,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
   String path = "";
   bool displayRaw = false;
-  bool init = false;
+  bool initialised = false;
 
   @override
   void initState() {
@@ -68,7 +68,7 @@ class _NoteEditorState extends State<NoteEditor> {
   Widget build(BuildContext context) {
     if (path == ""){return const LoadingNoteEditor();}
 
-    if (!init){
+    if (!initialised){
       // Only run once, on initalisation
 
       // Retrieve arguements from previous page
@@ -85,7 +85,7 @@ class _NoteEditorState extends State<NoteEditor> {
       DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(note.time);
       time = DateFormat('dd MMMM yyyy - hh:mm').format(dateTime);
 
-      init = true;
+      initialised = true;
     }
 
 
@@ -176,11 +176,11 @@ class _NoteEditorState extends State<NoteEditor> {
               } else if (imgIndex == 0) {
                 // If image
 
-                // Removes '![]', and everything inside
+                // Remove '![]', and everything inside
                 String imageName = text.replaceAll(RegExp(r'!\[.*?\]'), "");
                 imageName = imageName.substring(1, imageName.length - 1);
 
-                // Removes '()', and everything inside
+                // Remove '()', and everything inside
                 String altText = text.replaceAll(RegExp(r'\(.*?\)'), "");
                 altText = altText.substring(2, altText.length - 1);
 
@@ -230,7 +230,7 @@ class _NoteEditorState extends State<NoteEditor> {
                   ],
                 );
               } else if (index == (descSplitter.list.length - 1)){
-                // If end, to account for DockedActionBar
+                // If end, add space to account for DockedActionBar
                 return Column(
                   children: [
                     widget,

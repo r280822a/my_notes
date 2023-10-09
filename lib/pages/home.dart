@@ -77,9 +77,9 @@ class _HomeState extends State<Home> {
     if (loading) {return const LoadingHome();}
 
     return Scaffold(
-      extendBodyBehindAppBar: true, // For frosted look
       backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
 
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         // For frosted look
         backgroundColor: Theme.of(context).colorScheme.inversePrimary.withAlpha(190),

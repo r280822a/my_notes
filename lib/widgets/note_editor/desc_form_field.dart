@@ -34,14 +34,16 @@ class DescFormField extends StatelessWidget {
       onChanged: (value) {
         // Update textblock, when changed
 
+        // Adds checkbox symbol if checkbox
         int cbIndex = descSplitter.list[index].indexOf(Consts.checkboxStr);
         int cbTickedIndex = descSplitter.list[index].indexOf(Consts.checkboxTickedStr);
-
         if (cbIndex == 0) {
           value = "${Consts.checkboxStr}$value";
         } else if (cbTickedIndex == 0){
           value = "${Consts.checkboxTickedStr}$value";
         }
+        
+        // Update note
         descSplitter.list[index] = value;
         descSplitter.joinDescription();
       },

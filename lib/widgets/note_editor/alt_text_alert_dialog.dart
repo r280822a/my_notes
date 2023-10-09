@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/desc_splitter.dart';
 
+// AlertDialog to alt text to given image
 class AltTextAlertDialog extends StatelessWidget {
   const AltTextAlertDialog({
     super.key,

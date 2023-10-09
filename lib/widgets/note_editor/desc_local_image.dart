@@ -3,12 +3,11 @@ import 'dart:io';
 import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/widgets/rounded_square.dart';
 import 'package:my_notes/widgets/delete_alert_dialog.dart';
+import 'package:my_notes/widgets/note_editor/alt_text_alert_dialog.dart';
 import 'package:path/path.dart' as p;
 import 'package:fluttertoast/fluttertoast.dart';
 
-import 'alt_text_alert_dialog.dart';
-
-// File image for description with remove & delete buttons
+// File image for description with appropriate buttons
 class DescLocalImage extends StatelessWidget {
   const DescLocalImage({
     super.key,
@@ -114,6 +113,7 @@ class DescLocalImage extends StatelessWidget {
         ),
       ],
       child: Container(
+        // Image
         padding: const EdgeInsets.all(8.0),
         child: Image.file(
           File(p.join(path, imageName)),
