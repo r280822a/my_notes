@@ -39,6 +39,17 @@ class _NoteEditorState extends State<NoteEditor> {
     setState(() {});
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    for (int i = 0; i < descSplitter.textControllers.length; i++){
+      descSplitter.textControllers[i].dispose();
+    }
+    for (int i = 0; i < descSplitter.focusNodes.length; i++){
+      descSplitter.focusNodes[i].dispose();
+    }
+  }
+
   void toggleRawRendered() {
     // Toggle raw/rendered description
     displayRaw = !displayRaw;
