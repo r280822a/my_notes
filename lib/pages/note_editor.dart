@@ -25,7 +25,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
   String path = "";
   bool displayRaw = false;
-  bool loading = true;
+  bool init = false;
 
   @override
   void initState() {
@@ -39,9 +39,21 @@ class _NoteEditorState extends State<NoteEditor> {
     setState(() {});
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    for (int i = 0; i < descSplitter.textControllers.length; i++){
+      descSplitter.textControllers[i].dispose();
+    }
+    for (int i = 0; i < descSplitter.focusNodes.length; i++){
+      descSplitter.focusNodes[i].dispose();
+    }
+  }
+
   void toggleRawRendered() {
     // Toggle raw/rendered description
     displayRaw = !displayRaw;
+    descSplitter.splitDescription();
     setState(() {});
   }
 
@@ -56,8 +68,8 @@ class _NoteEditorState extends State<NoteEditor> {
   Widget build(BuildContext context) {
     if (path == ""){return const LoadingNoteEditor();}
 
-    if (loading){
-      // Only load once, on initalisation
+    if (!init){
+      // Only run once, on initalisation
 
       // Retrieve arguements from previous page
       Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
@@ -73,7 +85,7 @@ class _NoteEditorState extends State<NoteEditor> {
       DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(note.time);
       time = DateFormat('dd MMMM yyyy - hh:mm').format(dateTime);
 
-      loading = false;
+      init = true;
     }
 
 
@@ -176,8 +188,27 @@ class _NoteEditorState extends State<NoteEditor> {
 
                 // Add image
                 if (imageName.startsWith("assets/")){
-                  // Remove "assets/" at beginning for local image
-                  imageName = imageName.substring(7, imageName.length);
+                  // Update from "assets/" to "local_images/"
+                  descSplitter.list[index] = descSplitter.list[index].replaceAll("assets/", "local_images/");
+                  String newDescription = descSplitter.list.join("\n");
+                  note.description = newDescription;
+                  notesDB.updateNote(note);
+
+                  // Remove "local_images/" at beginning for image name
+                  imageName = imageName.replaceAll("local_images/", "");
+                  widget = DescLocalImage(
+                    note: note,
+                    notesDB: notesDB,
+                    descSplitter: descSplitter,
+                    index: index,
+                    path: path,
+                    imageName: imageName,
+                    altText: altText,
+                    setState: () {setState(() {updateDescription();});},
+                  );
+                } else if (imageName.startsWith("local_images/")){
+                  // Remove "local_images/" at beginning for image name
+                  imageName = imageName.replaceAll("local_images/", "");
                   widget = DescLocalImage(
                     note: note,
                     notesDB: notesDB,

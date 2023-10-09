@@ -24,7 +24,7 @@ class _HomeState extends State<Home> {
   List<bool> isSelected = []; // Check if note is selected for given index
   bool selectModeEnabled = false;
 
-  final SearchController controller = SearchController();
+  final SearchController searchController = SearchController();
 
   @override
   void initState() {
@@ -42,6 +42,12 @@ class _HomeState extends State<Home> {
     isSelected = List.filled(notesDB.list.length, false, growable: true);
     loading = false;
     setState(() {});
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    searchController.dispose();
   }
 
   void selectCard(index) {
@@ -92,7 +98,7 @@ class _HomeState extends State<Home> {
         ) : NotesSearchAnchor(
           notesDB: notesDB,
           isSelected: isSelected,
-          controller: controller,
+          controller: searchController,
           update: () {
             isSelected = List.filled(notesDB.list.length, false, growable: true);
             setState(() {});

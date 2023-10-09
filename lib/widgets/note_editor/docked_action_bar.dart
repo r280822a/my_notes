@@ -187,7 +187,7 @@ class AddImageBottomSheet extends StatelessWidget {
                     int descIndex = currentPos["descIndex"] as int;
                     int offset = currentPos["offset"] as int;
 
-                    String link = "![](assets/$imageName)";
+                    String link = "![](local_images/$imageName)";
                     addNonText(link, descIndex, offset);
                   }
                 },
