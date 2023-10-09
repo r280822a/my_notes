@@ -31,7 +31,7 @@ class NotesSearchAnchor extends StatelessWidget {
       viewBuilder: (Iterable<Widget> iterable) {
         // Builds general layout
         return GridView(
-          // Same layout as body
+          // Same layout as Home
           padding: const EdgeInsets.all(8),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,

@@ -25,7 +25,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
   String path = "";
   bool displayRaw = false;
-  bool init = false;
+  bool initialised = false;
 
   @override
   void initState() {
@@ -42,6 +42,7 @@ class _NoteEditorState extends State<NoteEditor> {
   @override
   void dispose() {
     super.dispose();
+    // Dispose of all text controllers and focus nodes
     for (int i = 0; i < descSplitter.textControllers.length; i++){
       descSplitter.textControllers[i].dispose();
     }
@@ -68,7 +69,7 @@ class _NoteEditorState extends State<NoteEditor> {
   Widget build(BuildContext context) {
     if (path == ""){return const LoadingNoteEditor();}
 
-    if (!init){
+    if (!initialised){
       // Only run once, on initalisation
 
       // Retrieve arguements from previous page
@@ -78,14 +79,14 @@ class _NoteEditorState extends State<NoteEditor> {
       notesDB = arguments["notesDB"];
 
       // Set description
-      descSplitter = DescSplitter(note: note);
+      descSplitter = DescSplitter(note: note, notesDB: notesDB);
       updateDescription();
 
       // Set time
       DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(note.time);
       time = DateFormat('dd MMMM yyyy - hh:mm').format(dateTime);
 
-      init = true;
+      initialised = true;
     }
 
 
@@ -166,8 +167,6 @@ class _NoteEditorState extends State<NoteEditor> {
 
                 // Add checkbox
                 widget = DescCheckBox(
-                  note: note,
-                  notesDB: notesDB,
                   descSplitter: descSplitter,
                   textController: descSplitter.textControllers[index],
                   focusNode: descSplitter.focusNodes[index],
@@ -178,40 +177,19 @@ class _NoteEditorState extends State<NoteEditor> {
               } else if (imgIndex == 0) {
                 // If image
 
-                // Removes '![]', and everything inside
+                // Remove '![]', and everything inside
                 String imageName = text.replaceAll(RegExp(r'!\[.*?\]'), "");
                 imageName = imageName.substring(1, imageName.length - 1);
 
-                // Removes '()', and everything inside
+                // Remove '()', and everything inside
                 String altText = text.replaceAll(RegExp(r'\(.*?\)'), "");
                 altText = altText.substring(2, altText.length - 1);
 
                 // Add image
-                if (imageName.startsWith("assets/")){
-                  // Update from "assets/" to "local_images/"
-                  descSplitter.list[index] = descSplitter.list[index].replaceAll("assets/", "local_images/");
-                  String newDescription = descSplitter.list.join("\n");
-                  note.description = newDescription;
-                  notesDB.updateNote(note);
-
-                  // Remove "local_images/" at beginning for image name
+                if (imageName.startsWith("local_images/")){
+                  // Remove "local_images/" at beginning of image name
                   imageName = imageName.replaceAll("local_images/", "");
                   widget = DescLocalImage(
-                    note: note,
-                    notesDB: notesDB,
-                    descSplitter: descSplitter,
-                    index: index,
-                    path: path,
-                    imageName: imageName,
-                    altText: altText,
-                    setState: () {setState(() {updateDescription();});},
-                  );
-                } else if (imageName.startsWith("local_images/")){
-                  // Remove "local_images/" at beginning for image name
-                  imageName = imageName.replaceAll("local_images/", "");
-                  widget = DescLocalImage(
-                    note: note,
-                    notesDB: notesDB,
                     descSplitter: descSplitter,
                     index: index,
                     path: path,
@@ -221,8 +199,6 @@ class _NoteEditorState extends State<NoteEditor> {
                   );
                 } else {
                   widget = DescNetworkImage(
-                    note: note,
-                    notesDB: notesDB,
                     descSplitter: descSplitter,
                     index: index,
                     link: imageName,
@@ -233,8 +209,6 @@ class _NoteEditorState extends State<NoteEditor> {
               } else {
                 // Add textblock
                 widget = DescFormField(
-                  note: note,
-                  notesDB: notesDB,
                   descSplitter: descSplitter,
                   textController: descSplitter.textControllers[index],
                   focusNode: descSplitter.focusNodes[index],
@@ -257,7 +231,7 @@ class _NoteEditorState extends State<NoteEditor> {
                   ],
                 );
               } else if (index == (descSplitter.list.length - 1)){
-                // If end, to account for DockedActionBar
+                // If end, add space to account for DockedActionBar
                 return Column(
                   children: [
                     widget,

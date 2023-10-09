@@ -8,9 +8,11 @@ class DescSplitter{
   List<String> list = []; // Holds split up description
   List<TextEditingController> textControllers = [];
   List<FocusNode> focusNodes = [];
-  Note note;
 
-  DescSplitter({required this.note,});
+  Note note;
+  NotesDatabase notesDB;
+
+  DescSplitter({required this.note, required this.notesDB});
 
   void splitDescription() {
     // Splits description into seperate items
@@ -80,5 +82,11 @@ class DescSplitter{
       textControllers.add(TextEditingController(text: value));
       focusNodes.add(FocusNode());
     }
+  }
+
+  void joinDescription() {
+    String newDescription = list.join("\n");
+    note.description = newDescription;
+    notesDB.updateNote(note);
   }
 }

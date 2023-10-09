@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/desc_splitter.dart';
+import 'package:my_notes/widgets/note_editor/alt_text_alert_dialog.dart';
 import 'package:my_notes/widgets/rounded_square.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-// Network image for description with remove button
+// Network image for description with appropriate button
 class DescNetworkImage extends StatelessWidget {
   const DescNetworkImage({
     super.key,
-    required this.note,
-    required this.notesDB,
     required this.descSplitter,
     required this.index,
     required this.link,
@@ -17,8 +15,6 @@ class DescNetworkImage extends StatelessWidget {
     required this.setState,
   });
 
-  final Note note;
-  final NotesDatabase notesDB;
   final DescSplitter descSplitter;
   final int index;
   final String link;
@@ -38,14 +34,34 @@ class DescNetworkImage extends StatelessWidget {
 
       itemBuilder: (context) => [
         PopupMenuItem(
+          // Popup item to add alt text/tooltip
+          onTap: () {
+            TextEditingController altController = TextEditingController();
+            showDialog(
+              context: context,
+              builder: (context) => AltTextAlertDialog(
+                textFieldController: altController,
+                descSplitter: descSplitter,
+                index: index,
+                setState: setState
+              ),
+            );
+          },
+          child: const Row(
+            children: [
+              Icon(Icons.textsms_outlined),
+              SizedBox(width: 10),
+              Text("Add alt text"),
+            ],
+          ),
+        ),
+        PopupMenuItem(
           // Popup item to remove image
           onTap: () {
             // Remove image from description
             descSplitter.list.removeAt(index);
-            String newDescription = descSplitter.list.join("\n");
-            note.description = newDescription;
-            notesDB.updateNote(note);
-            
+            descSplitter.joinDescription();
+
             Fluttertoast.showToast(msg: "Removed image");
             setState();
           },
@@ -59,6 +75,7 @@ class DescNetworkImage extends StatelessWidget {
         ),
       ],
       child: Container(
+        // Image
         padding: const EdgeInsets.all(8.0),
         child: Image.network(
           link,

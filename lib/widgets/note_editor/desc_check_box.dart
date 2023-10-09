@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/notes_database.dart';
 import 'package:my_notes/desc_splitter.dart';
 import 'package:my_notes/consts.dart';
 import 'package:my_notes/widgets/note_editor/desc_form_field.dart';
@@ -9,8 +8,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 class DescCheckBox extends StatelessWidget {
   const DescCheckBox({
     super.key,
-    required this.note,
-    required this.notesDB,
     required this.descSplitter,
     required this.textController,
     required this.focusNode,
@@ -19,8 +16,6 @@ class DescCheckBox extends StatelessWidget {
     required this.setState,
   });
 
-  final Note note;
-  final NotesDatabase notesDB;
   final DescSplitter descSplitter;
   final TextEditingController textController;
   final FocusNode focusNode;
@@ -47,16 +42,12 @@ class DescCheckBox extends StatelessWidget {
             descSplitter.list[index] = symbol + descSplitter.list[index].substring(2);
 
             // Update note
-            String newDescription = descSplitter.list.join("\n");
-            note.description = newDescription;
-            notesDB.updateNote(note);
+            descSplitter.joinDescription();
             setState();
           },
         ),
         Flexible(
           child: DescFormField(
-            note: note,
-            notesDB: notesDB,
             descSplitter: descSplitter,
             textController: textController,
             focusNode: focusNode,
@@ -68,9 +59,7 @@ class DescCheckBox extends StatelessWidget {
           onPressed: () {
             // Remove checkbox
             descSplitter.list.removeAt(index);
-            String newDescription = descSplitter.list.join("\n");
-            note.description = newDescription;
-            notesDB.updateNote(note);
+            descSplitter.joinDescription();
 
             Fluttertoast.showToast(msg: "Removed checkbox");
             setState();
