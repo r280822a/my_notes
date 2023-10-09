@@ -42,6 +42,7 @@ class _NoteEditorState extends State<NoteEditor> {
   void toggleRawRendered() {
     // Toggle raw/rendered description
     displayRaw = !displayRaw;
+    descSplitter.splitDescription();
     setState(() {});
   }
 
@@ -57,7 +58,7 @@ class _NoteEditorState extends State<NoteEditor> {
     if (path == ""){return const LoadingNoteEditor();}
 
     if (loading){
-      // Only load once, on initalisation
+      // Only run once, on initalisation
 
       // Retrieve arguements from previous page
       Map arguments = ModalRoute.of(context)!.settings.arguments as Map;
