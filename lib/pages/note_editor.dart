@@ -187,27 +187,8 @@ class _NoteEditorState extends State<NoteEditor> {
                 altText = altText.substring(2, altText.length - 1);
 
                 // Add image
-                if (imageName.startsWith("assets/")){
-                  // Update from "assets/" to "local_images/"
-                  descSplitter.list[index] = descSplitter.list[index].replaceAll("assets/", "local_images/");
-                  String newDescription = descSplitter.list.join("\n");
-                  note.description = newDescription;
-                  notesDB.updateNote(note);
-
-                  // Remove "local_images/" at beginning for image name
-                  imageName = imageName.replaceAll("local_images/", "");
-                  widget = DescLocalImage(
-                    note: note,
-                    notesDB: notesDB,
-                    descSplitter: descSplitter,
-                    index: index,
-                    path: path,
-                    imageName: imageName,
-                    altText: altText,
-                    setState: () {setState(() {updateDescription();});},
-                  );
-                } else if (imageName.startsWith("local_images/")){
-                  // Remove "local_images/" at beginning for image name
+                if (imageName.startsWith("local_images/")){
+                  // Remove "local_images/" at beginning of image name
                   imageName = imageName.replaceAll("local_images/", "");
                   widget = DescLocalImage(
                     note: note,
