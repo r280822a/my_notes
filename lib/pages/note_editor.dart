@@ -42,6 +42,7 @@ class _NoteEditorState extends State<NoteEditor> {
   @override
   void dispose() {
     super.dispose();
+    // Dispose of all text controllers and focus nodes
     for (int i = 0; i < descSplitter.textControllers.length; i++){
       descSplitter.textControllers[i].dispose();
     }
