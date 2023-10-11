@@ -54,7 +54,7 @@ class _NoteEditorState extends State<NoteEditor> {
   void toggleRawRendered() {
     // Toggle raw/rendered description
     displayRaw = !displayRaw;
-    descSplitter.splitDescription();
+    updateDescription();
     setState(() {});
   }
 
