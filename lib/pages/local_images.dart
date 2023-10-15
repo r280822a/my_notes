@@ -40,7 +40,7 @@ class _LocalImagesState extends State<LocalImages> {
 
   @override
   Widget build(BuildContext context) {
-    if (loading == true){return const LoadingLocalImages();}
+    if (loading){return const LoadingLocalImages();}
 
     return Scaffold(
       extendBodyBehindAppBar: true,

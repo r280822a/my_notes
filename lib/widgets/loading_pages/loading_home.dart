@@ -10,6 +10,8 @@ class LoadingHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         leading: IconButton(
@@ -24,8 +26,6 @@ class LoadingHome extends StatelessWidget {
         ],
       ),
 
-      backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-
       body: GridView.builder(
         padding: const EdgeInsets.all(8),
         itemCount: 10,
@@ -39,6 +39,9 @@ class LoadingHome extends StatelessWidget {
           return Card(
             elevation: 0,
             color: Theme.of(context).colorScheme.surface,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
             child: Container(),
           );
         },
@@ -46,7 +49,6 @@ class LoadingHome extends StatelessWidget {
 
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
-        tooltip: 'Add note',
         child: const Icon(Icons.add),
       ),
     );
