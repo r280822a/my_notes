@@ -19,7 +19,6 @@ class LoadingNoteEditor extends StatelessWidget {
         ]
       ),
 
-
       body: const Padding(
         padding: EdgeInsets.all(20),
         child: Column(
@@ -30,7 +29,6 @@ class LoadingNoteEditor extends StatelessWidget {
           ],
         ),
       ),
-
 
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Material(
