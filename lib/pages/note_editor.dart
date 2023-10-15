@@ -26,11 +26,21 @@ class _NoteEditorState extends State<NoteEditor> {
   String path = "";
   bool displayRaw = false;
   bool initialised = false;
+  ScrollController scrollController = ScrollController();
+  bool showTitle = false;
 
   @override
   void initState() {
     super.initState();
     getPath();
+    scrollController.addListener(() {
+      // To show/hide title in appbar when scrolling
+      if ((scrollController.position.pixels > 60) && (showTitle == false)){
+        setState(() {showTitle = true;});
+      } else if ((scrollController.position.pixels < 60) && (showTitle == true)){
+        setState(() {showTitle = false;});
+      }
+    });
   }
 
   void getPath() async {
@@ -49,6 +59,7 @@ class _NoteEditorState extends State<NoteEditor> {
     for (int i = 0; i < descSplitter.focusNodes.length; i++){
       descSplitter.focusNodes[i].dispose();
     }
+    scrollController.dispose(); // Dispose of scroll controller
   }
 
   void toggleRawRendered() {
@@ -98,6 +109,13 @@ class _NoteEditorState extends State<NoteEditor> {
         scrolledUnderElevation: 0,
         flexibleSpace: Frosted(child: Container(color: Colors.transparent)),
 
+        title: showTitle ? Text(note.title) : const Text(""),
+        titleTextStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onBackground,
+          fontWeight: FontWeight.bold,
+          fontSize: 23,
+        ),
+
         actions: [
           OptionsMenu(
             note: note,
@@ -122,6 +140,7 @@ class _NoteEditorState extends State<NoteEditor> {
           },
 
           child: displayRaw ? ListView(
+            controller: scrollController,
             physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
             children: [
               // Title and time
@@ -144,6 +163,7 @@ class _NoteEditorState extends State<NoteEditor> {
               const SizedBox(height: 80)
             ],
           ) : ListView.builder(
+            controller: scrollController,
             physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
             itemCount: descSplitter.list.length,
             itemBuilder: (context, index) {
