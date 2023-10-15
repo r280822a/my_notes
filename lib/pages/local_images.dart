@@ -70,10 +70,17 @@ class _LocalImagesState extends State<LocalImages> {
                       // Displays full image when tapped
                       showDialog(
                         context: context,
-                        builder: (context) => AlertDialog(
-                          contentPadding: const EdgeInsets.all(0),
-                          content: Image.file(
-                            File(images[index].path),
+                        builder: (context) => Dialog(
+                          elevation: 0,
+                          backgroundColor: Colors.transparent,
+                          insetPadding: const EdgeInsets.all(0),
+                          child: InteractiveViewer(
+                            // To zoom into image
+                            maxScale: 5,
+                            clipBehavior: Clip.none,
+                            child: Image.file(
+                              File(images[index].path),
+                            ),
                           ),
                         ),
                       );
