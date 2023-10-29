@@ -35,9 +35,9 @@ class _NoteEditorState extends State<NoteEditor> {
     getPath();
     scrollController.addListener(() {
       // To show/hide title in appbar when scrolling
-      if ((scrollController.position.pixels > 50) && (showTitle == false)){
+      if ((scrollController.position.pixels > 40) && (showTitle == false)){
         setState(() {showTitle = true;});
-      } else if ((scrollController.position.pixels < 50) && (showTitle == true)){
+      } else if ((scrollController.position.pixels < 40) && (showTitle == true)){
         setState(() {showTitle = false;});
       }
     });
