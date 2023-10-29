@@ -121,7 +121,7 @@ class _HomeState extends State<Home> {
               } else{
                 int note1Index = notesDB.list.indexOf(notesToSwap[0]);
                 int note2Index = notesDB.list.indexOf(notesToSwap[1]);
-                await notesDB.swapNote(note1Index, note2Index);
+                await notesDB.swapNotes(note1Index, note2Index);
               }
               setState(() {});
             },
@@ -173,16 +173,19 @@ class _HomeState extends State<Home> {
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           onReorder: (oldIndex, newIndex) async {
             // Reorder notes, after dragging
-            final Note noteToReorder = notesDB.list[oldIndex];
-            await notesDB.deleteNote(noteToReorder);
-            await notesDB.insertNote(noteToReorder, newIndex);
-            // final element = notesDB.list.removeAt(oldIndex);
-            // notesDB.list.insert(newIndex, element);
 
+            // First reorder list, to update UI
+            final Note noteToReorder = notesDB.list[oldIndex];
+            notesDB.list.remove(noteToReorder);
+            notesDB.list.insert(newIndex, noteToReorder);
+
+            // Update selection
             isSelected.removeAt(oldIndex);
             isSelected.insert(newIndex, false);
             selectCard(newIndex);
             setState(() {});
+            // Reorder database in background
+            await notesDB.reorderNotesDB(noteToReorder, oldIndex, newIndex);
           },
           dragStartDelay: const Duration(milliseconds: 250),
           onDragStart: (dragIndex) {

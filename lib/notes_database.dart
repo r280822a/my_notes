@@ -86,7 +86,7 @@ CREATE TABLE $tableName (
 
     Batch batch = database.batch();
     for (int i = index; i < list.length; i++){
-      // Iterate from (index + 1) to end of list
+      // Iterate from index to end of list
       // Incrementing each index, to give space to insert given note
       batch.update(tableName, 
         {"list_index": (i + 1)}, 
@@ -116,7 +116,7 @@ CREATE TABLE $tableName (
     updateIndexes();
   }
 
-  Future swapNote(int note1Index, int note2Index) async {
+  Future swapNotes(int note1Index, int note2Index) async {
     // Swaps 2 notes in database and list
     Note note1 = list[note1Index];
     Note note2 = list[note2Index];
@@ -134,6 +134,29 @@ CREATE TABLE $tableName (
     // Swap notes in list
     list[note1Index] = note2;
     list[note2Index] = note1;
+  }
+
+  Future reorderNotesDB(Note note, int oldIndex, int newIndex) async {
+    // Reorders notes in database
+    // NOTE: list should already be reordered
+    Batch batch = database.batch();
+    int start = oldIndex;
+    int end = newIndex;
+    if (newIndex < oldIndex){
+      start = newIndex;
+      end = oldIndex;
+    }
+
+    for (int i = start; i <= end; i++){
+      // Update list_index based on list
+      // Between old and new indexes
+      batch.update(tableName, 
+        {"list_index": i}, 
+        where: "_id = ?", 
+        whereArgs: [list[i].id]
+      );
+    }
+    await batch.commit(noResult: true);
   }
 }
 
