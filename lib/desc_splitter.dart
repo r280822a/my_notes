@@ -4,7 +4,7 @@ import 'package:my_notes/consts.dart';
 
 // Splits description into textblocks and non-text sections
 // To be used in NoteEditor
-class DescSplitter{
+class DescSplitter {
   List<String> list = []; // Holds split up description
   List<TextEditingController> textControllers = [];
   List<FocusNode> focusNodes = [];
