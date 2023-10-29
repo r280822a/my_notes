@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:my_notes/notes_database.dart';
-import 'package:my_notes/desc_splitter.dart';
-import 'package:my_notes/consts.dart';
+import 'package:my_notes/utils/notes_database.dart';
+import 'package:my_notes/utils/desc_splitter.dart';
+import 'package:my_notes/utils/consts.dart';
 import 'package:my_notes/widgets/note_editor/all.dart';
 import 'package:my_notes/widgets/frosted.dart';
 import 'package:my_notes/widgets/loading_pages/loading_note_editor.dart';

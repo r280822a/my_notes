@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/notes_database.dart';
-import 'package:my_notes/consts.dart';
+import 'package:my_notes/utils/notes_database.dart';
+import 'package:my_notes/utils/consts.dart';
 
 // Splits description into textblocks and non-text sections
 // To be used in NoteEditor

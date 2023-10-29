@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/desc_splitter.dart';
-import 'package:my_notes/consts.dart';
+import 'package:my_notes/utils/desc_splitter.dart';
+import 'package:my_notes/utils/consts.dart';
 import 'package:my_notes/widgets/note_editor/desc_form_field.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/notes_database.dart';
+import 'package:my_notes/utils/notes_database.dart';
 
 // TextFormField that displays/edits raw/unrendered description
 // (mainly for testing)

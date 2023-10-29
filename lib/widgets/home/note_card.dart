@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/notes_database.dart';
+import 'package:my_notes/utils/notes_database.dart';
 
 // Card to display preview of note
 class NoteCard extends StatelessWidget {

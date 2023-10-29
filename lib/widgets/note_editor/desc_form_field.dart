@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/desc_splitter.dart';
-import 'package:my_notes/consts.dart';
+import 'package:my_notes/utils/desc_splitter.dart';
+import 'package:my_notes/utils/consts.dart';
 
 // TextFormField that displays/edits rendered description
 class DescFormField extends StatelessWidget {

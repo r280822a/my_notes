@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:my_notes/desc_splitter.dart';
+import 'package:my_notes/utils/desc_splitter.dart';
 import 'package:my_notes/widgets/rounded_square.dart';
 import 'package:my_notes/widgets/delete_alert_dialog.dart';
 import 'package:my_notes/widgets/note_editor/alt_text_alert_dialog.dart';

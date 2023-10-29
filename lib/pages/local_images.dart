@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:my_notes/widgets/loading_pages/loading_local_images.dart';
 import 'package:my_notes/widgets/delete_alert_dialog.dart';
 import 'package:my_notes/widgets/frosted.dart';
-import 'package:my_notes/consts.dart';
+import 'package:my_notes/utils/consts.dart';
 
 class LocalImages extends StatefulWidget {
   const LocalImages({super.key});
