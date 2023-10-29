@@ -197,13 +197,15 @@ class _NoteEditorState extends State<NoteEditor> {
               } else if (imgIndex == 0) {
                 // If image
 
-                // Remove '![]', and everything inside
-                String imageName = text.replaceAll(RegExp(r'!\[.*?\]'), "");
-                imageName = imageName.substring(1, imageName.length - 1);
+                // Remove '![...](', with '...' being anything
+                String imageName = text.replaceAll(RegExp(r'!\[(.*?)\]\('), "");
+                // Remove ')' at end
+                imageName = imageName.substring(0, imageName.length - 1);
 
-                // Remove '()', and everything inside
-                String altText = text.replaceAll(RegExp(r'\(.*?\)'), "");
-                altText = altText.substring(2, altText.length - 1);
+                // Remove '](...)', with '...' being anything
+                String altText = text.replaceAll(RegExp(r'\]\((.*?)\)'), "");
+                // Remove '![' at beginning
+                altText = altText.substring(2, altText.length);
 
                 // Add image
                 if ((imageName.startsWith("assets/")) || (imageName.startsWith("local_images/"))){
