@@ -32,16 +32,15 @@ class NotesDatabase {
     // Creates database, if not created already
     const String idType = "INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL";
     const String textType = "TEXT NOT NULL";
-    const String dateIntType = "INTEGER NOT NULL";
-    const String listIndexType = "INTEGER NOT NULL";
+    const String intType = "INTEGER NOT NULL";
 
     await db.execute('''
 CREATE TABLE $tableName ( 
   _id $idType,
   title $textType,
   description $textType,
-  time $dateIntType,
-  list_index $listIndexType
+  time $intType,
+  list_index $intType
   )
 ''');
   }
