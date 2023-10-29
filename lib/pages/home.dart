@@ -202,6 +202,7 @@ class _HomeState extends State<Home> {
               notesDB: notesDB,
               isSelected: isSelected,
               index: index,
+              hasBorder: true,
             );
           }),
 

@@ -8,11 +8,13 @@ class NoteCard extends StatelessWidget {
     required this.notesDB,
     required this.isSelected,
     required this.index,
+    this.hasBorder = false
   });
 
   final NotesDatabase notesDB;
   final List<bool> isSelected;
   final int index;
+  final bool hasBorder;
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +25,14 @@ class NoteCard extends StatelessWidget {
       color: isSelected[index] ? Theme.of(context).colorScheme.outline : Theme.of(context).colorScheme.surface,
       width: 3,
     );
+
+    if (hasBorder) {
+      // Border always visible
+      borderSide = BorderSide(
+        color: Theme.of(context).colorScheme.outline,
+        width: 3,
+      );
+    }
 
     return Card(
       elevation: 0,
