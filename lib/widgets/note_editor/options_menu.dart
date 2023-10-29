@@ -24,6 +24,7 @@ class OptionsMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton(
+      tooltip: "More Options",
       itemBuilder: (context) => [
         PopupMenuItem(
           onTap: () {
