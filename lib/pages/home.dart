@@ -119,7 +119,9 @@ class _HomeState extends State<Home> {
                   toastLength: Toast.LENGTH_LONG
                 );
               } else{
-                await notesDB.swapNote(notesToSwap[0], notesToSwap[1]);
+                int note1Index = notesDB.list.indexOf(notesToSwap[0]);
+                int note2Index = notesDB.list.indexOf(notesToSwap[1]);
+                await notesDB.swapNote(note1Index, note2Index);
               }
               setState(() {});
             },
