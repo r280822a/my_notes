@@ -6,6 +6,7 @@ class NotesDatabase {
   late Database database; // Database to save notes to
   late List<Note> list; // List to help display notes
 
+  static const String tableName = "notes";
   bool hasUpgraded = false;
 
   Future open() async {
@@ -22,7 +23,7 @@ class NotesDatabase {
   Future _upgradeDB(Database db, int currentVersion, int newVersion) async {
     if (currentVersion < newVersion) {
       // Adds column for list index, giving default value of 0
-      await db.execute("ALTER TABLE notes ADD COLUMN list_index INTEGER NOT NULL DEFAULT 0;");
+      await db.execute("ALTER TABLE $tableName ADD COLUMN list_index INTEGER NOT NULL DEFAULT 0;");
       hasUpgraded = true; // To run updateIndexes, when converting to list
     }
   }
@@ -35,7 +36,7 @@ class NotesDatabase {
     const String listIndexType = "INTEGER NOT NULL";
 
     await db.execute('''
-CREATE TABLE notes ( 
+CREATE TABLE $tableName ( 
   _id $idType,
   title $textType,
   description $textType,
@@ -47,7 +48,7 @@ CREATE TABLE notes (
 
   Future toList() async {
     // Converts database object to list
-    List<Map<String, Object?>> mapList = await database.query("notes", orderBy: "list_index ASC");
+    List<Map<String, Object?>> mapList = await database.query(tableName, orderBy: "list_index ASC");
     list = mapList.map((map) => Note.fromMap(map)).toList();
     if (hasUpgraded) {updateIndexes();}
   }
@@ -56,7 +57,7 @@ CREATE TABLE notes (
     // Iterate through each note, and update it's index
     Batch batch = database.batch();
     for (int i = 0; i < list.length; i++){
-      batch.update("notes", 
+      batch.update(tableName, 
         {"list_index": i}, 
         where: "_id = ?", 
         whereArgs: [list[i].id]
@@ -75,8 +76,8 @@ CREATE TABLE notes (
       "list_index": list.length
     };
 
-    database.insert("notes", note);
-    List<Map<String, Object?>> lastRow = await database.query("notes", orderBy: "_id DESC",limit: 1);
+    database.insert(tableName, note);
+    List<Map<String, Object?>> lastRow = await database.query(tableName, orderBy: "_id DESC",limit: 1);
     list.add(Note.fromMap(lastRow[0]));
     return (list.length - 1);
   }
@@ -88,7 +89,7 @@ CREATE TABLE notes (
     for (int i = index; i < list.length; i++){
       // Iterate from (index + 1) to end of list
       // Incrementing each index, to give space to insert given note
-      batch.update("notes", 
+      batch.update(tableName, 
         {"list_index": (i + 1)}, 
         where: "_id = ?", 
         whereArgs: [list[i].id]
@@ -99,19 +100,19 @@ CREATE TABLE notes (
     // Add note to index
     Map<String, Object?> noteMap = note.toMap();
     noteMap["list_index"] = index;
-    database.insert("notes", noteMap);
+    database.insert(tableName, noteMap);
     list.insert(index, note);
   }
 
   Future updateNote(Note note) async {
     // Updates the note in database
     // NOTE: list should already have been updated
-    await database.update("notes", note.toMap(), where: "_id = ?", whereArgs: [note.id]);
+    await database.update(tableName, note.toMap(), where: "_id = ?", whereArgs: [note.id]);
   }
 
   Future deleteNote(Note note) async {
     // Deletes note in database and list
-    await database.delete("notes", where: '_id = ?', whereArgs: [note.id]);
+    await database.delete(tableName, where: '_id = ?', whereArgs: [note.id]);
     list.remove(note);
     updateIndexes();
   }
@@ -122,11 +123,11 @@ CREATE TABLE notes (
     Note note2 = list[note2Index];
 
     // Swap notes in database
-    await database.update("notes",
+    await database.update(tableName,
       {"list_index": note2Index},
       where: "_id = ?", whereArgs: [note1.id]
     );
-    await database.update("notes",
+    await database.update(tableName,
       {"list_index": note1Index},
       where: "_id = ?", whereArgs: [note2.id]
     );
