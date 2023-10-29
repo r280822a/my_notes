@@ -6,7 +6,7 @@ class NotesDatabase {
   late Database database; // Database to save notes to
   late List<Note> list; // List to help display notes
 
-  static const String tableName = "notes";
+  final String tableName = "notes";
   bool hasUpgraded = false;
 
   Future open() async {
@@ -28,7 +28,7 @@ class NotesDatabase {
     }
   }
 
-  static Future _createDB(Database db, int version) async {
+  Future _createDB(Database db, int version) async {
     // Creates database, if not created already
     const String idType = "INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL";
     const String textType = "TEXT NOT NULL";
