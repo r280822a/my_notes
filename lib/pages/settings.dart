@@ -62,6 +62,28 @@ class _SettingsState extends State<Settings> {
             leading: const Icon(Icons.photo_library_outlined),
             minVerticalPadding: 25
           ),
+
+          // To backup data
+          ListTile(
+            onTap: () {
+              // Backup notes database + local images to downloads
+              
+            },
+            title: const Text("Backup"),
+            subtitle: const Text("Last backup: 20th October 2023"),
+            leading: const Icon(Icons.backup_outlined)
+          ),
+
+          // To restore data
+          ListTile(
+            onTap: () {
+              // Restore notes database + local images from given file
+              
+            },
+            title: const Text("Restore"),
+            leading: const Icon(Icons.settings_backup_restore_outlined),
+            minVerticalPadding: 25
+          ),
         ],
       )
     );
