@@ -153,15 +153,15 @@ class _HomeState extends State<Home> {
           )
         ] : [
           IconButton(
-            tooltip: "View local image attachments",
+            tooltip: "Settings page",
             onPressed: () async {
-              // Open local images page
+              // Open settings page
               await Navigator.pushNamed(
                 context,
-                "/local_image_attachments",
+                "/settings",
               );
             },
-            icon: const Icon(Icons.photo_library_outlined)
+            icon: const Icon(Icons.settings)
           )
         ],
       ),
