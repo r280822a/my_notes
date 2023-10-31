@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Bottom Sheet to display information while backing up
 class BackupBottomSheet extends StatelessWidget {
   const BackupBottomSheet({
     super.key,
@@ -14,6 +15,7 @@ class BackupBottomSheet extends StatelessWidget {
           child: Column(
             children: [
               Row(
+                // Backup icon, row used to fill horizontally
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(

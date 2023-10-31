@@ -155,8 +155,10 @@ class _HomeState extends State<Home> {
           IconButton(
             tooltip: "Open settings",
             onPressed: () async {
-              // Open settings page
+              // Close then, after returning, reopen database in case user restores data
+
               notesDB.close();
+              // Open settings page
               await Navigator.pushNamed(
                 context,
                 "/settings",

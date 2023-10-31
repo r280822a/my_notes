@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// Bottom Sheet to display information while restoring
 class RestoreBottomSheet extends StatelessWidget {
   const RestoreBottomSheet({
     super.key,
@@ -14,6 +15,7 @@ class RestoreBottomSheet extends StatelessWidget {
           child: Column(
             children: [
               Row(
+                // Restore icon, row used to fill horizontally
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(

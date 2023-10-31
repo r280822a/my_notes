@@ -26,14 +26,16 @@ class _SettingsState extends State<Settings> {
     // Returns path to backup folder, that user can access
     Directory? directory;
     try {
-      // Return path to own folder by default
+      // Return path to own 'My_Notes' folder by default
       directory = Directory('/storage/emulated/0/My_Notes');
       directory.createSync(recursive: true);
+
       // If doesn't exist, fallback to getExternalStorageDirectory
       if (!await directory.exists()) {
         directory = await getExternalStorageDirectory();
       }
     } catch (err) {
+      // If error occured, display error alert dialog to inform user
       if (mounted) {
         showDialog(
           context: context,
@@ -43,12 +45,14 @@ class _SettingsState extends State<Settings> {
         );
       }
     }
+
     return directory?.path;
   }
 
   Future<String> fillRootBackupDirectory() async {
-    // Get path to root backup directory (user cannot access this dir)
-    // Used to create the backup.zip file
+    // Fill root backup directory with database, and local images
+    // Return path to root backup directory
+    // NOTE: user cannot access this directory
 
     Directory docDir = await getApplicationDocumentsDirectory();
     String docPath = docDir.path.toString();
@@ -57,17 +61,16 @@ class _SettingsState extends State<Settings> {
     Directory backupDirectory = Directory(backupPath);
 
     if (backupDirectory.existsSync()){
-      // Empty directory
+      // Empty directory, if exists
       backupDirectory.deleteSync(recursive: true);
     }
     backupDirectory.createSync(recursive: true);
 
-    // Path to database
+    // Path to database, that app uses
     String databasePath = join(await getDatabasesPath(), "notes.db");
     File databaseFile = File(databasePath);
-    print(databaseFile.readAsBytesSync());
 
-    // Copy local images. then copy database
+    // Copy local images, then copy database. Both to root backup directory 
     io.copyPathSync(await Consts.getLocalImagesPath(), join(backupPath, "local_images"));
     databaseFile.copySync(join(backupPath, "notes.db"));
 
@@ -75,14 +78,17 @@ class _SettingsState extends State<Settings> {
   }
 
   Future<String> getRootRestorePath() async {
+    // Returns path to root backup directory
+    // NOTE: user cannot access this directory
+
     Directory docDir = await getApplicationDocumentsDirectory();
     String docPath = docDir.path.toString();
 
-    String restorePath = join(docPath, "restore"); // Full path to backup
+    String restorePath = join(docPath, "restore"); // Full path to restore
     Directory restoreDirectory = Directory(restorePath);
 
     if (restoreDirectory.existsSync()){
-      // Empty directory
+      // Empty directory, if exists
       restoreDirectory.deleteSync(recursive: true);
     }
     restoreDirectory.createSync(recursive: true);
@@ -151,7 +157,7 @@ class _SettingsState extends State<Settings> {
           // To backup data
           ListTile(
             onTap: () async {
-              // Backup notes database + local images to downloads
+              // Backup notes database + local images to 'My_Notes' folder
 
               showModalBottomSheet(
                 // To display backup info to user
@@ -161,13 +167,13 @@ class _SettingsState extends State<Settings> {
 
               // First request storage permissions
               if ((await Permission.storage.request().isGranted) && mounted) {
-                // Get user backup path, and create a backup.zip file object
+                // Get user backup path, and instantiate a backup.zip file object
                 String? backupPath = await getUserBackupPath(context);
-                final zipFile = File(join(backupPath!, "backup.zip"));
+                File zipFile = File(join(backupPath!, "backup.zip"));
 
                 // Fill root backup directory, ready to zip
                 String backup = await fillRootBackupDirectory();
-                final Directory backupDir = Directory(backup);
+                Directory backupDir = Directory(backup);
 
                 try {
                   // Create zip from root backup directory,
@@ -177,13 +183,15 @@ class _SettingsState extends State<Settings> {
                     zipFile: zipFile,
                     recurseSubDirs: true
                   );
+
                   if (mounted) {
                     // Give user a second to read text before popping bottomsheet
-                    sleep(const Duration(seconds: 1));
+                    sleep(const Duration(seconds: 2));
                     Navigator.pop(context);
                   }
                   Fluttertoast.showToast(msg: "Backup completed");
                 } catch (err) {
+                  // If error occured, display error alert dialog to inform user
                   if (mounted) {
                     showDialog(
                       context: context,
@@ -203,7 +211,7 @@ class _SettingsState extends State<Settings> {
           // To restore data
           ListTile(
             onTap: () async {
-              // Restore notes database + local images from given file
+              // Restore notes database + local images from own 'My_Notes' folder
 
               showModalBottomSheet(
                 // To display restore info to user
@@ -211,29 +219,34 @@ class _SettingsState extends State<Settings> {
                 builder: (BuildContext context) => const RestoreBottomSheet()
               );
 
+              // First request storage permissions
               if ((await Permission.storage.request().isGranted) && mounted) {
-                // Get user backup path, and backup.zip file object
+                // Get user backup path, and instantiate backup.zip file object
                 String? backupPath = await getUserBackupPath(context);
-                final zipFile = File(join(backupPath!, "backup.zip"));
+                File zipFile = File(join(backupPath!, "backup.zip"));
 
+                // Get (and empty) root restore path, ready to extract
                 String rootRestorePath = await getRootRestorePath();
-                final Directory destinationDir = Directory(rootRestorePath);
+                Directory destinationDir = Directory(rootRestorePath);
+
                 try {
+                  // Extract backup.zip to root restore path
                   await ZipFile.extractToDirectory(
                     zipFile: zipFile,
                     destinationDir: destinationDir
                   );
 
+                  // Restored database file object
                   String restoredDBPath = join(rootRestorePath, "notes.db");
                   File restoredDatabase = File(restoredDBPath);
-
+                  // Path to database, that app uses
                   String databasePath = join(await getDatabasesPath(), "notes.db");
-
+                  // Copy restored database file to database that app uses
                   restoredDatabase.copySync(databasePath);
 
-                  String restoredLocalImagesPath = join(
-                    rootRestorePath, "local_images"
-                  );
+                  // Path to restored local images
+                  String restoredLocalImagesPath = join(rootRestorePath, "local_images");
+                  // Copy restored local images to local images directory that app uses
                   io.copyPathSync(
                     restoredLocalImagesPath,
                     await Consts.getLocalImagesPath()
@@ -241,11 +254,14 @@ class _SettingsState extends State<Settings> {
 
                   if (mounted) {
                     // Give user a second to read text before popping bottomsheet
-                    sleep(const Duration(seconds: 2));
+                    // NOTE: Slightly longer sleep than backing up
+                    // since extracting is generally faster
+                    sleep(const Duration(seconds: 3));
                     Navigator.pop(context);
                   }
                   Fluttertoast.showToast(msg: "Restore completed");
                 } catch (err) {
+                  // If error occured, display error alert dialog to inform user
                   if (mounted) {
                     showDialog(
                       context: context,
