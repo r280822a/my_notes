@@ -3,14 +3,15 @@ import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:my_notes/widgets/frosted.dart';
 import 'package:my_notes/utils/consts.dart';
+import 'package:my_notes/widgets/backup_bottom_sheet.dart';
+import 'package:my_notes/widgets/error_alert_dialog.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_archive/flutter_archive.dart';
 import 'package:io/io.dart' as io;
 import 'package:sqflite/sqflite.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-import '../widgets/error_alert_dialog.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -61,10 +62,6 @@ class _SettingsState extends State<Settings> {
     // Copy local images. then copy database
     io.copyPathSync(await Consts.getLocalImagesPath(), join(path, "local_images"));
     databaseFile.copySync(join(path, "notes.db"));
-
-    // TESTING
-    List<FileSystemEntity> files = Directory(path).listSync();
-    print(files);
 
     return path;
   }
@@ -132,12 +129,17 @@ class _SettingsState extends State<Settings> {
             onTap: () async {
               // Backup notes database + local images to downloads
 
+              showModalBottomSheet(
+                // To display backup info to user
+                context: context,
+                builder: (BuildContext context) => const BackupBottomSheet()
+              );
+
               // First request storage permissions
               if ((await Permission.storage.request().isGranted) && mounted) {
                 // Get user backup path, and create a backup.zip file object
                 String? backupPath = await getUserBackupPath(context);
                 final zipFile = File(join(backupPath!, "backup.zip"));
-                print(backupPath); // TESTING
 
                 // Fill root backup directory, ready to zip
                 String backup = await fillRootBackupDirectory();
@@ -151,6 +153,12 @@ class _SettingsState extends State<Settings> {
                     zipFile: zipFile,
                     recurseSubDirs: true
                   );
+                  if (mounted) {
+                    // Give user a second to read text before popping bottomsheet
+                    sleep(const Duration(seconds: 1));
+                    Navigator.pop(context);
+                  }
+                  Fluttertoast.showToast(msg: "Backup completed");
                 } catch (err) {
                   if (mounted) {
                     showDialog(
