@@ -51,6 +51,11 @@ class _LocalImagesState extends State<LocalImages> {
         flexibleSpace: Frosted(child: Container(color: Colors.transparent)),
 
         title: const Text("Local Image Attachments"),
+        titleTextStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onBackground,
+          fontWeight: FontWeight.bold,
+          fontSize: 23,
+        ),
       ),
 
       body: ListView.builder(

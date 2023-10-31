@@ -20,6 +20,11 @@ class _SettingsState extends State<Settings> {
         flexibleSpace: Frosted(child: Container(color: Colors.transparent)),
 
         title: const Text("Settings"),
+        titleTextStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onBackground,
+          fontWeight: FontWeight.bold,
+          fontSize: 23,
+        ),
       ),
 
       body: ListView(
