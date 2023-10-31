@@ -74,7 +74,7 @@ class _SettingsState extends State<Settings> {
               
             },
             title: const Text("Backup"),
-            subtitle: const Text("Last backup: 20th October 2023"),
+            subtitle: const Text("Backup data to file, so you can restore it later"),
             leading: const Icon(Icons.backup_outlined)
           ),
 
@@ -85,8 +85,8 @@ class _SettingsState extends State<Settings> {
               
             },
             title: const Text("Restore"),
+            subtitle: const Text("Restore data from backup file"),
             leading: const Icon(Icons.settings_backup_restore_outlined),
-            minVerticalPadding: 25
           ),
         ],
       )
