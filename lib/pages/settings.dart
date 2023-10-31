@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:my_notes/widgets/frosted.dart';
 import 'package:my_notes/utils/consts.dart';
@@ -9,6 +10,8 @@ import 'package:io/io.dart' as io;
 import 'package:sqflite/sqflite.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../widgets/error_alert_dialog.dart';
+
 class Settings extends StatefulWidget {
   const Settings({super.key});
 
@@ -17,7 +20,8 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  Future<String?> getUserBackupPath() async {
+  Future<String?> getUserBackupPath(BuildContext context) async {
+    // Returns path to backup folder, that user can access
     Directory? directory;
     try {
       // Return path to own folder by default
@@ -28,7 +32,14 @@ class _SettingsState extends State<Settings> {
         directory = await getExternalStorageDirectory();
       }
     } catch (err) {
-      print(err);
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder:(context) => ErrorAlertDialog(
+            platformException: err as PlatformException
+          ),
+        );
+      }
     }
     return directory?.path;
   }
@@ -120,10 +131,11 @@ class _SettingsState extends State<Settings> {
           ListTile(
             onTap: () async {
               // Backup notes database + local images to downloads
+
               // First request storage permissions
-              if (await Permission.storage.request().isGranted) {
+              if ((await Permission.storage.request().isGranted) && mounted) {
                 // Get user backup path, and create a backup.zip file object
-                String? backupPath = await getUserBackupPath();
+                String? backupPath = await getUserBackupPath(context);
                 final zipFile = File(join(backupPath!, "backup.zip"));
                 print(backupPath); // TESTING
 
@@ -134,13 +146,20 @@ class _SettingsState extends State<Settings> {
                 try {
                   // Create zip from root backup directory,
                   // Storing it in user backup directory
-                  ZipFile.createFromDirectory(
+                  await ZipFile.createFromDirectory(
                     sourceDir: backupDir,
                     zipFile: zipFile,
                     recurseSubDirs: true
                   );
                 } catch (err) {
-                  print(err);
+                  if (mounted) {
+                    showDialog(
+                      context: context,
+                      builder:(context) => ErrorAlertDialog(
+                        platformException: err as PlatformException
+                      ),
+                    );
+                  }
                 }
               }
             },
