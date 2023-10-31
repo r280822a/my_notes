@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 // AlertDialog for displaying errors
 class ErrorAlertDialog extends StatelessWidget {
   const ErrorAlertDialog({
     super.key,
-    required this.platformException
+    required this.exception
   });
 
-  final PlatformException platformException;
+  final Exception exception;
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +17,7 @@ class ErrorAlertDialog extends StatelessWidget {
         style: TextStyle(fontWeight: FontWeight.bold)
       ),
       content: Text(
-        platformException.toString(),
+        exception.toString(),
         style: const TextStyle(fontSize: 16)
       ),
       actions: [

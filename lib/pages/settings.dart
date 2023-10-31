@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:my_notes/widgets/frosted.dart';
 import 'package:my_notes/utils/common.dart';
@@ -12,6 +11,7 @@ import 'package:flutter_archive/flutter_archive.dart';
 import 'package:io/io.dart' as io;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class Settings extends StatefulWidget {
   const Settings({super.key});
@@ -39,7 +39,7 @@ class _SettingsState extends State<Settings> {
         showDialog(
           context: context,
           builder:(context) => ErrorAlertDialog(
-            platformException: err as PlatformException
+            exception: err as Exception
           ),
         );
       }
@@ -165,8 +165,17 @@ class _SettingsState extends State<Settings> {
                 builder: (BuildContext context) => const BackupBottomSheet()
               );
 
+              // Permission name is different for Android SDK 29, and lower
+              bool storagePermissionGranted = false;
+              final androidInfo = await DeviceInfoPlugin().androidInfo;
+              if (androidInfo.version.sdkInt <= 29) {
+                storagePermissionGranted = await Permission.storage.request().isGranted;
+              } else {
+                storagePermissionGranted = await Permission.manageExternalStorage.request().isGranted;
+              }
+
               // First request storage permissions
-              if ((await Permission.storage.request().isGranted) && mounted) {
+              if (storagePermissionGranted && mounted) {
                 // Get user backup path, and instantiate a backup.zip file object
                 String? backupPath = await getUserBackupPath(context);
                 File zipFile = File(join(backupPath!, "backup.zip"));
@@ -184,11 +193,9 @@ class _SettingsState extends State<Settings> {
                     recurseSubDirs: true
                   );
 
-                  if (mounted) {
-                    // Give user a second to read text before popping bottomsheet
-                    sleep(const Duration(seconds: 2));
-                    Navigator.pop(context);
-                  }
+                  // Give user a second to read text before popping bottomsheet
+                  await Future.delayed(const Duration(seconds: 2), (){});
+                  if (mounted) {Navigator.pop(context);}
                   Fluttertoast.showToast(msg: "Backup completed");
                 } catch (err) {
                   // If error occured, display error alert dialog to inform user
@@ -196,7 +203,7 @@ class _SettingsState extends State<Settings> {
                     showDialog(
                       context: context,
                       builder:(context) => ErrorAlertDialog(
-                        platformException: err as PlatformException
+                        exception: err as Exception
                       ),
                     );
                   }
@@ -219,8 +226,17 @@ class _SettingsState extends State<Settings> {
                 builder: (BuildContext context) => const RestoreBottomSheet()
               );
 
+              // Permission name is different for Android SDK 29, and lower
+              bool storagePermissionGranted = false;
+              final androidInfo = await DeviceInfoPlugin().androidInfo;
+              if (androidInfo.version.sdkInt <= 29) {
+                storagePermissionGranted = await Permission.storage.request().isGranted;
+              } else {
+                storagePermissionGranted = await Permission.manageExternalStorage.request().isGranted;
+              }
+
               // First request storage permissions
-              if ((await Permission.storage.request().isGranted) && mounted) {
+              if (storagePermissionGranted && mounted) {
                 // Get user backup path, and instantiate backup.zip file object
                 String? backupPath = await getUserBackupPath(context);
                 File zipFile = File(join(backupPath!, "backup.zip"));
@@ -252,13 +268,12 @@ class _SettingsState extends State<Settings> {
                     await Common.getLocalImagesPath()
                   );
 
-                  if (mounted) {
-                    // Give user a second to read text before popping bottomsheet
-                    // NOTE: Slightly longer sleep than backing up
-                    // since extracting is generally faster
-                    sleep(const Duration(seconds: 3));
-                    Navigator.pop(context);
-                  }
+                  // Give user a second to read text before popping bottomsheet
+                  // NOTE: Slightly longer sleep than backing up
+                  // since extracting is generally faster
+                  await Future.delayed(const Duration(seconds: 3), (){});
+                  if (mounted) {Navigator.pop(context);}
+
                   Fluttertoast.showToast(msg: "Restore completed");
                 } catch (err) {
                   // If error occured, display error alert dialog to inform user
@@ -266,7 +281,7 @@ class _SettingsState extends State<Settings> {
                     showDialog(
                       context: context,
                       builder:(context) => ErrorAlertDialog(
-                        platformException: err as PlatformException
+                        exception: err as Exception
                       ),
                     );
                   }
