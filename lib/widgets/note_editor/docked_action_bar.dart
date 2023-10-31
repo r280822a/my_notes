@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:my_notes/utils/notes_database.dart';
 import 'package:my_notes/utils/desc_splitter.dart';
-import 'package:my_notes/utils/consts.dart';
+import 'package:my_notes/utils/common.dart';
 import 'package:my_notes/widgets/frosted.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
@@ -102,7 +102,7 @@ class DockedActionBar extends StatelessWidget {
     // Copy image to local images folder
     List split = p.split(image.path);
     String imageName = split[split.length - 1];
-    imageFile.copySync("$path/$imageName");
+    imageFile.copySync(p.join(path, imageName));
 
     return imageName;
   }
@@ -123,7 +123,7 @@ class DockedActionBar extends StatelessWidget {
                   Map<String, int> currentPos = getCurrentTextPos();
                   int descIndex = currentPos["descIndex"] as int;
                   int offset = currentPos["offset"] as int;
-                  addNonText(Consts.checkboxStr, descIndex, offset);
+                  addNonText(Common.checkboxStr, descIndex, offset);
                 },
                 icon: const Icon(Icons.add_box_outlined),
                 color: Theme.of(context).colorScheme.onBackground,

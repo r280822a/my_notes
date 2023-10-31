@@ -153,15 +153,19 @@ class _HomeState extends State<Home> {
           )
         ] : [
           IconButton(
-            tooltip: "View local image attachments",
+            tooltip: "Open settings",
             onPressed: () async {
-              // Open local images page
+              // Close then, after returning, reopen database in case user restores data
+
+              notesDB.close();
+              // Open settings page
               await Navigator.pushNamed(
                 context,
-                "/local_image_attachments",
+                "/settings",
               );
+              getDatabase();
             },
-            icon: const Icon(Icons.photo_library_outlined)
+            icon: const Icon(Icons.settings)
           )
         ],
       ),

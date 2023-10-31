@@ -20,7 +20,7 @@ class LoadingHome extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.photo_library_outlined),
+            icon: const Icon(Icons.settings),
             onPressed: () {},
           )
         ],

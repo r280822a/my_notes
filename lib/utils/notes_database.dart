@@ -1,5 +1,5 @@
+import 'package:my_notes/utils/common.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 
 // Stores/edits list and database of all notes
 class NotesDatabase {
@@ -11,13 +11,17 @@ class NotesDatabase {
 
   Future open() async {
     // Opens the database
-    String path = join(await getDatabasesPath(), "notes.db");
+    String path = await Common.getNotesDatabasePath();
 
     // await deleteDatabase(path); // Deletes database - FOR TESTING ONLY
     database = await openDatabase(path, version: 2, 
       onCreate: _createDB,
       onUpgrade: _upgradeDB,
     );
+  }
+
+  Future close() async {
+    database.close();
   }
 
   Future _upgradeDB(Database db, int currentVersion, int newVersion) async {
