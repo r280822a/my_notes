@@ -23,7 +23,6 @@ class _SettingsState extends State<Settings> {
       ),
 
       body: ListView(
-        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
         children: [
           // App Icon
           Padding(
