@@ -42,6 +42,12 @@ dependencies:
   fluttertoast:
     git:
       url: https://github.com/ponnamkarthik/FlutterToast.git
+  flutter_archive:
+    git:
+      url: https://github.com/kineapps/flutter_archive.git
+  io: ^1.0.4
+  permission_handler: ^11.0.1
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
