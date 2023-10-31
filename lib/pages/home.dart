@@ -156,10 +156,12 @@ class _HomeState extends State<Home> {
             tooltip: "Open settings",
             onPressed: () async {
               // Open settings page
+              notesDB.close();
               await Navigator.pushNamed(
                 context,
                 "/settings",
               );
+              getDatabase();
             },
             icon: const Icon(Icons.settings)
           )

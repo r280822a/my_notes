@@ -51,19 +51,42 @@ class _SettingsState extends State<Settings> {
 
     Directory docDir = await getApplicationDocumentsDirectory();
     String docPath = docDir.path.toString();
-    String path = join(docPath, "backup"); // Full path to backup
-    Directory(path).deleteSync(recursive: true); // Empty directory
-    Directory(path).createSync(recursive: true);
+
+    String backupPath = join(docPath, "backup"); // Full path to backup
+    Directory backupDirectory = Directory(backupPath);
+
+    if (backupDirectory.existsSync()){
+      // Empty directory
+      backupDirectory.deleteSync(recursive: true);
+    }
+    backupDirectory.createSync(recursive: true);
 
     // Path to database
     String databasePath = join(await getDatabasesPath(), "notes.db");
     File databaseFile = File(databasePath);
+    print(databaseFile.readAsBytesSync());
 
     // Copy local images. then copy database
-    io.copyPathSync(await Consts.getLocalImagesPath(), join(path, "local_images"));
-    databaseFile.copySync(join(path, "notes.db"));
+    io.copyPathSync(await Consts.getLocalImagesPath(), join(backupPath, "local_images"));
+    databaseFile.copySync(join(backupPath, "notes.db"));
 
-    return path;
+    return backupPath;
+  }
+
+  Future<String> getRootRestorePath() async {
+    Directory docDir = await getApplicationDocumentsDirectory();
+    String docPath = docDir.path.toString();
+
+    String restorePath = join(docPath, "restore"); // Full path to backup
+    Directory restoreDirectory = Directory(restorePath);
+
+    if (restoreDirectory.existsSync()){
+      // Empty directory
+      restoreDirectory.deleteSync(recursive: true);
+    }
+    restoreDirectory.createSync(recursive: true);
+
+    return restorePath;
   }
 
   @override
@@ -178,9 +201,47 @@ class _SettingsState extends State<Settings> {
 
           // To restore data
           ListTile(
-            onTap: () {
+            onTap: () async {
               // Restore notes database + local images from given file
-              
+
+              if ((await Permission.storage.request().isGranted) && mounted) {
+                // Get user backup path, and backup.zip file object
+                String? backupPath = await getUserBackupPath(context);
+                final zipFile = File(join(backupPath!, "backup.zip"));
+
+                String rootRestorePath = await getRootRestorePath();
+                final Directory destinationDir = Directory(rootRestorePath);
+                try {
+                  await ZipFile.extractToDirectory(
+                    zipFile: zipFile,
+                    destinationDir: destinationDir
+                  );
+
+                  String restoredDBPath = join(rootRestorePath, "notes.db");
+                  File restoredDatabase = File(restoredDBPath);
+
+                  String databasePath = join(await getDatabasesPath(), "notes.db");
+
+                  restoredDatabase.copySync(databasePath);
+
+                  String restoredLocalImagesPath = join(
+                    rootRestorePath, "local_images"
+                  );
+                  io.copyPathSync(
+                    restoredLocalImagesPath,
+                    await Consts.getLocalImagesPath()
+                  );
+                } catch (err) {
+                  if (mounted) {
+                    showDialog(
+                      context: context,
+                      builder:(context) => ErrorAlertDialog(
+                        platformException: err as PlatformException
+                      ),
+                    );
+                  }
+                }
+              }
             },
             title: const Text("Restore"),
             subtitle: const Text("Restore data from backup file"),

@@ -20,6 +20,10 @@ class NotesDatabase {
     );
   }
 
+  Future close() async {
+    database.close();
+  }
+
   Future _upgradeDB(Database db, int currentVersion, int newVersion) async {
     if (currentVersion < newVersion) {
       // Adds column for list index, giving default value of 0
