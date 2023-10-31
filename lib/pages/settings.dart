@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:my_notes/widgets/frosted.dart';
 import 'package:my_notes/utils/consts.dart';
 import 'package:my_notes/widgets/backup_bottom_sheet.dart';
+import 'package:my_notes/widgets/restore_bottom_sheet.dart';
 import 'package:my_notes/widgets/error_alert_dialog.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -204,6 +205,12 @@ class _SettingsState extends State<Settings> {
             onTap: () async {
               // Restore notes database + local images from given file
 
+              showModalBottomSheet(
+                // To display restore info to user
+                context: context,
+                builder: (BuildContext context) => const RestoreBottomSheet()
+              );
+
               if ((await Permission.storage.request().isGranted) && mounted) {
                 // Get user backup path, and backup.zip file object
                 String? backupPath = await getUserBackupPath(context);
@@ -231,6 +238,13 @@ class _SettingsState extends State<Settings> {
                     restoredLocalImagesPath,
                     await Consts.getLocalImagesPath()
                   );
+
+                  if (mounted) {
+                    // Give user a second to read text before popping bottomsheet
+                    sleep(const Duration(seconds: 2));
+                    Navigator.pop(context);
+                  }
+                  Fluttertoast.showToast(msg: "Restore completed");
                 } catch (err) {
                   if (mounted) {
                     showDialog(

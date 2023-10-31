@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class BackupBottomSheet extends StatelessWidget {
-  const BackupBottomSheet({
+class RestoreBottomSheet extends StatelessWidget {
+  const RestoreBottomSheet({
     super.key,
   });
 
@@ -17,13 +17,13 @@ class BackupBottomSheet extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
-                    Icons.backup,
-                    size: 150,
+                    Icons.settings_backup_restore,
+                    size: 125,
                   ),
                 ],
               ),
               Text(
-                "Backing up...",
+                "Restoring...",
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20
@@ -31,7 +31,7 @@ class BackupBottomSheet extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               Text(
-                "Backing up data to 'backup.zip' file in 'My_Notes' folder",
+                "Restoring data from 'backup.zip' file in 'My_Notes' folder",
                 style: TextStyle(fontSize: 16),
                 textAlign: TextAlign.center,
               )
