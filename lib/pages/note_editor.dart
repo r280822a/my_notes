@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_notes/utils/notes_database.dart';
 import 'package:my_notes/utils/desc_splitter.dart';
-import 'package:my_notes/utils/consts.dart';
+import 'package:my_notes/utils/common.dart';
 import 'package:my_notes/widgets/note_editor/all.dart';
 import 'package:my_notes/widgets/frosted.dart';
 import 'package:my_notes/widgets/loading_pages/loading_note_editor.dart';
@@ -45,7 +45,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
   void getPath() async {
     // Store path for local images folder
-    path = await Consts.getLocalImagesPath();
+    path = await Common.getLocalImagesPath();
     setState(() {});
   }
 
@@ -173,9 +173,9 @@ class _NoteEditorState extends State<NoteEditor> {
               Widget widget;
 
               // Indexes for non-text widgets
-              int cbIndex = text.indexOf(Consts.checkboxStr);
-              int cbTickedIndex = text.indexOf(Consts.checkboxTickedStr);
-              int imgIndex = text.indexOf(Consts.imageRegex);
+              int cbIndex = text.indexOf(Common.checkboxStr);
+              int cbTickedIndex = text.indexOf(Common.checkboxTickedStr);
+              int imgIndex = text.indexOf(Common.imageRegex);
 
               bool isTicked = false;
 

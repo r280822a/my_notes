@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/utils/notes_database.dart';
-import 'package:my_notes/utils/consts.dart';
+import 'package:my_notes/utils/common.dart';
 
 // Splits description into textblocks and non-text sections
 // To be used in NoteEditor
@@ -30,9 +30,9 @@ class DescSplitter {
       // Split line by line
 
       // Indexes for non-text sections
-      int cbIndex = line.indexOf(Consts.checkboxStr);
-      int cbTickedIndex = line.indexOf(Consts.checkboxTickedStr);
-      int imgIndex = line.indexOf(Consts.imageRegex);
+      int cbIndex = line.indexOf(Common.checkboxStr);
+      int cbTickedIndex = line.indexOf(Common.checkboxTickedStr);
+      int imgIndex = line.indexOf(Common.imageRegex);
 
       if ((cbIndex == 0) || (cbTickedIndex == 0) || (imgIndex == 0)){
         // If about to add a non-text item

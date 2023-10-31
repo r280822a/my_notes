@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:my_notes/widgets/frosted.dart';
-import 'package:my_notes/utils/consts.dart';
+import 'package:my_notes/utils/common.dart';
 import 'package:my_notes/widgets/settings/backup_bottom_sheet.dart';
 import 'package:my_notes/widgets/settings/restore_bottom_sheet.dart';
 import 'package:my_notes/widgets/error_alert_dialog.dart';
@@ -10,7 +10,6 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_archive/flutter_archive.dart';
 import 'package:io/io.dart' as io;
-import 'package:sqflite/sqflite.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -67,11 +66,11 @@ class _SettingsState extends State<Settings> {
     backupDirectory.createSync(recursive: true);
 
     // Path to database, that app uses
-    String databasePath = join(await getDatabasesPath(), "notes.db");
+    String databasePath = await Common.getNotesDatabasePath();
     File databaseFile = File(databasePath);
 
     // Copy local images, then copy database. Both to root backup directory 
-    io.copyPathSync(await Consts.getLocalImagesPath(), join(backupPath, "local_images"));
+    io.copyPathSync(await Common.getLocalImagesPath(), join(backupPath, "local_images"));
     databaseFile.copySync(join(backupPath, "notes.db"));
 
     return backupPath;
@@ -95,6 +94,7 @@ class _SettingsState extends State<Settings> {
 
     return restorePath;
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -240,7 +240,7 @@ class _SettingsState extends State<Settings> {
                   String restoredDBPath = join(rootRestorePath, "notes.db");
                   File restoredDatabase = File(restoredDBPath);
                   // Path to database, that app uses
-                  String databasePath = join(await getDatabasesPath(), "notes.db");
+                  String databasePath = await Common.getNotesDatabasePath();
                   // Copy restored database file to database that app uses
                   restoredDatabase.copySync(databasePath);
 
@@ -249,7 +249,7 @@ class _SettingsState extends State<Settings> {
                   // Copy restored local images to local images directory that app uses
                   io.copyPathSync(
                     restoredLocalImagesPath,
-                    await Consts.getLocalImagesPath()
+                    await Common.getLocalImagesPath()
                   );
 
                   if (mounted) {
