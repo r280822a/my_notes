@@ -153,7 +153,7 @@ class _HomeState extends State<Home> {
           )
         ] : [
           IconButton(
-            tooltip: "Settings page",
+            tooltip: "Open settings",
             onPressed: () async {
               // Open settings page
               await Navigator.pushNamed(
