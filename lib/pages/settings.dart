@@ -21,28 +21,18 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-  Future<String?> getUserBackupPath(BuildContext context) async {
+  Future<String?> getUserBackupPath() async {
     // Returns path to backup folder, that user can access
-    Directory? directory;
-    try {
-      // Return path to own 'My_Notes' folder by default
-      directory = Directory('/storage/emulated/0/My_Notes');
-      directory.createSync(recursive: true);
+    // NOTE: Can throw an exception, if error occured
 
-      // If doesn't exist, fallback to getExternalStorageDirectory
-      if (!await directory.exists()) {
-        directory = await getExternalStorageDirectory();
-      }
-    } catch (err) {
-      // If error occured, display error alert dialog to inform user
-      if (mounted) {
-        showDialog(
-          context: context,
-          builder:(context) => ErrorAlertDialog(
-            exception: err as Exception
-          ),
-        );
-      }
+    Directory? directory;
+    // Return path to own 'My_Notes' folder by default
+    directory = Directory('/storage/emulated/0/My_Notes');
+    directory.createSync(recursive: true);
+
+    // If doesn't exist, fallback to getExternalStorageDirectory
+    if (!await directory.exists()) {
+      directory = await getExternalStorageDirectory();
     }
 
     return directory?.path;
@@ -51,12 +41,13 @@ class _SettingsState extends State<Settings> {
   Future<String> fillRootBackupDirectory() async {
     // Fill root backup directory with database, and local images
     // Return path to root backup directory
-    // NOTE: user cannot access this directory
+    // NOTE: user cannot access this directory, and function can throw exception
 
+    String backupPath = "";
     Directory docDir = await getApplicationDocumentsDirectory();
     String docPath = docDir.path.toString();
 
-    String backupPath = join(docPath, "backup"); // Full path to backup
+    backupPath = join(docPath, "backup"); // Full path to backup
     Directory backupDirectory = Directory(backupPath);
 
     if (backupDirectory.existsSync()){
@@ -78,12 +69,13 @@ class _SettingsState extends State<Settings> {
 
   Future<String> getRootRestorePath() async {
     // Returns path to root backup directory
-    // NOTE: user cannot access this directory
+    // NOTE: user cannot access this directory, and function can throw exception
 
+    String restorePath = "";
     Directory docDir = await getApplicationDocumentsDirectory();
     String docPath = docDir.path.toString();
 
-    String restorePath = join(docPath, "restore"); // Full path to restore
+    restorePath = join(docPath, "restore"); // Full path to restore
     Directory restoreDirectory = Directory(restorePath);
 
     if (restoreDirectory.existsSync()){
@@ -175,16 +167,16 @@ class _SettingsState extends State<Settings> {
               }
 
               // First request storage permissions
-              if (storagePermissionGranted && mounted) {
-                // Get user backup path, and instantiate a backup.zip file object
-                String? backupPath = await getUserBackupPath(context);
-                File zipFile = File(join(backupPath!, "backup.zip"));
-
-                // Fill root backup directory, ready to zip
-                String backup = await fillRootBackupDirectory();
-                Directory backupDir = Directory(backup);
-
+              if (storagePermissionGranted) {
                 try {
+                  // Get user backup path, and instantiate a backup.zip file object
+                  String? backupPath = await getUserBackupPath();
+                  File zipFile = File(join(backupPath!, "backup.zip"));
+
+                  // Fill root backup directory, ready to zip
+                  String backup = await fillRootBackupDirectory();
+                  Directory backupDir = Directory(backup);
+
                   // Create zip from root backup directory,
                   // Storing it in user backup directory
                   await ZipFile.createFromDirectory(
@@ -236,16 +228,16 @@ class _SettingsState extends State<Settings> {
               }
 
               // First request storage permissions
-              if (storagePermissionGranted && mounted) {
-                // Get user backup path, and instantiate backup.zip file object
-                String? backupPath = await getUserBackupPath(context);
-                File zipFile = File(join(backupPath!, "backup.zip"));
-
-                // Get (and empty) root restore path, ready to extract
-                String rootRestorePath = await getRootRestorePath();
-                Directory destinationDir = Directory(rootRestorePath);
-
+              if (storagePermissionGranted) {
                 try {
+                  // Get user backup path, and instantiate backup.zip file object
+                  String? backupPath = await getUserBackupPath();
+                  File zipFile = File(join(backupPath!, "backup.zip"));
+
+                  // Get (and empty) root restore path, ready to extract
+                  String rootRestorePath = await getRootRestorePath();
+                  Directory destinationDir = Directory(rootRestorePath);
+
                   // Extract backup.zip to root restore path
                   await ZipFile.extractToDirectory(
                     zipFile: zipFile,
