@@ -20,7 +20,7 @@ class BackupBottomSheet extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.backup,
-                    size: 150,
+                    size: 120,
                   ),
                 ],
               ),

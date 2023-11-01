@@ -20,7 +20,7 @@ class RestoreBottomSheet extends StatelessWidget {
                 children: [
                   Icon(
                     Icons.settings_backup_restore,
-                    size: 125,
+                    size: 120,
                   ),
                 ],
               ),
