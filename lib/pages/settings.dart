@@ -44,11 +44,11 @@ class _SettingsState extends State<Settings> {
     // NOTE: user cannot access this directory, and function can throw exception
 
     String backupPath = "";
-    Directory docDir = await getApplicationDocumentsDirectory();
-    String docPath = docDir.path.toString();
+    final Directory docDir = await getApplicationDocumentsDirectory();
+    final String docPath = docDir.path.toString();
 
     backupPath = join(docPath, "backup"); // Full path to backup
-    Directory backupDirectory = Directory(backupPath);
+    final Directory backupDirectory = Directory(backupPath);
 
     if (backupDirectory.existsSync()){
       // Empty directory, if exists
@@ -57,8 +57,8 @@ class _SettingsState extends State<Settings> {
     backupDirectory.createSync(recursive: true);
 
     // Path to database, that app uses
-    String databasePath = await Common.getNotesDatabasePath();
-    File databaseFile = File(databasePath);
+    final String databasePath = await Common.getNotesDatabasePath();
+    final File databaseFile = File(databasePath);
 
     // Copy local images, then copy database. Both to root backup directory 
     io.copyPathSync(await Common.getLocalImagesPath(), join(backupPath, "local_images"));
@@ -72,11 +72,11 @@ class _SettingsState extends State<Settings> {
     // NOTE: user cannot access this directory, and function can throw exception
 
     String restorePath = "";
-    Directory docDir = await getApplicationDocumentsDirectory();
-    String docPath = docDir.path.toString();
+    final Directory docDir = await getApplicationDocumentsDirectory();
+    final String docPath = docDir.path.toString();
 
     restorePath = join(docPath, "restore"); // Full path to restore
-    Directory restoreDirectory = Directory(restorePath);
+    final Directory restoreDirectory = Directory(restorePath);
 
     if (restoreDirectory.existsSync()){
       // Empty directory, if exists
@@ -159,7 +159,7 @@ class _SettingsState extends State<Settings> {
 
               // Permission name is different for Android SDK 29, and lower
               bool storagePermissionGranted = false;
-              final androidInfo = await DeviceInfoPlugin().androidInfo;
+              final AndroidDeviceInfo androidInfo = await DeviceInfoPlugin().androidInfo;
               if (androidInfo.version.sdkInt <= 29) {
                 storagePermissionGranted = await Permission.storage.request().isGranted;
               } else {
@@ -170,12 +170,12 @@ class _SettingsState extends State<Settings> {
               if (storagePermissionGranted) {
                 try {
                   // Get user backup path, and instantiate a backup.zip file object
-                  String? backupPath = await getUserBackupPath();
-                  File zipFile = File(join(backupPath!, "backup.zip"));
+                  final String? backupPath = await getUserBackupPath();
+                  final File zipFile = File(join(backupPath!, "backup.zip"));
 
                   // Fill root backup directory, ready to zip
-                  String backup = await fillRootBackupDirectory();
-                  Directory backupDir = Directory(backup);
+                  final String backup = await fillRootBackupDirectory();
+                  final Directory backupDir = Directory(backup);
 
                   // Create zip from root backup directory,
                   // Storing it in user backup directory
@@ -220,7 +220,7 @@ class _SettingsState extends State<Settings> {
 
               // Permission name is different for Android SDK 29, and lower
               bool storagePermissionGranted = false;
-              final androidInfo = await DeviceInfoPlugin().androidInfo;
+              final AndroidDeviceInfo androidInfo = await DeviceInfoPlugin().androidInfo;
               if (androidInfo.version.sdkInt <= 29) {
                 storagePermissionGranted = await Permission.storage.request().isGranted;
               } else {
@@ -231,12 +231,12 @@ class _SettingsState extends State<Settings> {
               if (storagePermissionGranted) {
                 try {
                   // Get user backup path, and instantiate backup.zip file object
-                  String? backupPath = await getUserBackupPath();
-                  File zipFile = File(join(backupPath!, "backup.zip"));
+                  final String? backupPath = await getUserBackupPath();
+                  final File zipFile = File(join(backupPath!, "backup.zip"));
 
                   // Get (and empty) root restore path, ready to extract
-                  String rootRestorePath = await getRootRestorePath();
-                  Directory destinationDir = Directory(rootRestorePath);
+                  final String rootRestorePath = await getRootRestorePath();
+                  final Directory destinationDir = Directory(rootRestorePath);
 
                   // Extract backup.zip to root restore path
                   await ZipFile.extractToDirectory(
@@ -245,18 +245,19 @@ class _SettingsState extends State<Settings> {
                   );
 
                   // Restored database file object
-                  String restoredDBPath = join(rootRestorePath, "notes.db");
-                  File restoredDatabase = File(restoredDBPath);
+                  final String restoredDBPath = join(rootRestorePath, "notes.db");
+                  final File restoredDatabase = File(restoredDBPath);
                   // Path to database, that app uses
-                  String databasePath = await Common.getNotesDatabasePath();
+                  final String databasePath = await Common.getNotesDatabasePath();
                   // Copy restored database file to database that app uses
                   restoredDatabase.copySync(databasePath);
 
                   // Path to restored local images
-                  String restoredLocalImagesPath = join(rootRestorePath, "local_images");
+                  final String restoredLocalImagesPath = join(rootRestorePath, "local_images");
+                  // Path to local images directory, that app uses
+                  final String localImagesPath = await Common.getLocalImagesPath();
+                  final Directory localImagesDir = Directory(localImagesPath); // Outdated path/directory name
                   // Empty local images directory, that app uses
-                  String localImagesPath = await Common.getLocalImagesPath();
-                  Directory localImagesDir = Directory(localImagesPath); // Outdated path/directory name
                   localImagesDir.deleteSync(recursive: true);
                   localImagesDir.createSync(recursive: true);
                   // Copy restored local images to local images directory that app uses
