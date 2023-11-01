@@ -132,10 +132,12 @@ class _NoteEditorState extends State<NoteEditor> {
         child: GestureDetector(
           onTap: () {
             // Focus on bottom-most TextFormField, when tapping background
-            if (displayRaw){
-              rawFocusNode.requestFocus();
-            } else {
-              descSplitter.focusNodes[descSplitter.focusNodes.length - 1].requestFocus();
+            if (scrollController.position.maxScrollExtent == 0) {
+              if (displayRaw){
+                rawFocusNode.requestFocus();
+              } else {
+                descSplitter.focusNodes[descSplitter.focusNodes.length - 1].requestFocus();
+              }
             }
           },
 
