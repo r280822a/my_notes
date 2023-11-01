@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:my_notes/utils/notes_database.dart';
 import 'package:my_notes/utils/desc_splitter.dart';
 import 'package:my_notes/utils/common.dart';
+import 'package:my_notes/widgets/error_alert_dialog.dart';
 import 'package:my_notes/widgets/frosted.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
@@ -135,6 +136,7 @@ class DockedActionBar extends StatelessWidget {
   }
 }
 
+// Bottom sheet to allow user to select between adding a network or local image
 class AddImageBottomSheet extends StatelessWidget {
   const AddImageBottomSheet({
     super.key,
@@ -153,7 +155,7 @@ class AddImageBottomSheet extends StatelessWidget {
 
     if (image == null) {return "";}
 
-    // Convert XFile to file
+    // Convert XFile to File
     File imageFile = File(image.path);
 
     // Copy image to local images folder
@@ -177,16 +179,29 @@ class AddImageBottomSheet extends StatelessWidget {
               TextButton(
                 onPressed: () async {
                   // Add local image
+
                   Navigator.pop(context);
-                  String imageName = await pickImage();
+                  try {
+                    String imageName = await pickImage();
 
-                  if (imageName != ""){
-                    Map<String, int> currentPos = getCurrentTextPos();
-                    int descIndex = currentPos["descIndex"] as int;
-                    int offset = currentPos["offset"] as int;
+                    if (imageName != ""){
+                      Map<String, int> currentPos = getCurrentTextPos();
+                      int descIndex = currentPos["descIndex"] as int;
+                      int offset = currentPos["offset"] as int;
 
-                    String link = "![](local_images/$imageName)";
-                    addNonText(link, descIndex, offset);
+                      String link = "![](local_images/$imageName)";
+                      addNonText(link, descIndex, offset);
+                    }
+                  } catch (err) {
+                    // If error occured, display error alert dialog to inform user
+                    if (context.mounted) {
+                      showDialog(
+                        context: context,
+                        builder:(context) => ErrorAlertDialog(
+                          exception: err as Exception
+                        ),
+                      );
+                    }
                   }
                 },
                 style: TextButton.styleFrom(
