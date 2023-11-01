@@ -90,23 +90,6 @@ class DockedActionBar extends StatelessWidget {
     setState();
   }
 
-  Future<String> pickImage() async {
-    // Let user pick image
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-
-    if (image == null) {return "";}
-
-    // Convert XFile to file
-    File imageFile = File(image.path);
-
-    // Copy image to local images folder
-    List split = p.split(image.path);
-    String imageName = split[split.length - 1];
-    imageFile.copySync(p.join(path, imageName));
-
-    return imageName;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Frosted(
@@ -138,7 +121,7 @@ class DockedActionBar extends StatelessWidget {
                   builder: (BuildContext context) => AddImageBottomSheet(
                     getCurrentTextPos: getCurrentTextPos,
                     addNonText: addNonText,
-                    pickImage: pickImage,
+                    path: path,
                   ),
                 );
               },
@@ -157,12 +140,29 @@ class AddImageBottomSheet extends StatelessWidget {
     super.key,
     required this.getCurrentTextPos,
     required this.addNonText,
-    required this.pickImage,
+    required this.path,
   });
 
   final Function getCurrentTextPos;
   final Function addNonText;
-  final Function pickImage;
+  final String path;
+
+  Future<String> pickImage() async {
+    // Let user pick image
+    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
+
+    if (image == null) {return "";}
+
+    // Convert XFile to file
+    File imageFile = File(image.path);
+
+    // Copy image to local images folder
+    List split = p.split(image.path);
+    String imageName = split[split.length - 1];
+    imageFile.copySync(p.join(path, imageName));
+
+    return imageName;
+  }
 
   @override
   Widget build(BuildContext context) {
