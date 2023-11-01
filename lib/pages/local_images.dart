@@ -31,15 +31,13 @@ class _LocalImagesState extends State<LocalImages> {
     // Stores list of image files
     images = Directory(path).listSync();
 
-    if (images.isNotEmpty){
-      loading = false;
-      setState(() {});
-    }
+    setState(() {});
   }
 
 
   @override
   Widget build(BuildContext context) {
+    if (images.isNotEmpty) {loading = false;} else {loading = true;}
     if (loading){return const LoadingLocalImages();}
 
     return Scaffold(
