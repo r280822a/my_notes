@@ -29,7 +29,7 @@ class OptionsMenu extends StatelessWidget {
         PopupMenuItem(
           onTap: () {
             // Copy note to clipboard
-            String copiedText = "${note.title}\n\n${note.description}";
+            final String copiedText = "${note.title}\n\n${note.description}";
             Clipboard.setData(ClipboardData(text: copiedText));
             Fluttertoast.showToast(msg: "Copied to clipboard");
           },

@@ -56,7 +56,7 @@ class DockedActionBar extends StatelessWidget {
       }
     }
 
-    Map<String, int> result = {
+    final Map<String, int> result = {
       "descIndex": descIndex,
       "offset": offset
     };
@@ -72,11 +72,11 @@ class DockedActionBar extends StatelessWidget {
 
     // Split text from start till index
     // To find which line to add string
-    String substring = text.substring(0, offset);
-    List<String> substringSplit = substring.split("\n");
+    final String substring = text.substring(0, offset);
+    final List<String> substringSplit = substring.split("\n");
 
     // Add string
-    List<String> textSplit = text.split("\n");
+    final List<String> textSplit = text.split("\n");
     textSplit.insert(substringSplit.length, strToAdd);
     text = textSplit.join("\n");
 
@@ -155,11 +155,11 @@ class AddImageBottomSheet extends StatelessWidget {
     if (image == null) {return "";}
 
     // Convert XFile to File
-    File imageFile = File(image.path);
+    final File imageFile = File(image.path);
 
     // Copy image to local images folder
-    List split = p.split(image.path);
-    String imageName = split[split.length - 1];
+    final List split = p.split(image.path);
+    final String imageName = split[split.length - 1];
     imageFile.copySync(p.join(path, imageName));
 
     return imageName;
@@ -184,11 +184,11 @@ class AddImageBottomSheet extends StatelessWidget {
                     String imageName = await pickImage();
 
                     if (imageName != ""){
-                      Map<String, int> currentPos = getCurrentTextPos();
-                      int descIndex = currentPos["descIndex"] as int;
-                      int offset = currentPos["offset"] as int;
+                      final Map<String, int> currentPos = getCurrentTextPos();
+                      final int descIndex = currentPos["descIndex"] as int;
+                      final int offset = currentPos["offset"] as int;
 
-                      String link = "![](local_images/$imageName)";
+                      final String link = "![](local_images/$imageName)";
                       addNonText(link, descIndex, offset);
                     }
                   } catch (err) {
@@ -222,11 +222,11 @@ class AddImageBottomSheet extends StatelessWidget {
                 onPressed: () {
                   // Add network image
                   Navigator.pop(context);
-                  Map<String, int> currentPos = getCurrentTextPos();
-                  int descIndex = currentPos["descIndex"] as int;
-                  int offset = currentPos["offset"] as int;
+                  final Map<String, int> currentPos = getCurrentTextPos();
+                  final int descIndex = currentPos["descIndex"] as int;
+                  final int offset = currentPos["offset"] as int;
 
-                  TextEditingController linkController = TextEditingController();
+                  final TextEditingController linkController = TextEditingController();
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(

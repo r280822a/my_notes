@@ -93,7 +93,7 @@ class DescLocalImage extends StatelessWidget {
                   descSplitter.joinDescription();
 
                   // Delete image file
-                  File imageFile = File(p.join(path, imageName));
+                  final File imageFile = File(p.join(path, imageName));
                   if (imageFile.existsSync()){
                     imageFile.deleteSync();
                   }

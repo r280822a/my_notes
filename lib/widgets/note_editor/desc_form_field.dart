@@ -35,8 +35,8 @@ class DescFormField extends StatelessWidget {
         // Update textblock, when changed
 
         // Adds checkbox symbol if checkbox
-        int cbIndex = descSplitter.list[index].indexOf(Common.checkboxStr);
-        int cbTickedIndex = descSplitter.list[index].indexOf(Common.checkboxTickedStr);
+        final int cbIndex = descSplitter.list[index].indexOf(Common.checkboxStr);
+        final int cbTickedIndex = descSplitter.list[index].indexOf(Common.checkboxTickedStr);
         if (cbIndex == 0) {
           value = "${Common.checkboxStr}$value";
         } else if (cbTickedIndex == 0){
