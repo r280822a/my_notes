@@ -20,12 +20,12 @@ class Common {
   static Future<String> getLocalImagesPath() async {
     // Get path to local images folder
 
-    Directory docDir = await getApplicationDocumentsDirectory();
-    String docPath = docDir.path.toString();
+    final Directory docDir = await getApplicationDocumentsDirectory();
+    final String docPath = docDir.path.toString();
 
-    String oldPath = p.join(docPath, "assets");
-    Directory oldDir = Directory(oldPath); // Outdated path/directory name
-    String path = p.join(docPath, "local_images"); // Full path to local images
+    final String oldPath = p.join(docPath, "assets");
+    final Directory oldDir = Directory(oldPath); // Outdated path/directory name
+    final String path = p.join(docPath, "local_images"); // Full path to local images
 
     if (oldDir.existsSync()){
       // If old path exists & contains nothing, delete directory

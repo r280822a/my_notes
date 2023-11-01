@@ -11,7 +11,7 @@ class NotesDatabase {
 
   Future open() async {
     // Opens the database
-    String path = await Common.getNotesDatabasePath();
+    final String path = await Common.getNotesDatabasePath();
 
     // await deleteDatabase(path); // Deletes database - FOR TESTING ONLY
     database = await openDatabase(path, version: 2, 
