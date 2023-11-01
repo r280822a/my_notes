@@ -126,7 +126,7 @@ class _SettingsState extends State<Settings> {
               style: TextStyle(fontSize: 25),
             ),
             subtitle: Text(
-              "v3.4.0",
+              "v4.0.0",
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleSmall,
             ),
