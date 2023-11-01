@@ -19,14 +19,14 @@ class _NoteEditorState extends State<NoteEditor> {
   late NotesDatabase notesDB;
 
   late DescSplitter descSplitter;
-  TextEditingController rawTextController = TextEditingController();
-  FocusNode rawFocusNode = FocusNode();
+  final TextEditingController rawTextController = TextEditingController();
+  final FocusNode rawFocusNode = FocusNode();
   late String time;
 
   String path = "";
   bool displayRaw = false;
   bool initialised = false;
-  ScrollController scrollController = ScrollController();
+  final ScrollController scrollController = ScrollController();
   bool showTitle = false;
 
   @override
@@ -172,13 +172,13 @@ class _NoteEditorState extends State<NoteEditor> {
             itemBuilder: (context, index) {
               // Display rendered note description
 
-              String text = descSplitter.list[index]; // Text to render
+              final String text = descSplitter.list[index]; // Text to render
               Widget widget;
 
               // Indexes for non-text widgets
-              int cbIndex = text.indexOf(Common.checkboxStr);
-              int cbTickedIndex = text.indexOf(Common.checkboxTickedStr);
-              int imgIndex = text.indexOf(Common.imageRegex);
+              final int cbIndex = text.indexOf(Common.checkboxStr);
+              final int cbTickedIndex = text.indexOf(Common.checkboxTickedStr);
+              final int imgIndex = text.indexOf(Common.imageRegex);
 
               bool isTicked = false;
 
@@ -221,6 +221,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
                   // Remove "local_images/" at beginning for image name
                   imageName = imageName.replaceAll("local_images/", "");
+
                   widget = DescLocalImage(
                     descSplitter: descSplitter,
                     index: index,
@@ -239,7 +240,7 @@ class _NoteEditorState extends State<NoteEditor> {
                   );
                 }
               } else {
-                // Add textblock
+                // If non of the above, add textblock
                 widget = DescFormField(
                   descSplitter: descSplitter,
                   textController: descSplitter.textControllers[index],
@@ -278,6 +279,7 @@ class _NoteEditorState extends State<NoteEditor> {
         ),
       ),
 
+      // Docked action bar, to add non-text widgets
       resizeToAvoidBottomInset: false,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(

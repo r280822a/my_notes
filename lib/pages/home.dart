@@ -72,6 +72,7 @@ class _HomeState extends State<Home> {
     return selectedNotes;
   }
 
+
   @override
   Widget build(BuildContext context) {
     if (loading) {return const LoadingHome();}
@@ -106,7 +107,7 @@ class _HomeState extends State<Home> {
           }
         ),
 
-        // Display buttons for select mode, else local images page button
+        // Display buttons for select mode, else settings page button
         actions: selectModeEnabled ? [
           IconButton(
             tooltip: "Swap notes",
@@ -188,18 +189,16 @@ class _HomeState extends State<Home> {
             isSelected.insert(newIndex, false);
             selectCard(newIndex);
             setState(() {});
+
             // Reorder database in background
             await notesDB.reorderNotesDB(noteToReorder, oldIndex, newIndex);
           },
           dragStartDelay: const Duration(milliseconds: 250),
           onDragStart: (dragIndex) {
-            // Essentially activates when long pressing
-            // Select note/card, if not in select mode
-            if (!selectModeEnabled){
-              HapticFeedback.selectionClick();
-              selectCard(dragIndex);
-              setState(() {});
-            }
+            // Select note/card, if activating select mode then use haptic feedback
+            if (!selectModeEnabled) {HapticFeedback.selectionClick();}
+            selectCard(dragIndex);
+            setState(() {});
           },
           dragWidgetBuilderV2: DragWidgetBuilderV2(builder: (int index, Widget child, ImageProvider? screenshot) {
             return NoteCard(
