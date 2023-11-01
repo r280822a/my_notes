@@ -151,8 +151,7 @@ class AddImageBottomSheet extends StatelessWidget {
 
   Future<String> pickImage() async {
     // Let user pick image
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-
+    final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (image == null) {return "";}
 
     // Convert XFile to File
