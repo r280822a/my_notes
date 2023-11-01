@@ -254,10 +254,15 @@ class _SettingsState extends State<Settings> {
 
                   // Path to restored local images
                   String restoredLocalImagesPath = join(rootRestorePath, "local_images");
+                  // Empty local images directory, that app uses
+                  String localImagesPath = await Common.getLocalImagesPath();
+                  Directory localImagesDir = Directory(localImagesPath); // Outdated path/directory name
+                  localImagesDir.deleteSync(recursive: true);
+                  localImagesDir.createSync(recursive: true);
                   // Copy restored local images to local images directory that app uses
                   io.copyPathSync(
                     restoredLocalImagesPath,
-                    await Common.getLocalImagesPath()
+                    localImagesPath
                   );
 
                   // Give user a second to read text before popping bottomsheet
