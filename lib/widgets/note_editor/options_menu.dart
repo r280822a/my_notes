@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:my_notes/notes_database.dart';
+import 'package:my_notes/utils/notes_database.dart';
 import 'package:my_notes/widgets/delete_alert_dialog.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -24,11 +24,12 @@ class OptionsMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopupMenuButton(
+      tooltip: "More options",
       itemBuilder: (context) => [
         PopupMenuItem(
           onTap: () {
             // Copy note to clipboard
-            String copiedText = "${note.title}\n\n${note.description}";
+            final String copiedText = "${note.title}\n\n${note.description}";
             Clipboard.setData(ClipboardData(text: copiedText));
             Fluttertoast.showToast(msg: "Copied to clipboard");
           },

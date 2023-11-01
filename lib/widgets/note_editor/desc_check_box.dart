@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/desc_splitter.dart';
-import 'package:my_notes/consts.dart';
+import 'package:my_notes/utils/desc_splitter.dart';
+import 'package:my_notes/utils/common.dart';
 import 'package:my_notes/widgets/note_editor/desc_form_field.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -33,9 +33,9 @@ class DescCheckBox extends StatelessWidget {
             // Ticks/Unticks checkbox
 
             // Symbol to put at start
-            String symbol = Consts.checkboxTickedStr;
+            String symbol = Common.checkboxTickedStr;
             if (isTicked){
-              symbol = Consts.checkboxStr;
+              symbol = Common.checkboxStr;
             }
 
             // Change checkbox symbol

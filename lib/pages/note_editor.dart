@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:my_notes/notes_database.dart';
-import 'package:my_notes/desc_splitter.dart';
-import 'package:my_notes/consts.dart';
+import 'package:my_notes/utils/notes_database.dart';
+import 'package:my_notes/utils/desc_splitter.dart';
+import 'package:my_notes/utils/common.dart';
 import 'package:my_notes/widgets/note_editor/all.dart';
 import 'package:my_notes/widgets/frosted.dart';
 import 'package:my_notes/widgets/loading_pages/loading_note_editor.dart';
@@ -19,14 +19,14 @@ class _NoteEditorState extends State<NoteEditor> {
   late NotesDatabase notesDB;
 
   late DescSplitter descSplitter;
-  TextEditingController rawTextController = TextEditingController();
-  FocusNode rawFocusNode = FocusNode();
+  final TextEditingController rawTextController = TextEditingController();
+  final FocusNode rawFocusNode = FocusNode();
   late String time;
 
   String path = "";
   bool displayRaw = false;
   bool initialised = false;
-  ScrollController scrollController = ScrollController();
+  final ScrollController scrollController = ScrollController();
   bool showTitle = false;
 
   @override
@@ -35,9 +35,9 @@ class _NoteEditorState extends State<NoteEditor> {
     getPath();
     scrollController.addListener(() {
       // To show/hide title in appbar when scrolling
-      if ((scrollController.position.pixels > 60) && (showTitle == false)){
+      if ((scrollController.position.pixels > 40) && (showTitle == false)){
         setState(() {showTitle = true;});
-      } else if ((scrollController.position.pixels < 60) && (showTitle == true)){
+      } else if ((scrollController.position.pixels < 40) && (showTitle == true)){
         setState(() {showTitle = false;});
       }
     });
@@ -45,7 +45,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
   void getPath() async {
     // Store path for local images folder
-    path = await Consts.getLocalImagesPath();
+    path = await Common.getLocalImagesPath();
     setState(() {});
   }
 
@@ -132,10 +132,13 @@ class _NoteEditorState extends State<NoteEditor> {
         child: GestureDetector(
           onTap: () {
             // Focus on bottom-most TextFormField, when tapping background
-            if (displayRaw){
-              rawFocusNode.requestFocus();
-            } else {
-              descSplitter.focusNodes[descSplitter.focusNodes.length - 1].requestFocus();
+            if (scrollController.position.maxScrollExtent == 0) {
+              // Only if ListView doesn't extend to bottom of screen
+              if (displayRaw){
+                rawFocusNode.requestFocus();
+              } else {
+                descSplitter.focusNodes[descSplitter.focusNodes.length - 1].requestFocus();
+              }
             }
           },
 
@@ -169,13 +172,13 @@ class _NoteEditorState extends State<NoteEditor> {
             itemBuilder: (context, index) {
               // Display rendered note description
 
-              String text = descSplitter.list[index]; // Text to render
+              final String text = descSplitter.list[index]; // Text to render
               Widget widget;
 
               // Indexes for non-text widgets
-              int cbIndex = text.indexOf(Consts.checkboxStr);
-              int cbTickedIndex = text.indexOf(Consts.checkboxTickedStr);
-              int imgIndex = text.indexOf(Consts.imageRegex);
+              final int cbIndex = text.indexOf(Common.checkboxStr);
+              final int cbTickedIndex = text.indexOf(Common.checkboxTickedStr);
+              final int imgIndex = text.indexOf(Common.imageRegex);
 
               bool isTicked = false;
 
@@ -197,13 +200,15 @@ class _NoteEditorState extends State<NoteEditor> {
               } else if (imgIndex == 0) {
                 // If image
 
-                // Remove '![]', and everything inside
-                String imageName = text.replaceAll(RegExp(r'!\[.*?\]'), "");
-                imageName = imageName.substring(1, imageName.length - 1);
+                // Remove '![...](', with '...' being anything
+                String imageName = text.replaceAll(RegExp(r'!\[(.*?)\]\('), "");
+                // Remove ')' at end
+                imageName = imageName.substring(0, imageName.length - 1);
 
-                // Remove '()', and everything inside
-                String altText = text.replaceAll(RegExp(r'\(.*?\)'), "");
-                altText = altText.substring(2, altText.length - 1);
+                // Remove '](...)', with '...' being anything
+                String altText = text.replaceAll(RegExp(r'\]\((.*?)\)'), "");
+                // Remove '![' at beginning
+                altText = altText.substring(2, altText.length);
 
                 // Add image
                 if ((imageName.startsWith("assets/")) || (imageName.startsWith("local_images/"))){
@@ -216,6 +221,7 @@ class _NoteEditorState extends State<NoteEditor> {
 
                   // Remove "local_images/" at beginning for image name
                   imageName = imageName.replaceAll("local_images/", "");
+
                   widget = DescLocalImage(
                     descSplitter: descSplitter,
                     index: index,
@@ -234,7 +240,7 @@ class _NoteEditorState extends State<NoteEditor> {
                   );
                 }
               } else {
-                // Add textblock
+                // If non of the above, add textblock
                 widget = DescFormField(
                   descSplitter: descSplitter,
                   textController: descSplitter.textControllers[index],
@@ -273,6 +279,7 @@ class _NoteEditorState extends State<NoteEditor> {
         ),
       ),
 
+      // Docked action bar, to add non-text widgets
       resizeToAvoidBottomInset: false,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Padding(

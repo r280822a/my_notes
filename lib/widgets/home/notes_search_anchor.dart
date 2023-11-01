@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_notes/widgets/home/note_card.dart';
-import 'package:my_notes/notes_database.dart';
+import 'package:my_notes/utils/notes_database.dart';
 
 // SearchAnchor to search for notes, based on title
 class NotesSearchAnchor extends StatelessWidget {

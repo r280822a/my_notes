@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/notes_database.dart';
-import 'package:my_notes/consts.dart';
+import 'package:my_notes/utils/notes_database.dart';
+import 'package:my_notes/utils/common.dart';
 
 // Splits description into textblocks and non-text sections
 // To be used in NoteEditor
-class DescSplitter{
+class DescSplitter {
   List<String> list = []; // Holds split up description
   List<TextEditingController> textControllers = [];
   List<FocusNode> focusNodes = [];
@@ -21,8 +21,8 @@ class DescSplitter{
     textControllers.clear();
     focusNodes.clear();
 
-    String description = note.description;
-    List<String> lineSplitText = description.split("\n");
+    final String description = note.description;
+    final List<String> lineSplitText = description.split("\n");
     List<String> textBuffer = [];
     bool endsInNonText = false;
 
@@ -30,16 +30,16 @@ class DescSplitter{
       // Split line by line
 
       // Indexes for non-text sections
-      int cbIndex = line.indexOf(Consts.checkboxStr);
-      int cbTickedIndex = line.indexOf(Consts.checkboxTickedStr);
-      int imgIndex = line.indexOf(Consts.imageRegex);
+      final int cbIndex = line.indexOf(Common.checkboxStr);
+      final int cbTickedIndex = line.indexOf(Common.checkboxTickedStr);
+      final int imgIndex = line.indexOf(Common.imageRegex);
 
       if ((cbIndex == 0) || (cbTickedIndex == 0) || (imgIndex == 0)){
         // If about to add a non-text item
         if (textBuffer.isNotEmpty && !((textBuffer.length == 1) && (textBuffer[0] == ""))){
           // If any text in text buffer (ignore single line gaps)
           // Join together to form 1 textblock
-          String join = textBuffer.join("\n");
+          final String join = textBuffer.join("\n");
 
           // Add textblock to lists
           list.add(join);
@@ -85,7 +85,7 @@ class DescSplitter{
   }
 
   void joinDescription() {
-    String newDescription = list.join("\n");
+    final String newDescription = list.join("\n");
     note.description = newDescription;
     notesDB.updateNote(note);
   }

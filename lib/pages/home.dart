@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:my_notes/notes_database.dart';
+import 'package:my_notes/utils/notes_database.dart';
 import 'package:my_notes/widgets/loading_pages/loading_home.dart';
 import 'package:my_notes/widgets/delete_alert_dialog.dart';
 import 'package:my_notes/widgets/frosted.dart';
@@ -72,6 +72,7 @@ class _HomeState extends State<Home> {
     return selectedNotes;
   }
 
+
   @override
   Widget build(BuildContext context) {
     if (loading) {return const LoadingHome();}
@@ -106,7 +107,7 @@ class _HomeState extends State<Home> {
           }
         ),
 
-        // Display buttons for select mode, else local images page button
+        // Display buttons for select mode, else settings page button
         actions: selectModeEnabled ? [
           IconButton(
             tooltip: "Swap notes",
@@ -119,7 +120,9 @@ class _HomeState extends State<Home> {
                   toastLength: Toast.LENGTH_LONG
                 );
               } else{
-                await notesDB.swapNote(notesToSwap[0], notesToSwap[1]);
+                int note1Index = notesDB.list.indexOf(notesToSwap[0]);
+                int note2Index = notesDB.list.indexOf(notesToSwap[1]);
+                await notesDB.swapNotes(note1Index, note2Index);
               }
               setState(() {});
             },
@@ -151,15 +154,19 @@ class _HomeState extends State<Home> {
           )
         ] : [
           IconButton(
-            tooltip: "View local image attachments",
+            tooltip: "Open settings",
             onPressed: () async {
-              // Open local images page
+              // Close then, after returning, reopen database in case user restores data
+
+              notesDB.close();
+              // Open settings page
               await Navigator.pushNamed(
                 context,
-                "/local_image_attachments",
+                "/settings",
               );
+              getDatabase();
             },
-            icon: const Icon(Icons.photo_library_outlined)
+            icon: const Icon(Icons.settings)
           )
         ],
       ),
@@ -171,32 +178,34 @@ class _HomeState extends State<Home> {
           physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
           onReorder: (oldIndex, newIndex) async {
             // Reorder notes, after dragging
-            final Note noteToReorder = notesDB.list[oldIndex];
-            await notesDB.deleteNote(noteToReorder);
-            await notesDB.insertNote(noteToReorder, newIndex);
-            // final element = notesDB.list.removeAt(oldIndex);
-            // notesDB.list.insert(newIndex, element);
 
+            // First reorder list, to update UI
+            final Note noteToReorder = notesDB.list[oldIndex];
+            notesDB.list.remove(noteToReorder);
+            notesDB.list.insert(newIndex, noteToReorder);
+
+            // Update selection
             isSelected.removeAt(oldIndex);
             isSelected.insert(newIndex, false);
             selectCard(newIndex);
             setState(() {});
+
+            // Reorder database in background
+            await notesDB.reorderNotesDB(noteToReorder, oldIndex, newIndex);
           },
           dragStartDelay: const Duration(milliseconds: 250),
           onDragStart: (dragIndex) {
-            // Essentially activates when long pressing
-            // Select note/card, if not in select mode
-            if (!selectModeEnabled){
-              HapticFeedback.selectionClick();
-              selectCard(dragIndex);
-              setState(() {});
-            }
+            // Select note/card, if activating select mode then use haptic feedback
+            if (!selectModeEnabled) {HapticFeedback.selectionClick();}
+            selectCard(dragIndex);
+            setState(() {});
           },
           dragWidgetBuilderV2: DragWidgetBuilderV2(builder: (int index, Widget child, ImageProvider? screenshot) {
             return NoteCard(
               notesDB: notesDB,
               isSelected: isSelected,
               index: index,
+              hasBorder: true,
             );
           }),
 

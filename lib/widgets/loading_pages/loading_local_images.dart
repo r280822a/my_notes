@@ -12,12 +12,21 @@ class LoadingLocalImages extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Local Image Attachments"),
+        titleTextStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onBackground,
+          fontWeight: FontWeight.bold,
+          fontSize: 23,
+        ),
       ),
 
       body: const Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Icon(
+              Icons.photo_library,
+              size: 150
+            ),
             Text(
               "No images",
               textAlign: TextAlign.center,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/desc_splitter.dart';
-import 'package:my_notes/consts.dart';
+import 'package:my_notes/utils/desc_splitter.dart';
+import 'package:my_notes/utils/common.dart';
 
 // TextFormField that displays/edits rendered description
 class DescFormField extends StatelessWidget {
@@ -35,12 +35,12 @@ class DescFormField extends StatelessWidget {
         // Update textblock, when changed
 
         // Adds checkbox symbol if checkbox
-        int cbIndex = descSplitter.list[index].indexOf(Consts.checkboxStr);
-        int cbTickedIndex = descSplitter.list[index].indexOf(Consts.checkboxTickedStr);
+        final int cbIndex = descSplitter.list[index].indexOf(Common.checkboxStr);
+        final int cbTickedIndex = descSplitter.list[index].indexOf(Common.checkboxTickedStr);
         if (cbIndex == 0) {
-          value = "${Consts.checkboxStr}$value";
+          value = "${Common.checkboxStr}$value";
         } else if (cbTickedIndex == 0){
-          value = "${Consts.checkboxTickedStr}$value";
+          value = "${Common.checkboxTickedStr}$value";
         }
         
         // Update note

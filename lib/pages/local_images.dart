@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:my_notes/widgets/loading_pages/loading_local_images.dart';
 import 'package:my_notes/widgets/delete_alert_dialog.dart';
 import 'package:my_notes/widgets/frosted.dart';
-import 'package:my_notes/consts.dart';
+import 'package:my_notes/utils/common.dart';
 
 class LocalImages extends StatefulWidget {
   const LocalImages({super.key});
@@ -26,20 +26,18 @@ class _LocalImagesState extends State<LocalImages> {
     // Get a list of image files
 
     // Gets path to images
-    String path = await Consts.getLocalImagesPath();
-
+    final String path = await Common.getLocalImagesPath();
     // Stores list of image files
     images = Directory(path).listSync();
 
-    if (images.isNotEmpty){
-      loading = false;
-      setState(() {});
-    }
+    setState(() {});
   }
 
 
   @override
   Widget build(BuildContext context) {
+    // If no images, then display loading screen
+    if (images.isNotEmpty) {loading = false;} else {loading = true;}
     if (loading){return const LoadingLocalImages();}
 
     return Scaffold(
@@ -51,14 +49,19 @@ class _LocalImagesState extends State<LocalImages> {
         flexibleSpace: Frosted(child: Container(color: Colors.transparent)),
 
         title: const Text("Local Image Attachments"),
+        titleTextStyle: TextStyle(
+          color: Theme.of(context).colorScheme.onBackground,
+          fontWeight: FontWeight.bold,
+          fontSize: 23,
+        ),
       ),
 
       body: ListView.builder(
         physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
         itemCount: images.length,
         itemBuilder: (context, index) {
-          List<String> imagePathList = images[index].path.split("/");
-          String imageName = imagePathList.last;
+          final List<String> imagePathList = images[index].path.split("/");
+          final String imageName = imagePathList.last;
 
           return Column(
             children: [

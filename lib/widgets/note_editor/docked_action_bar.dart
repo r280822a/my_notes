@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:my_notes/notes_database.dart';
-import 'package:my_notes/desc_splitter.dart';
-import 'package:my_notes/consts.dart';
+import 'package:my_notes/utils/notes_database.dart';
+import 'package:my_notes/utils/desc_splitter.dart';
+import 'package:my_notes/utils/common.dart';
+import 'package:my_notes/widgets/error_alert_dialog.dart';
 import 'package:my_notes/widgets/frosted.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
@@ -55,7 +56,7 @@ class DockedActionBar extends StatelessWidget {
       }
     }
 
-    Map<String, int> result = {
+    final Map<String, int> result = {
       "descIndex": descIndex,
       "offset": offset
     };
@@ -71,11 +72,11 @@ class DockedActionBar extends StatelessWidget {
 
     // Split text from start till index
     // To find which line to add string
-    String substring = text.substring(0, offset);
-    List<String> substringSplit = substring.split("\n");
+    final String substring = text.substring(0, offset);
+    final List<String> substringSplit = substring.split("\n");
 
     // Add string
-    List<String> textSplit = text.split("\n");
+    final List<String> textSplit = text.split("\n");
     textSplit.insert(substringSplit.length, strToAdd);
     text = textSplit.join("\n");
 
@@ -88,23 +89,6 @@ class DockedActionBar extends StatelessWidget {
       notesDB.updateNote(note);
     }
     setState();
-  }
-
-  Future<String> pickImage() async {
-    // Let user pick image
-    final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-
-    if (image == null) {return "";}
-
-    // Convert XFile to file
-    File imageFile = File(image.path);
-
-    // Copy image to local images folder
-    List split = p.split(image.path);
-    String imageName = split[split.length - 1];
-    imageFile.copySync("$path/$imageName");
-
-    return imageName;
   }
 
   @override
@@ -123,7 +107,7 @@ class DockedActionBar extends StatelessWidget {
                   Map<String, int> currentPos = getCurrentTextPos();
                   int descIndex = currentPos["descIndex"] as int;
                   int offset = currentPos["offset"] as int;
-                  addNonText(Consts.checkboxStr, descIndex, offset);
+                  addNonText(Common.checkboxStr, descIndex, offset);
                 },
                 icon: const Icon(Icons.add_box_outlined),
                 color: Theme.of(context).colorScheme.onBackground,
@@ -138,7 +122,7 @@ class DockedActionBar extends StatelessWidget {
                   builder: (BuildContext context) => AddImageBottomSheet(
                     getCurrentTextPos: getCurrentTextPos,
                     addNonText: addNonText,
-                    pickImage: pickImage,
+                    path: path,
                   ),
                 );
               },
@@ -152,17 +136,34 @@ class DockedActionBar extends StatelessWidget {
   }
 }
 
+// Bottom sheet to allow user to select between adding a network or local image
 class AddImageBottomSheet extends StatelessWidget {
   const AddImageBottomSheet({
     super.key,
     required this.getCurrentTextPos,
     required this.addNonText,
-    required this.pickImage,
+    required this.path,
   });
 
   final Function getCurrentTextPos;
   final Function addNonText;
-  final Function pickImage;
+  final String path;
+
+  Future<String> pickImage() async {
+    // Let user pick image
+    final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (image == null) {return "";}
+
+    // Convert XFile to File
+    final File imageFile = File(image.path);
+
+    // Copy image to local images folder
+    final List split = p.split(image.path);
+    final String imageName = split[split.length - 1];
+    imageFile.copySync(p.join(path, imageName));
+
+    return imageName;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -177,16 +178,29 @@ class AddImageBottomSheet extends StatelessWidget {
               TextButton(
                 onPressed: () async {
                   // Add local image
+
                   Navigator.pop(context);
-                  String imageName = await pickImage();
+                  try {
+                    String imageName = await pickImage();
 
-                  if (imageName != ""){
-                    Map<String, int> currentPos = getCurrentTextPos();
-                    int descIndex = currentPos["descIndex"] as int;
-                    int offset = currentPos["offset"] as int;
+                    if (imageName != ""){
+                      final Map<String, int> currentPos = getCurrentTextPos();
+                      final int descIndex = currentPos["descIndex"] as int;
+                      final int offset = currentPos["offset"] as int;
 
-                    String link = "![](local_images/$imageName)";
-                    addNonText(link, descIndex, offset);
+                      final String link = "![](local_images/$imageName)";
+                      addNonText(link, descIndex, offset);
+                    }
+                  } catch (err) {
+                    // If error occured, display error alert dialog to inform user
+                    if (context.mounted) {
+                      showDialog(
+                        context: context,
+                        builder:(context) => ErrorAlertDialog(
+                          exception: err as Exception
+                        ),
+                      );
+                    }
                   }
                 },
                 style: TextButton.styleFrom(
@@ -208,11 +222,11 @@ class AddImageBottomSheet extends StatelessWidget {
                 onPressed: () {
                   // Add network image
                   Navigator.pop(context);
-                  Map<String, int> currentPos = getCurrentTextPos();
-                  int descIndex = currentPos["descIndex"] as int;
-                  int offset = currentPos["offset"] as int;
+                  final Map<String, int> currentPos = getCurrentTextPos();
+                  final int descIndex = currentPos["descIndex"] as int;
+                  final int offset = currentPos["offset"] as int;
 
-                  TextEditingController linkController = TextEditingController();
+                  final TextEditingController linkController = TextEditingController();
                   showDialog(
                     context: context,
                     builder: (context) => AlertDialog(

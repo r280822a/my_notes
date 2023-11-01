@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_notes/desc_splitter.dart';
+import 'package:my_notes/utils/desc_splitter.dart';
 import 'package:my_notes/widgets/note_editor/alt_text_alert_dialog.dart';
 import 'package:my_notes/widgets/rounded_square.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -23,7 +23,7 @@ class DescNetworkImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double size = 60;
+    const double size = 60;
 
     return PopupMenuButton(
       position: PopupMenuPosition.under,
@@ -95,7 +95,7 @@ class DescNetworkImage extends StatelessWidget {
 
           errorBuilder: (context, error, stackTrace) {
             // Error icon if not found
-            return RoundedSquare(size: size, child: const Icon(Icons.error));
+            return const RoundedSquare(size: size, child: Icon(Icons.error));
           },
         ),
       ),
