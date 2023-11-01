@@ -133,6 +133,7 @@ class _NoteEditorState extends State<NoteEditor> {
           onTap: () {
             // Focus on bottom-most TextFormField, when tapping background
             if (scrollController.position.maxScrollExtent == 0) {
+              // Only if ListView doesn't extend to bottom of screen
               if (displayRaw){
                 rawFocusNode.requestFocus();
               } else {
