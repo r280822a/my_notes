@@ -38,7 +38,7 @@ class DockedActionBar extends StatelessWidget {
 
     if (displayRaw == true){
       // If raw, only send offset
-      offset = rawTextController.selection.baseOffset;
+      final int offset = rawTextController.selection.baseOffset;
       Map<String, int> result = {
         "descIndex": -1,
         "offset": offset
@@ -49,10 +49,9 @@ class DockedActionBar extends StatelessWidget {
     // Find currently selected text controller
     // Store its index and offset
     for (int i = 0; i < descSplitter.textControllers.length; i++){
-      final int baseOffset = descSplitter.textControllers[i].selection.baseOffset;
-      if (baseOffset != -1){
+      if (descSplitter.focusNodes[i].hasFocus){
         descIndex = i;
-        offset = baseOffset;
+        offset = descSplitter.textControllers[i].selection.baseOffset;
       }
     }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:my_notes/utils/common.dart';
 import 'package:my_notes/utils/notes_database.dart';
 import 'package:my_notes/widgets/delete_alert_dialog.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -72,7 +73,7 @@ class OptionsMenu extends StatelessWidget {
           },
           child: Row(
             children: [
-              Icon(Icons.delete_outline, color: Colors.red[600]),
+              Icon(Icons.delete_outline, color: Common.getDeleteColor(context)),
               const SizedBox(width: 10),
               const Text("Delete note"),
             ],

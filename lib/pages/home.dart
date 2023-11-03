@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:my_notes/utils/common.dart';
 import 'package:my_notes/utils/notes_database.dart';
 import 'package:my_notes/widgets/loading_pages/loading_home.dart';
 import 'package:my_notes/widgets/delete_alert_dialog.dart';
@@ -150,7 +151,7 @@ class _HomeState extends State<Home> {
               );
             }, 
             icon: const Icon(Icons.delete_outline),
-            color: Colors.red[600],
+            color: Common.getDeleteColor(context),
           )
         ] : [
           IconButton(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:my_notes/utils/common.dart';
 import 'package:my_notes/widgets/loading_pages/loading_local_images.dart';
 import 'package:my_notes/widgets/delete_alert_dialog.dart';
 import 'package:my_notes/widgets/frosted.dart';
-import 'package:my_notes/utils/common.dart';
 
 class LocalImages extends StatefulWidget {
   const LocalImages({super.key});
@@ -124,7 +124,7 @@ class _LocalImagesState extends State<LocalImages> {
                       );
                     },
                     icon: const Icon(Icons.delete_outline),
-                    color: Colors.red[600],
+                    color: Common.getDeleteColor(context),
                   ),
                 ],
               ),
