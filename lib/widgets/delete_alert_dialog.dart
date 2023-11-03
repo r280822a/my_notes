@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:my_notes/utils/common.dart';
 
 // AlertDialog for deleting something
 class DeleteAlertDialog extends StatelessWidget {
@@ -34,7 +35,7 @@ class DeleteAlertDialog extends StatelessWidget {
             "Yes",
             style: TextStyle(
               fontSize: 16,
-              color: Colors.red[600]
+              color: Common.getDeleteColor(context)
             )
           )
         ),

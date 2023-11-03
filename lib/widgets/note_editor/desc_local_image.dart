@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:my_notes/utils/common.dart';
 import 'package:my_notes/utils/desc_splitter.dart';
 import 'package:my_notes/widgets/rounded_square.dart';
 import 'package:my_notes/widgets/delete_alert_dialog.dart';
@@ -105,7 +106,7 @@ class DescLocalImage extends StatelessWidget {
           },
           child: Row(
             children: [
-              Icon(Icons.delete_outline, color: Colors.red[600]),
+              Icon(Icons.delete_outline, color: Common.getDeleteColor(context)),
               const SizedBox(width: 10),
               const Text("Delete image"),
             ],

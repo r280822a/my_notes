@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
@@ -11,6 +12,17 @@ class Common {
 
   // For any string matching "![...](...)", with '...' being anything
   static final RegExp imageRegex = RegExp(r'!\[(.*?)\]\((.*?)\)');
+
+  static Color? getDeleteColor(BuildContext context) {
+    // Returns lighter red if dark mode, else darker red
+
+    Brightness brightness = MediaQuery.of(context).platformBrightness;
+    if (brightness == Brightness.dark) {
+      return Colors.red[300];
+    } else {
+      return Colors.red[600];
+    }
+  }
 
   static Future<String> getNotesDatabasePath() async {
     // Get path to notes database
