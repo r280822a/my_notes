@@ -14,7 +14,8 @@ class Common {
   static final RegExp imageRegex = RegExp(r'!\[(.*?)\]\((.*?)\)');
 
   static Color? getDeleteColor(BuildContext context) {
-    // Returns lighter red if dark mode, else darker red
+    // Returns lighter red if in dark mode, else darker red
+    // To improve contrast, and readability
 
     Brightness brightness = MediaQuery.of(context).platformBrightness;
     if (brightness == Brightness.dark) {
